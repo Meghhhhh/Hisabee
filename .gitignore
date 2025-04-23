@@ -1,0 +1,61 @@
+# ========================
+# Node / React
+# ========================
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+package-lock.json
+yarn.lock
+.pnpm-debug.log
+dist/
+build/
+.env
+
+# ========================
+# Python
+# ========================
+__pycache__/
+*.py[cod]
+*$py.class
+venv/
+env/
+ENV/
+.venv/
+.ENV/
+.ipynb_checkpoints/
+*.log
+.pytest_cache/
+.mypy_cache/
+coverage/
+*.cover
+*.py,cover
+.cache/
+.tox/
+.nox/
+.coverage
+nosetests.xml
+coverage.xml
+htmlcov/
+.dmypy.json
+.pyre/
+Pipfile.lock
+poetry.lock
+
+# ========================
+# macOS / OS files
+# ========================
+.DS_Store
+Thumbs.db
+
+# ========================
+# IDEs / Editors
+# ========================
+.vscode/
+.idea/
+
+# ========================
+# Misc
+# ========================
+*.swp
+*.swo
