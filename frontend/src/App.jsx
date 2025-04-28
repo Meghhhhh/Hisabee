@@ -1,10 +1,16 @@
-import React from 'react'
-import LandingPage from './pages/LandingPage'
+import React from 'react';
+import LandingPage from './pages/LandingPage';
+import { RouterProvider, createBrowserRouter } from 'react-router';
 
 const App = () => {
-  return (
-    <LandingPage></LandingPage>
-  )
-}
+  const router = createBrowserRouter([
+    {
+      path: '/',
+      element: <LandingPage />,
+    },
+  ]);
 
-export default App
+  return <RouterProvider router={router} />;
+};
+
+export default App;
