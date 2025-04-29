@@ -1,5 +1,7 @@
-export default asyncHandler = fun => {
+const asyncHandler = fun => {
   return (req, res, next) => {
-    Promise.resolve(fun(req, res, next)).catch(next);
+    Promise.resolve(fun(req, res, next)).catch(err => next(err));
   };
 };
+
+export default asyncHandler

@@ -1,7 +1,7 @@
-const handleResponse = (res, status, success, message, data = null) => {
+const handleResponse = (res, status, message, data = null) => {
     return res.status(status).json({
         status,
-        success,
+        success: status < 400,
         message,
         data
     })
