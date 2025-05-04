@@ -1,5 +1,6 @@
 import React, { useRef, useEffect, useState } from 'react';
 import { IoIosArrowUp } from 'react-icons/io';
+import { Link } from "react-router";
 
 const LandingPage = () => {
   const containerRef = useRef(null);
@@ -87,9 +88,9 @@ const LandingPage = () => {
             </ul>
           </div>
 
-          <div className="mt-4">
-            <button className="capsule-button">Get Started</button>
-            <button className="capsule-button">Login now</button>
+          <div className="mt-8">
+            <Link to={"/home"} className="capsule-button">Get Started</Link>
+            <Link to={"/login"} className="capsule-button">Login now</Link>
           </div>
         </div>
 
