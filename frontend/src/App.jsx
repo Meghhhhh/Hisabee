@@ -3,6 +3,7 @@ import React from 'react';
 import Home from './pages/Home';
 import { RouterProvider, createBrowserRouter } from 'react-router';
 import Profile from './pages/Profile';
+import SignUp from './pages/SignUp';
 
 
 const App = () => {
@@ -19,6 +20,10 @@ const App = () => {
     {
       path: "/profile",
       element: <Profile />
+    },
+    {
+      path: "/SignUp",
+      element: <SignUp />
     }
     
   ]);
