@@ -4,12 +4,10 @@ import Home from './pages/Home';
 import { RouterProvider, createBrowserRouter } from 'react-router';
 import Profile from './pages/Profile';
 
+
 const App = () => {
+  
   const router = createBrowserRouter([
-    {
-      path: '/',
-      element: <LandingPage />,
-    },
     {
       path: "/home",
       element: <Home />
@@ -18,7 +16,9 @@ const App = () => {
       path: "/profile",
       element: <Profile />
     }
+    
   ]);
+  
 
   return <RouterProvider router={router} />;
 };
