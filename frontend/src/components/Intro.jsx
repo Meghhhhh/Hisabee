@@ -1,4 +1,5 @@
 import { homevid } from "../constants/index1"
+import { Link } from 'react-router';
 
 
 const Intro = () => {
@@ -12,9 +13,11 @@ const Intro = () => {
             <p className="text-gray-400 mt-2 text-sm font-roboto">Hisabee transforms the way you manage finances on your trips.</p>
         </div>
         <div className="flex justify-center items-center mt-10">
-            <button className="w-35 h-10 bg-green-400">
+          <Link to={"/SignUp"}>
+            <button className="w-35 h-10 bg-green-400 cursor-pointer">
                 Get Started! →
             </button>
+          </Link>
         </div>
         <div className="flex justify-center items-center mt-6">
         <div className="bg-gray-700 w-[75%] h-90 rounded-lg flex justify-center items-center">
