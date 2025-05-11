@@ -1,5 +1,5 @@
 import React from 'react';
-import LandingPage from './pages/LandingPage';
+
 import Home from './pages/Home';
 import { RouterProvider, createBrowserRouter } from 'react-router';
 import Profile from './pages/Profile';
@@ -8,6 +8,10 @@ import Profile from './pages/Profile';
 const App = () => {
   
   const router = createBrowserRouter([
+    {
+      path: "/",
+      element: <Home />
+    },
     {
       path: "/home",
       element: <Home />
