@@ -6,7 +6,9 @@ const Navbar = () => {
   return (
     <header className="w-full px-5 py-5 sm:px-10 flex justify-center items-center">
       <nav className="flex w-full screen-max-width ">
+        <Link to={"/home"}>
         <img src={logoImg} alt="Apple" width={50} height={30}  />
+        </Link>
 
         <div className="flex flex-1 justify-end items-center max-sm:hidden">
         
