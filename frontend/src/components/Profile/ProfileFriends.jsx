@@ -3,7 +3,7 @@ import React from 'react';
 const ProfileFriends = ({ friends }) => (
   <div>
     <h3 className="text-xl font-semibold mb-4">Friends</h3>
-    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+    <div className="grid grid-cols-6 md:grid-cols-10 gap-4">
       {friends.map(friend => (
         <div key={friend.id} className="flex flex-col items-center">
           <img
