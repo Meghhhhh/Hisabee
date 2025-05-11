@@ -1,20 +1,23 @@
-
+import { Link } from 'react-router';
 import { navLists, profileImg,logoImg } from '../constants/index1';
+import { CgProfile } from "react-icons/cg";
 
 const Navbar = () => {
   return (
-    <header className="w-full px-5 py-5 sm:px-10 px-5 flex justify-center items-center">
+    <header className="w-full px-5 py-5 sm:px-10 flex justify-center items-center">
       <nav className="flex w-full screen-max-width ">
-        <img src={logoImg} alt="Apple" width={100} height={50}  />
+        <img src={logoImg} alt="Apple" width={50} height={30}  />
 
-        <div className="flex flex-1 justify-end max-sm:hidden">
+        <div className="flex flex-1 justify-end items-center max-sm:hidden">
         
           {navLists.map((nav) => (
-            <div key={nav} className="px-5 text-xl cursor-pointer text-gray-400 hover:text-white transition-all">
+            <div key={nav} className="px-5 text-xl cursor-pointer text-white  hover:text-gray-400 transition-all">
               {nav}
             </div>
           ))}
-          <img src={profileImg } alt="profile" width={30} height={30}  />
+          <Link to={"/profile"}>
+          <CgProfile className='text-white ml-5 p-0.5' size={35} />
+          </Link>
         </div>
         
        
