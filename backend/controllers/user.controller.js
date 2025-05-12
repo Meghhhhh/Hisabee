@@ -1,6 +1,5 @@
 import handleResponse from '../utils/responsehandler.js';
 import {
-  getAllUsers,
   getUserById,
   updateUser,
   deleteUser,
@@ -221,3 +220,46 @@ export const refreshAccessToken = asyncHandler(async (req, res) => {
   }
 });
 
+export const deleteUser = asyncHandler(async (req, res) => {
+  const { user_id } = req.params;
+
+  const user = await getUserById(user_id);
+  if (!user) return handleResponse(res, 404, 'User not found');
+
+  await updateUser(user_id, { refreshToken: null });
+  await deleteUser(user_id);
+
+  res
+    .clearCookie('accessToken', cookieOptions)
+    .clearCookie('refreshToken', cookieOptions)
+    .json({
+      status: 200,
+      success: true,
+      message: 'User Deleted successfully',
+      data: null,
+    });
+});
+
+export const getCurrentUser = asyncHandler(async (req, res) => {
+  const { user_id } = req.body;
+  const user = await getUserById(user_id);
+  if (!user) return handleResponse(res, 404, 'User not found');
+
+  return handleResponse(res, 200, 'User fetched successfully', user);
+});
+
+export const updateProfile = asyncHandler(async (req, res) => {
+  const { user_id, firstName, lastName, phone_number, payment_reference } =
+    req.body;
+
+  const user = await getUserById(user_id);
+  if (!user) return handleResponse(res, 404, 'User not found');
+
+  const updatedUser = await updateUser(user.user_id, {
+    name: `${firstName} ${lastName}`,
+    phone_number,
+    payment_reference,
+  });
+
+  return handleResponse(res, 200, 'User updated successfully', updatedUser);
+});

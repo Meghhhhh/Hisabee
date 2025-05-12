@@ -16,10 +16,10 @@ export const getUserById = async id => {
   return user;
 };
 
-export const getUserByQuery = async(column, value) => {
-    const user = await getEntriesByQuery('users', column, value)
-    return user;
-}
+export const getUserByQuery = async (column, value) => {
+  const user = await getEntriesByQuery('users', column, value);
+  return user;
+};
 
 export const createUser = async payload => {
   const user = await insertEntry('users', payload);
