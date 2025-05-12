@@ -6,6 +6,10 @@ const createTableQueries = {
         password VARCHAR(255) NOT NULL,
         name VARCHAR(255),
         phone_number VARCHAR(10) UNIQUE,
+        otp_code VARCHAR(6),
+        otp_expires_at TIMESTAMP,
+        is_verified BOOLEAN DEFAULT FALSE,
+        refresh_token TEXT,
         payment_reference VARCHAR(255),
         created_at TIMESTAMP DEFAULT NOW()
       )

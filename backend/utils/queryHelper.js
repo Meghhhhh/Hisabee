@@ -6,7 +6,7 @@ export const getAllEntries = async tableName => {
   return result.rows;
 };
 
-export const getEntriesById = async (tableName, idColumn, idValue) => {
+export const getEntriesByQuery = async (tableName, idColumn, idValue) => {
   const query = `SELECT * FROM ${tableName} WHERE ${idColumn} = $1`;
   const result = await pool.query(query, [idValue]);
   return result.rows;

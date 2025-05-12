@@ -1,6 +1,6 @@
 import {
   getAllEntries,
-  getEntriesById,
+  getEntriesByQuery,
   insertEntry,
   updateEntryById,
   deleteEntryById,
@@ -12,9 +12,14 @@ export const getAllUsers = async () => {
 };
 
 export const getUserById = async id => {
-  const user = await getEntriesById('users', 'user_id', id);
+  const user = await getEntriesByQuery('users', 'user_id', id);
   return user;
 };
+
+export const getUserByQuery = async(column, value) => {
+    const user = await getEntriesByQuery('users', column, value)
+    return user;
+}
 
 export const createUser = async payload => {
   const user = await insertEntry('users', payload);
