@@ -4,6 +4,8 @@ import Home from './pages/Home';
 import { RouterProvider, createBrowserRouter } from 'react-router';
 import Profile from './pages/Profile';
 import SignUp from './pages/SignUp';
+import Register from './pages/Register';
+import Notifications from './pages/Notifications';
 
 
 const App = () => {
@@ -24,6 +26,14 @@ const App = () => {
     {
       path: "/SignUp",
       element: <SignUp />
+    },
+    {
+      path: "/Register",
+      element: <Register />
+    },
+    {
+      path: "/Notifications",
+      element: <Notifications />
     }
     
   ]);

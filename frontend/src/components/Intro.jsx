@@ -4,7 +4,7 @@ import { useState } from 'react';
 import Dashboard from './Dashboard';
 
 const Intro = () => {
-  const [isLoggedIn, setIsLoggedIn] = useState(true);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   return (
     <>
@@ -32,7 +32,7 @@ const Intro = () => {
             </p>
           </div>
           <div className="flex justify-center items-center mt-10">
-           <Link to={"/SignUp"}>
+           <Link to={"/Register"}>
             <button className="w-35 h-10 bg-green-400 cursor-pointer">
                 Get Started! →
             </button>
