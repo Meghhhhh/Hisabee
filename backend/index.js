@@ -6,7 +6,7 @@ import asyncHandler from './utils/asyncHandler.js';
 import errorHandler from './utils/errorHandler.js';
 import responseHandler from './utils/responsehandler.js';
 import cookieParser from 'cookie-parser';
-import userRoute from "./routes/user.route.js"
+import userRoute from './routes/user.route.js';
 import cors from 'cors';
 
 const app = express();
@@ -43,10 +43,10 @@ createTables()
       }),
     );
 
-    // Routes 
+    // Routes
     app.use('/api/v1/user', userRoute);
 
-    // error handling 
+    // error handling
     app.use(errorHandler);
 
     app.listen(process.env.PORT, () =>

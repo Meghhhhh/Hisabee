@@ -1,3 +1,4 @@
+import 'dotenv/config';
 import handleResponse from '../utils/responsehandler.js';
 import {
   getUserById,
@@ -9,6 +10,7 @@ import {
 import asyncHandler from '../utils/asyncHandler.js';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
+import sendMessage, { otpHtml } from '../utils/mailHandler.js';
 
 const cookieOptions = {
   httpOnly: true,
@@ -72,7 +74,7 @@ export const registerUser = asyncHandler(async (req, res) => {
         otp_expires_at: expiry,
       });
 
-      // todo : send otp
+      sendMessage(email, 'OTP for Hisabee', otpHtml(otp));
       return handleResponse(res, 200, 'OTP resent please verify');
     }
   }
@@ -91,7 +93,8 @@ export const registerUser = asyncHandler(async (req, res) => {
     otp_expires_at: otpExpiry,
   });
 
-  // todo : send otp
+  // send otp
+  sendMessage(email, 'OTP for Hisabee', otpHtml(otp));
 
   return handleResponse(
     res,
@@ -184,7 +187,7 @@ export const resendOtp = asyncHandler(async (req, res) => {
     otp_expires_at: otpExpiry,
   });
 
-  // todo : send otp
+  sendMessage(email, 'OTP for Hisabee', otpHtml(otp));
 
   return handleResponse(res, 200, 'OTP resent successfully');
 });
