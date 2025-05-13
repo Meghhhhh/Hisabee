@@ -7,6 +7,7 @@ import {
   refreshAccessToken,
   registerUser,
   resendOtp,
+  updateProfile,
   verifyOtp,
 } from '../controllers/user.controller.js';
 
@@ -20,5 +21,6 @@ router.delete('/delete', deleteUserById);
 router.post('/verify-otp', verifyOtp);
 router.post('/resend-otp', resendOtp);
 router.post('/refresh-access-token', refreshAccessToken);
+router.patch('/update-profile', updateProfile);
 
 export default router;
