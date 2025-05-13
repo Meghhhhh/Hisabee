@@ -9,7 +9,7 @@ const createTableQueries = {
         otp_code VARCHAR(6),
         otp_expires_at TIMESTAMP,
         is_verified BOOLEAN DEFAULT FALSE,
-        refresh_token TEXT,
+        refresh_token TEXT DEFAULT NULL,
         payment_reference VARCHAR(255),
         created_at TIMESTAMP DEFAULT NOW()
       )

@@ -16,9 +16,9 @@ export const getUserById = async id => {
   return user;
 };
 
-export const getUserByQuery = async (column, value) => {
+export const getOneUserByQuery = async (column, value) => {
   const user = await getEntriesByQuery('users', column, value);
-  return user;
+  return user[0] ? user[0] : null;
 };
 
 export const createUser = async payload => {

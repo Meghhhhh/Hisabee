@@ -38,7 +38,7 @@ createTables()
       asyncHandler(async (req, res) => {
         const query = 'SELECT NOW()';
         const result = await pool.query(query);
-        console.log(result.rows[0].now);
+        // console.log(result.rows[0].now);
         responseHandler(res, 200, 'Hello World');
       }),
     );

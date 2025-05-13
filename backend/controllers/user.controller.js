@@ -5,7 +5,7 @@ import {
   updateUser,
   deleteUser,
   createUser,
-  getUserByQuery,
+  getOneUserByQuery,
 } from '../models/user.model.js';
 import asyncHandler from '../utils/asyncHandler.js';
 import bcrypt from 'bcrypt';
@@ -18,6 +18,12 @@ const cookieOptions = {
   sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
   maxAge: 24 * 60 * 60 * 1000,
 };
+
+const filterUserProps = user => ({
+  user_id: user.user_id,
+  email: user.email,
+  name: user.name,
+});
 
 const generateAccessToken = user => {
   return jwt.sign(
@@ -60,7 +66,7 @@ const generateAccessAndRefreshTokens = async userId => {
 
 export const registerUser = asyncHandler(async (req, res) => {
   const { email, password, firstName, lastName } = req.body;
-  const user = await getUserByQuery('email', email);
+  const user = await getOneUserByQuery('email', email);
   if (user) {
     if (user.is_verified)
       return handleResponse(res, 400, 'User already registered!');
@@ -74,7 +80,7 @@ export const registerUser = asyncHandler(async (req, res) => {
         otp_expires_at: expiry,
       });
 
-      sendMessage(email, 'OTP for Hisabee', otpHtml(otp));
+      // sendMessage(email, 'OTP for Hisabee', otpHtml(newOTP));
       return handleResponse(res, 200, 'OTP resent please verify');
     }
   }
@@ -94,19 +100,19 @@ export const registerUser = asyncHandler(async (req, res) => {
   });
 
   // send otp
-  sendMessage(email, 'OTP for Hisabee', otpHtml(otp));
+  // sendMessage(email, 'OTP for Hisabee', otpHtml(otp));
 
   return handleResponse(
     res,
     201,
     'User registered successfully. Please verify the OTP',
-    newUser,
+    filterUserProps(newUser),
   );
 });
 
 export const loginUser = asyncHandler(async (req, res) => {
   const { email, password } = req.body;
-  const user = await getUserByQuery('email', email);
+  const user = await getOneUserByQuery('email', email);
   if (!user || !user.is_verified)
     return handleResponse(res, 401, 'User not found or unverified.');
 
@@ -149,7 +155,7 @@ export const logoutUser = asyncHandler(async (req, res) => {
 
 export const verifyOtp = asyncHandler(async (req, res) => {
   const { email, otp } = req.body;
-  const user = await getUserByQuery('email', email);
+  const user = await getOneUserByQuery('email', email);
   if (!user) return handleResponse(res, 404, 'User not found');
 
   if (user.is_verified)
@@ -168,12 +174,17 @@ export const verifyOtp = asyncHandler(async (req, res) => {
     otp_expires_at: null,
   });
 
-  return handleResponse(res, 200, 'OTP verified successfully', updated);
+  return handleResponse(
+    res,
+    200,
+    'OTP verified successfully',
+    filterUserProps(updated),
+  );
 });
 
 export const resendOtp = asyncHandler(async (req, res) => {
   const { email } = req.body;
-  const user = await getUserByQuery('email', email);
+  const user = await getOneUserByQuery('email', email);
 
   if (!user) return handleResponse(res, 404, 'User not found');
   if (user.is_verified)
@@ -187,7 +198,7 @@ export const resendOtp = asyncHandler(async (req, res) => {
     otp_expires_at: otpExpiry,
   });
 
-  sendMessage(email, 'OTP for Hisabee', otpHtml(otp));
+  // sendMessage(email, 'OTP for Hisabee', otpHtml(otp));
 
   return handleResponse(res, 200, 'OTP resent successfully');
 });
@@ -224,7 +235,7 @@ export const refreshAccessToken = asyncHandler(async (req, res) => {
 });
 
 export const deleteUserById = asyncHandler(async (req, res) => {
-  const { user_id } = req.params;
+  const { user_id } = req.body;
 
   const user = await getUserById(user_id);
   if (!user) return handleResponse(res, 404, 'User not found');
@@ -248,7 +259,12 @@ export const getCurrentUser = asyncHandler(async (req, res) => {
   const user = await getUserById(user_id);
   if (!user) return handleResponse(res, 404, 'User not found');
 
-  return handleResponse(res, 200, 'User fetched successfully', user);
+  return handleResponse(
+    res,
+    200,
+    'User fetched successfully',
+    filterUserProps(user),
+  );
 });
 
 export const updateProfile = asyncHandler(async (req, res) => {
@@ -264,5 +280,10 @@ export const updateProfile = asyncHandler(async (req, res) => {
     payment_reference,
   });
 
-  return handleResponse(res, 200, 'User updated successfully', updatedUser);
+  return handleResponse(
+    res,
+    200,
+    'User updated successfully',
+    filterUserProps(updatedUser),
+  );
 });
