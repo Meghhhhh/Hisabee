@@ -18,7 +18,7 @@ const createTableQueries = {
       CREATE TABLE IF NOT EXISTS friends (
         user_id UUID REFERENCES users(user_id) ON DELETE CASCADE,
         friend_id UUID REFERENCES users(user_id) ON DELETE CASCADE,
-        created_at TIMESTAMP DEFAULT NOW()
+        created_at TIMESTAMP DEFAULT NOW(),
         status VARCHAR(20) CHECK (status IN ('pending', 'accepted', 'blocked')),
         PRIMARY KEY (user_id, friend_id)
       );

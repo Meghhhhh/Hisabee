@@ -4,7 +4,7 @@ import {
   insertEntry,
   updateEntryById,
   deleteEntryById,
-} from '../utils/queryHelper';
+} from '../utils/queryHelper.js';
 
 export const getAllUsers = async () => {
   const users = await getAllEntries('users');

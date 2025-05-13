@@ -6,7 +6,7 @@ import {
   deleteUser,
   createUser,
   getUserByQuery,
-} from '../models/user.model';
+} from '../models/user.model.js';
 import asyncHandler from '../utils/asyncHandler.js';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
@@ -223,7 +223,7 @@ export const refreshAccessToken = asyncHandler(async (req, res) => {
   }
 });
 
-export const deleteUser = asyncHandler(async (req, res) => {
+export const deleteUserById = asyncHandler(async (req, res) => {
   const { user_id } = req.params;
 
   const user = await getUserById(user_id);
