@@ -14,7 +14,7 @@ const Navbar = () => {
         <div className="flex flex-1 justify-end items-center max-sm:hidden">
           {navLists.map((nav) =>
             nav === "Login" ? (
-              <Link to={"/SignUp"}>
+              <Link to={"/signup"}>
                 <div
                   key={nav}
                   className="px-5 text-xl cursor-pointer text-white  hover:text-gray-400 transition-all"
@@ -34,7 +34,7 @@ const Navbar = () => {
           <Link to={"/profile"}>
             <CgProfile className="text-white ml-5 p-0.5" size={32} />
           </Link>
-          <Link to={"/Notifications"}>
+          <Link to={"/notifications"}>
             <CiBellOn className="text-white ml-5 p-0.5" size={32}  />
           </Link>
         </div>
