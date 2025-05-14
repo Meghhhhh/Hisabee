@@ -32,7 +32,7 @@ const Intro = () => {
             </p>
           </div>
           <div className="flex justify-center items-center mt-10">
-           <Link to={"/Register"}>
+           <Link to={"/register"}>
             <button className="w-35 h-10 bg-green-400 cursor-pointer">
                 Get Started! →
             </button>
