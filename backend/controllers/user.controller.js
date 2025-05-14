@@ -77,14 +77,14 @@ export const registerUser = asyncHandler(async (req, res) => {
     else {
       // case to handle where no otp is verified after regsitrying
       const newOTP = Math.floor(100000 + Math.random() * 900000);
-      const expiry = new Date(Date.now() + 2 * 60 * 1000);
+      const expiry = new Date(Date.now() + 5 * 60 * 1000);
 
       await updateUser(user.user_id, {
         otp_code: newOTP,
         otp_expires_at: expiry,
       });
 
-      // sendMessage(email, 'OTP for Hisabee', otpHtml(newOTP));
+      sendMessage(email, 'OTP for Hisabee', otpHtml(newOTP));
       return handleResponse(res, 200, 'OTP resent please verify');
     }
   }
@@ -94,7 +94,7 @@ export const registerUser = asyncHandler(async (req, res) => {
 
   // 6 digit otp plus expire in 2min
   const otp = Math.floor(100000 + Math.random() * 900000);
-  const otpExpiry = new Date(Date.now() + 2 * 60 * 1000);
+  const otpExpiry = new Date(Date.now() + 5 * 60 * 1000);
   const newUser = await createUser({
     email,
     password: hashedPass,
@@ -104,7 +104,7 @@ export const registerUser = asyncHandler(async (req, res) => {
   });
 
   // send otp
-  // sendMessage(email, 'OTP for Hisabee', otpHtml(otp));
+  sendMessage(email, 'OTP for Hisabee', otpHtml(otp));
 
   return handleResponse(
     res,
@@ -117,7 +117,7 @@ export const registerUser = asyncHandler(async (req, res) => {
 export const loginUser = asyncHandler(async (req, res) => {
   const { error } = registerSchema.validate(req.body);
   if (error) return handleResponse(res, 400, error.details[0].message);
-  
+
   const { email, password } = req.body;
   const user = await getOneUserByQuery('email', email);
   if (!user || !user.is_verified)
@@ -169,7 +169,7 @@ export const verifyOtp = asyncHandler(async (req, res) => {
     return handleResponse(res, 400, 'User already verified');
 
   if (
-    user.otp_code !== parseInt(otp) ||
+    parseInt(user.otp_code) !== parseInt(otp) ||
     new Date() > new Date(user.otp_expires_at)
   ) {
     return handleResponse(res, 400, 'Invalid or expired OTP');
@@ -198,14 +198,14 @@ export const resendOtp = asyncHandler(async (req, res) => {
     return handleResponse(res, 400, 'User already verified');
 
   const otp = Math.floor(100000 + Math.random() * 900000);
-  const otpExpiry = new Date(Date.now() + 2 * 60 * 1000);
+  const otpExpiry = new Date(Date.now() + 5 * 60 * 1000);
 
   await updateUser(user.user_id, {
     otp_code: otp,
     otp_expires_at: otpExpiry,
   });
 
-  // sendMessage(email, 'OTP for Hisabee', otpHtml(otp));
+  sendMessage(email, 'OTP for Hisabee', otpHtml(otp));
 
   return handleResponse(res, 200, 'OTP resent successfully');
 });
