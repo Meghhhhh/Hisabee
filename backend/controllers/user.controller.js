@@ -59,7 +59,7 @@ const generateAccessAndRefreshTokens = async userId => {
   const refreshToken = generateRefreshToken(user);
 
   await updateUser(user.user_id, {
-    refreshToken,
+    refresh_token : refreshToken,
   });
 
   return { accessToken, refreshToken };
@@ -115,8 +115,8 @@ export const registerUser = asyncHandler(async (req, res) => {
 });
 
 export const loginUser = asyncHandler(async (req, res) => {
-  const { error } = registerSchema.validate(req.body);
-  if (error) return handleResponse(res, 400, error.details[0].message);
+  // const { error } = registerSchema.validate(req.body);
+  // if (error) return handleResponse(res, 400, error.details[0].message);
 
   const { email, password } = req.body;
   const user = await getOneUserByQuery('email', email);
@@ -242,23 +242,28 @@ export const refreshAccessToken = asyncHandler(async (req, res) => {
 });
 
 export const deleteUserById = asyncHandler(async (req, res) => {
-  const { user_id } = req.body;
-
-  const user = await getUserById(user_id);
-  if (!user) return handleResponse(res, 404, 'User not found');
-
-  if (user.refreshToken) await updateUser(user_id, { refreshToken: null });
-  await deleteUser(user_id);
-
-  res
-    .clearCookie('accessToken', cookieOptions)
-    .clearCookie('refreshToken', cookieOptions)
-    .json({
-      status: 200,
-      success: true,
-      message: 'User Deleted successfully',
-      data: null,
-    });
+  try {
+    const { user_id } = req.body;
+  
+    const user = await getUserById(user_id);
+    if (!user) return handleResponse(res, 404, 'User not found');
+  
+    if (user.refreshToken) await updateUser(user_id, { refresh_token: null });
+    await deleteUser(user_id);
+  
+    res
+      .clearCookie('accessToken', cookieOptions)
+      .clearCookie('refreshToken', cookieOptions)
+      .json({
+        status: 200,
+        success: true,
+        message: 'User Deleted successfully',
+        data: null,
+      });
+  } catch (error) {
+    console.error(error);
+    return handleResponse(res, 500, "Invalid Inputs")
+  }
 });
 
 export const getCurrentUser = asyncHandler(async (req, res) => {
