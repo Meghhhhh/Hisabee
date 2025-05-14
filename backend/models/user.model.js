@@ -52,4 +52,6 @@ export const registerSchema = Joi.object({
         'Password must contain at least one letter and one number',
       'any.required': 'Password is required',
     }),
+  firstName: Joi.string().allow('', null), // Optional
+  lastName: Joi.string().allow('', null), // Optional
 });

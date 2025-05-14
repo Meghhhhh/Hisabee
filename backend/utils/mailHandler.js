@@ -58,14 +58,14 @@ export const otpHtml = otp => `
   `;
 
 const sendMessage = async (to, subject, html) => {
-  const info = await transporter.sendMail({
+  await transporter.sendMail({
     from: process.env.APP_EMAIL,
     to,
     subject,
     html,
   });
 
-  console.log('Message sent:', info.messageId);
+  // console.log('Message sent:', info.messageId);
 };
 
 export default sendMessage;

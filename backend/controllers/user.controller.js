@@ -84,7 +84,7 @@ export const registerUser = asyncHandler(async (req, res) => {
         otp_expires_at: expiry,
       });
 
-      // sendMessage(email, 'OTP for Hisabee', otpHtml(newOTP));
+      sendMessage(email, 'OTP for Hisabee', otpHtml(newOTP));
       return handleResponse(res, 200, 'OTP resent please verify');
     }
   }
@@ -104,7 +104,7 @@ export const registerUser = asyncHandler(async (req, res) => {
   });
 
   // send otp
-  // sendMessage(email, 'OTP for Hisabee', otpHtml(otp));
+  sendMessage(email, 'OTP for Hisabee', otpHtml(otp));
 
   return handleResponse(
     res,
@@ -169,7 +169,7 @@ export const verifyOtp = asyncHandler(async (req, res) => {
     return handleResponse(res, 400, 'User already verified');
 
   if (
-    user.otp_code !== parseInt(otp) ||
+    parseInt(user.otp_code) !== parseInt(otp) ||
     new Date() > new Date(user.otp_expires_at)
   ) {
     return handleResponse(res, 400, 'Invalid or expired OTP');
@@ -205,7 +205,7 @@ export const resendOtp = asyncHandler(async (req, res) => {
     otp_expires_at: otpExpiry,
   });
 
-  // sendMessage(email, 'OTP for Hisabee', otpHtml(otp));
+  sendMessage(email, 'OTP for Hisabee', otpHtml(otp));
 
   return handleResponse(res, 200, 'OTP resent successfully');
 });
