@@ -14,7 +14,7 @@ export const getAllUsers = async () => {
 
 export const getUserById = async id => {
   const user = await getEntriesByQuery('users', 'user_id', id);
-  return user;
+  return user[0] ? user[0] : null;
 };
 
 export const getOneUserByQuery = async (column, value) => {
