@@ -6,6 +6,7 @@ import {
   deleteUser,
   createUser,
   getOneUserByQuery,
+  registerSchema,
 } from '../models/user.model.js';
 import asyncHandler from '../utils/asyncHandler.js';
 import bcrypt from 'bcrypt';
@@ -65,6 +66,9 @@ const generateAccessAndRefreshTokens = async userId => {
 };
 
 export const registerUser = asyncHandler(async (req, res) => {
+  const { error } = registerSchema.validate(req.body);
+  if (error) return handleResponse(res, 400, error.details[0].message);
+
   const { email, password, firstName, lastName } = req.body;
   const user = await getOneUserByQuery('email', email);
   if (user) {
@@ -111,6 +115,9 @@ export const registerUser = asyncHandler(async (req, res) => {
 });
 
 export const loginUser = asyncHandler(async (req, res) => {
+  const { error } = registerSchema.validate(req.body);
+  if (error) return handleResponse(res, 400, error.details[0].message);
+  
   const { email, password } = req.body;
   const user = await getOneUserByQuery('email', email);
   if (!user || !user.is_verified)
