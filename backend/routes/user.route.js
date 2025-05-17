@@ -10,12 +10,13 @@ import {
   updateProfile,
   verifyOtp,
 } from '../controllers/user.controller.js';
+import { validateBody } from '../middleware/bodyValidator.js';
 
 const router = express.Router();
 
 router.get('/current-user', getCurrentUser);
-router.post('/register', registerUser);
-router.post('/login', loginUser);
+router.post('/register', validateBody([`email`, `password`]), registerUser);
+router.post('/login', validateBody([`email`, `password`]), loginUser);
 router.post('/logout', logoutUser);
 router.delete('/delete', deleteUserById);
 router.post('/verify-otp', verifyOtp);
