@@ -66,8 +66,8 @@ const generateAccessAndRefreshTokens = async userId => {
 };
 
 export const registerUser = asyncHandler(async (req, res) => {
-  const { error } = registerSchema.validate(req.body);
-  if (error) return handleResponse(res, 400, error.details[0].message);
+  // const { error } = registerSchema.validate(req.body);
+  // if (error) return handleResponse(res, 400, error.details[0].message);
 
   const { email, password, firstName = null, lastName = null } = req.body;
   const user = await getOneUserByQuery('email', email);
@@ -275,14 +275,19 @@ export const getCurrentUser = asyncHandler(async (req, res) => {
 });
 
 export const updateProfile = asyncHandler(async (req, res) => {
-  const { user_id, firstName, lastName, phone_number, payment_reference } =
-    req.body;
+  const {
+    user_id,
+    firstName = null,
+    lastName = null,
+    phone_number,
+    payment_reference,
+  } = req.body;
 
   const user = await getUserById(user_id);
   if (!user) return handleResponse(res, 404, 'User not found');
 
   const updatedUser = await updateUser(user.user_id, {
-    name: `${firstName} ${lastName}`,
+    name: [firstName, lastName].filter(Boolean).join(' '),
     phone_number,
     payment_reference,
   });
