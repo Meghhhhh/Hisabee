@@ -69,7 +69,7 @@ export const registerUser = asyncHandler(async (req, res) => {
   const { error } = registerSchema.validate(req.body);
   if (error) return handleResponse(res, 400, error.details[0].message);
 
-  const { email, password, firstName, lastName } = req.body;
+  const { email, password, firstName = null, lastName = null } = req.body;
   const user = await getOneUserByQuery('email', email);
   if (user) {
     if (user.is_verified)
@@ -98,7 +98,7 @@ export const registerUser = asyncHandler(async (req, res) => {
   const newUser = await createUser({
     email,
     password: hashedPass,
-    name: `${firstName} ${lastName}`,
+    name: [firstName, lastName].filter(Boolean).join(' '),
     otp_code: otp,
     otp_expires_at: otpExpiry,
   });
