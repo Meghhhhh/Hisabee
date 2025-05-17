@@ -86,9 +86,9 @@ const Registration = () => {
 
   return (
     <div className="flex flex-col items-center justify-center w-full h-full bg-[#161616] p-4 text-white relative">
-      <Link to={'/SignUp'}>
-        <IoIosArrowBack className="absolute top-3 left-2" size={30} />
-      </Link>
+        <Link to={"/home"}>
+                <IoIosArrowBack className='absolute top-3 left-2' size={30}/>
+        </Link>
       <div className="w-full max-w-md bg-[#2a2a2a] rounded-lg shadow-md p-6">
         <div className="text-center mb-6">
           <h1 className="text-2xl font-bold text-white">Create Account</h1>
@@ -342,11 +342,11 @@ const Registration = () => {
 
         <div className="mt-6 text-center">
           <p className="text-sm text-gray-600">
-            Already have an account?{' '}
-            <Link to={'/SignUp'}>
-              <a href="#" className="text-blue-600 hover:underline font-medium">
-                Sign in
-              </a>
+            Already have an account?{" "}
+            <Link to={"/signp"}>
+            <a href="#" className="text-blue-600 hover:underline font-medium">
+              Sign in
+            </a>
             </Link>
           </p>
         </div>

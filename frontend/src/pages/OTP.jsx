@@ -51,7 +51,7 @@ const OTP = () => {
                     Enter The Code sent to your Email
                     <CiMobile1 className='m-2' size={30} />
                 </div>
-                <button className="w-35 h-10 mt-7 bg-[#1999ff] cursor-pointer">
+                <button className=" bg-[#1999ff] capsule-button border-none">
                 Send
             </button>
 

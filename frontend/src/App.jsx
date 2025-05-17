@@ -25,19 +25,19 @@ const App = () => {
       element: <Profile />
     },
     {
-      path: "/SignUp",
+      path: "/signup",
       element: <SignUp />
     },
     {
-      path: "/Register",
+      path: "/register",
       element: <Register />
     },
     {
-      path: "/Notifications",
+      path: "/notifications",
       element: <Notifications />
     },
     {
-      path: "/OTP",
+      path: "/otp",
       element: <OTP />
     }
     
