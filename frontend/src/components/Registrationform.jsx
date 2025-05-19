@@ -1,6 +1,8 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Link, useNavigate } from 'react-router';
 import axios from 'axios';
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import { IoIosArrowBack } from 'react-icons/io';
 
 const Registration = () => {
@@ -62,26 +64,47 @@ const Registration = () => {
 
   const handleSubmit = async e => {
     e.preventDefault();
+    setLoading(true);
 
-    const validationErrors = validate();
-    if (Object.keys(validationErrors).length > 0) {
-      setErrors(validationErrors);
-      return;
+    try {
+      const validationErrors = validate();
+      if (Object.keys(validationErrors).length > 0) {
+        setErrors(validationErrors);
+        return;
+      }
+
+      setErrors({});
+      const response = await axios.post(
+        `${import.meta.env.VITE_BACKEND_API_URL}/user/register`,
+        {
+          email: formData.email,
+          password: formData.password,
+          firstName: formData.firstName,
+          lastName: formData.lastName,
+        },
+      );
+
+      if (response.status < 300) {
+        toast.success(
+          'Otp sent to the given email, redirecting to OTP window...',
+          {
+            autoClose: 3000,
+          },
+        );
+        localStorage.setItem('email', response.data?.data?.email);
+        setTimeout(() => {
+          navigate('/otp');
+        }, 3000);
+      } else {
+        toast.error('Failed to send otp', {
+          autoClose: 5000,
+        });
+      }
+    } catch (error) {
+      toast.error(error);
+    } finally {
+      setLoading(false);
     }
-
-    setErrors({});
-    const response = await axios.post(
-      `${import.meta.env.VITE_BACKEND_API_URL}/user/register`,
-      {
-        email: formData.email,
-        password: formData.password,
-        firstName: formData.firstName,
-        lastName: formData.lastName,
-      },
-    );
-
-    console.log(response);
-    navigate("/otp");
   };
 
   return (

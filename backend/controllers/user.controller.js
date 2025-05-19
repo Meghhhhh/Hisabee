@@ -59,7 +59,7 @@ const generateAccessAndRefreshTokens = async userId => {
   const refreshToken = generateRefreshToken(user);
 
   await updateUser(user.user_id, {
-    refresh_token : refreshToken,
+    refresh_token: refreshToken,
   });
 
   return { accessToken, refreshToken };
