@@ -131,6 +131,8 @@ export const loginUser = asyncHandler(async (req, res) => {
     user.user_id,
   );
 
+  // console.log(accessToken, refreshToken)
+
   res
     .cookie('refreshToken', refreshToken, cookieOptions)
     .cookie('accessToken', accessToken, cookieOptions)
