@@ -269,7 +269,7 @@ export const deleteUserById = asyncHandler(async (req, res) => {
 });
 
 export const getCurrentUser = asyncHandler(async (req, res) => {
-  const { user_id } = req.body;
+  const { user_id } = req.user;
   const user = await getUserById(user_id);
   if (!user) return handleResponse(res, 404, 'User not found');
 
