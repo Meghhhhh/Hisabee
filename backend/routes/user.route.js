@@ -23,6 +23,6 @@ router.delete('/delete', auth, deleteUserById);
 router.post('/verify-otp', verifyOtp);
 router.post('/resend-otp', resendOtp);
 router.post('/refresh-access-token', refreshAccessToken);
-router.patch('/update-profile', updateProfile);
+router.patch('/update-profile', auth, updateProfile);
 
 export default router;

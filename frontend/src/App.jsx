@@ -20,8 +20,25 @@ const App = () => {
     { path: '/notifications', element: <Notifications /> },
     { path: '/otp', element: <OTP /> },
   ]);
-  
 
+  // const router = createBrowserRouter(
+  //   createRoutesFromElements(
+  //     <>
+  //       <Route path="/signup" element={<SignUp />} />
+  //       <Route path="/register" element={<Register />} />
+  //       <Route path="/otp" element={<OTP />} />
+
+  //       {/* Protected routes */}
+  //       <Route element={<ProtectedRoute />}>
+  //         <Route path="/" element={<Home />} />
+  //         <Route path="/home" element={<Home />} />
+  //         <Route path="/profile" element={<Profile />} />
+  //         <Route path="/notifications" element={<Notifications />} />
+  //       </Route>
+  //     </>,
+  //   ),
+  // );
+  
   return (
     <>
       <RouterProvider router={router} />
