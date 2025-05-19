@@ -37,6 +37,9 @@ const Login = () => {
           email,
           password,
         },
+        {
+          withCredentials: true,
+        },
       );
 
       if (res.status < 300) {

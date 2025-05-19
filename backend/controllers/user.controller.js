@@ -131,6 +131,8 @@ export const loginUser = asyncHandler(async (req, res) => {
     user.user_id,
   );
 
+  // console.log(accessToken, refreshToken)
+
   res
     .cookie('refreshToken', refreshToken, cookieOptions)
     .cookie('accessToken', accessToken, cookieOptions)
@@ -267,7 +269,7 @@ export const deleteUserById = asyncHandler(async (req, res) => {
 });
 
 export const getCurrentUser = asyncHandler(async (req, res) => {
-  const { user_id } = req.body;
+  const { user_id } = req.user;
   const user = await getUserById(user_id);
   if (!user) return handleResponse(res, 404, 'User not found');
 
