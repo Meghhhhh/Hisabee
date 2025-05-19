@@ -33,6 +33,7 @@ const generateAccessToken = user => {
       email: user.email,
       name: user.name,
       phone_number: user.phone_number,
+      refresh_token: user.refresh_token,
     },
     process.env.ACCESS_TOKEN_SECRET,
     {
@@ -145,10 +146,10 @@ export const loginUser = asyncHandler(async (req, res) => {
 });
 
 export const logoutUser = asyncHandler(async (req, res) => {
-  const token = req.cookies.refreshToken;
+  const token = req.user.refresh_token;
   if (!token) return handleResponse(res, 401, 'No refresh token found');
   const decoded = jwt.verify(token, process.env.REFRESH_TOKEN_SECRET);
-  await updateUser(decoded.user_id, { refreshToken: null });
+  await updateUser(decoded.user_id, { refresh_token: null });
 
   return res
     .status(200)
@@ -227,7 +228,7 @@ export const refreshAccessToken = asyncHandler(async (req, res) => {
     const accessToken = generateAccessToken(user);
     const newRefreshToken = generateRefreshToken(user);
 
-    await updateUser(user.user_id, { refreshToken: newRefreshToken });
+    await updateUser(user.user_id, { refresh_token: newRefreshToken });
 
     res
       .cookie('accessToken', accessToken, cookieOptions)
@@ -245,14 +246,14 @@ export const refreshAccessToken = asyncHandler(async (req, res) => {
 
 export const deleteUserById = asyncHandler(async (req, res) => {
   try {
-    const { user_id } = req.body;
-  
+    const { user_id } = req.user;
+
     const user = await getUserById(user_id);
     if (!user) return handleResponse(res, 404, 'User not found');
-  
+
     if (user.refreshToken) await updateUser(user_id, { refresh_token: null });
     await deleteUser(user_id);
-  
+
     res
       .clearCookie('accessToken', cookieOptions)
       .clearCookie('refreshToken', cookieOptions)
@@ -264,7 +265,7 @@ export const deleteUserById = asyncHandler(async (req, res) => {
       });
   } catch (error) {
     console.error(error);
-    return handleResponse(res, 500, "Invalid Inputs")
+    return handleResponse(res, 500, 'Invalid Inputs');
   }
 });
 
@@ -283,12 +284,13 @@ export const getCurrentUser = asyncHandler(async (req, res) => {
 
 export const updateProfile = asyncHandler(async (req, res) => {
   const {
-    user_id,
     firstName = null,
     lastName = null,
     phone_number,
     payment_reference,
   } = req.body;
+
+  const { user_id } = req.user;
 
   const user = await getUserById(user_id);
   if (!user) return handleResponse(res, 404, 'User not found');
