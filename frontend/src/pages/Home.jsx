@@ -1,36 +1,10 @@
 import Navbar from '../components/Navbar';
 import Intro from '../components/Intro';
 import Footer from '../components/Footer';
-import { useEffect, useState } from 'react';
-import axios from 'axios';
+import { useCurrentUser } from '../hooks/useCurrentUser';
 
 const Home = () => {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [loading, setLoading] = useState(false);
-
-  useEffect(() => {
-    setLoading(true);
-    const getCurrUser = async () => {
-      try {
-        const response = await axios.get(
-          `${import.meta.env.VITE_BACKEND_API_URL}/user/current-user`,
-          {
-            withCredentials: true,
-          },
-        );
-
-        if (response.status < 300) {
-          setIsLoggedIn(true);
-        }
-      } catch (error) {
-        console.error('Error fetching current user:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    getCurrUser();
-  }, []);
+  const { loading, isLoggedIn } = useCurrentUser();
 
   if (loading) {
     return (

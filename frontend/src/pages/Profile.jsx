@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import Sidebar from '../components/Profile/Sidebar';
 import ProfileOverview from '../components/Profile/ProfileOverview';
 import ProfileHistory from '../components/Profile/ProfileHistory';
