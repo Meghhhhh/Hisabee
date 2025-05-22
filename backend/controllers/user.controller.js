@@ -6,7 +6,6 @@ import {
   deleteUser,
   createUser,
   getOneUserByQuery,
-  registerSchema,
 } from '../models/user.model.js';
 import asyncHandler from '../utils/asyncHandler.js';
 import bcrypt from 'bcrypt';
@@ -24,6 +23,10 @@ const filterUserProps = user => ({
   user_id: user.user_id,
   email: user.email,
   name: user.name,
+  phone_number: user.phone_number,
+  payment_reference: user.payment_reference,
+  friends: user.friends,
+  hisabs: user.hisabs,
 });
 
 const generateAccessToken = user => {
