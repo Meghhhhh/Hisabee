@@ -1,5 +1,3 @@
-import React from 'react';
-
 const ProfileOverview = ({ user }) => (
   <div className="font-[Montserrat] relative">
     {/* Avatar and Name */}
