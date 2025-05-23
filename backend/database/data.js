@@ -69,15 +69,16 @@ const createTableQueries = {
       );
     `,
   notifications: `
-      CREATE TABLE IF NOT EXISTS notifications(
-        notification_id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-        is_read BOOLEAN DEFAULT FALSE,
-        user_id UUID REFERENCES users(user_id) ON DELETE CASCADE NOT NULL,
-        message TEXT NOT NULL,
-        type VARCHAR(50) CHECK(type IN ('FRIEND','HISAB_REQUEST', 'OTHER')),
-        title TEXT NOT NULL,
-        created_at TIMESTAMP DEFAULT NOW()
-      )
+      CREATE TABLE IF NOT EXISTS notifications (
+      notification_id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+      is_read BOOLEAN DEFAULT FALSE,
+      send_user_id UUID REFERENCES users(user_id) ON DELETE CASCADE,
+      receive_user_id UUID REFERENCES users(user_id) ON DELETE CASCADE NOT NULL,
+      message TEXT NOT NULL,
+      type VARCHAR(50) CHECK(type IN ('FRIEND', 'HISAB_REQUEST', 'OTHER')),
+      title TEXT NOT NULL,
+      created_at TIMESTAMP DEFAULT NOW()
+    );
     `,
 };
 
