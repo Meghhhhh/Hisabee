@@ -1,6 +1,5 @@
 import { useEffect } from 'react';
 import { setLoading } from '../../store/slice/loading.js';
-import { setIsLoggedIn } from '../../store/slice/isLoggedIn.js';
 import axios from 'axios';
 import { useDispatch, useSelector } from 'react-redux';
 import { setUserData } from '../../store/slice/userSlice.js';
@@ -22,7 +21,6 @@ export const useCurrentUser = () => {
         );
 
         if (response.status < 300) {
-          dispatch(setIsLoggedIn(true));
           dispatch(setUserData(response?.data?.data));
         }
       } catch (error) {

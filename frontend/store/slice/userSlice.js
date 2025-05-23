@@ -7,7 +7,7 @@ const userSlice = createSlice({
     email: null,
     payment_refrence: null,
     phone: null,
-    avatar: 'https://pngtree.com/free-png-vectors/user-avatar',
+    avatar: './avatar.png',
     history: [],
     friends: [],
   },

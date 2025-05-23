@@ -4,6 +4,7 @@ import axios from 'axios';
 import { toast } from 'react-toastify';
 import { useSelector, useDispatch } from 'react-redux';
 import { setLoading } from '../../store/slice/loading.js';
+import { setIsLoggedIn } from '../../store/slice/isLoggedIn.js';
 
 export const useLoginForm = () => {
   const navigate = useNavigate();
@@ -47,11 +48,14 @@ export const useLoginForm = () => {
         toast.success(res.data?.message || 'Login successful', {
           autoClose: 3000,
         });
+        dispatch(setIsLoggedIn(true));
         setTimeout(() => navigate('/home'), 3000);
       } else {
+        dispatch(setIsLoggedIn(false));
         toast.error('Failed to login');
       }
     } catch (err) {
+      dispatch(setIsLoggedIn(false));
       toast.error(err.response?.data?.data?.message || 'Login failed');
     } finally {
       dispatch(setLoading(false));

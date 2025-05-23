@@ -3,7 +3,7 @@ import { useState } from 'react';
 import 'react-toastify/dist/ReactToastify.css';
 import { IoIosArrowBack } from 'react-icons/io';
 import useFormHandler from '../hooks/useFormHandler';
-import useRegisterUser from '../hooks/useRegisterUser';
+import useRegisterUser from '../hooks/useRegister';
 
 const Registration = () => {
   const { register, loading } = useRegisterUser();
