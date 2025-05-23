@@ -1,9 +1,9 @@
 import { useEffect } from 'react';
-import { setLoading } from '../../store/slice/loading';
-import { setIsLoggedIn } from '../../store/slice/isLoggedIn';
+import { setLoading } from '../../store/slice/loading.js';
+import { setIsLoggedIn } from '../../store/slice/isLoggedIn.js';
 import axios from 'axios';
 import { useDispatch, useSelector } from 'react-redux';
-import { setUserData } from '../../store/slice/userSlice';
+import { setUserData } from '../../store/slice/userSlice.js';
 
 export const useCurrentUser = () => {
   const dispatch = useDispatch();

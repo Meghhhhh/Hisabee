@@ -2,8 +2,10 @@ import { Link } from 'react-router';
 import { navLists, logoImg } from '../constants/index1';
 import { CgProfile } from 'react-icons/cg';
 import { CiBellOn } from 'react-icons/ci';
+import { useSelector } from 'react-redux';
 
-const Navbar = ({ isLoggedIn }) => {
+const Navbar = () => {
+  const isLoggedIn = useSelector(state => state.auth.isLoggedIn);
   return (
     <header className="w-full px-3 py-5 sm:px-5 flex justify-center items-center">
       <nav className="flex w-full h-[25px] screen-max-width ">
