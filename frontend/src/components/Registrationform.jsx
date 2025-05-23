@@ -1,117 +1,45 @@
+import { Link } from 'react-router';
 import { useState } from 'react';
-import { Link, useNavigate } from 'react-router';
-import axios from 'axios';
-import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { IoIosArrowBack } from 'react-icons/io';
+import useFormHandler from '../hooks/useFormHandler';
+import useRegisterUser from '../hooks/useRegisterUser';
 
 const Registration = () => {
-  const [formData, setFormData] = useState({
-    firstName: '',
-    lastName: '',
-    email: '',
-    password: '',
-    confirmPassword: '',
-  });
+  const { register, loading } = useRegisterUser();
   const [showPassword, setShowPassword] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [errors, setErrors] = useState({});
-  const navigate = useNavigate();
+  const { formData, handleChange, errors, validateForm } = useFormHandler(
+    {
+      firstName: '',
+      lastName: '',
+      email: '',
+      password: '',
+      confirmPassword: '',
+    },
+    data => {
+      const errs = {};
+      if (!data.firstName.trim()) errs.firstName = 'First name is required';
+      if (!data.lastName.trim()) errs.lastName = 'Last name is required';
+      if (!data.email.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/))
+        errs.email = 'Invalid email';
+      if (!data.password || data.password.length < 6)
+        errs.password = 'Min 6 characters';
+      if (data.password !== data.confirmPassword)
+        errs.confirmPassword = 'Passwords do not match';
+      return errs;
+    },
+  );
 
-  const handleChange = e => {
-    const { name, value } = e.target;
-    setFormData({
-      ...formData,
-      [name]: value,
-    });
-  };
-
-  const validate = () => {
-    const newErrors = {};
-
-    // Validate first name
-    if (!formData.firstName.trim()) {
-      newErrors.firstName = 'First name is required';
-    }
-
-    // Validate last name
-    if (!formData.lastName.trim()) {
-      newErrors.lastName = 'Last name is required';
-    }
-
-    // Validate email
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!formData.email) {
-      newErrors.email = 'Email is required';
-    } else if (!emailRegex.test(formData.email)) {
-      newErrors.email = 'Please enter a valid email address';
-    }
-
-    // Validate password
-    if (!formData.password) {
-      newErrors.password = 'Password is required';
-    } else if (formData.password.length < 6) {
-      newErrors.password = 'Password must be at least 6 characters';
-    }
-
-    // Validate confirm password
-    if (formData.password !== formData.confirmPassword) {
-      newErrors.confirmPassword = 'Passwords do not match';
-    }
-
-    return newErrors;
-  };
-
-  const handleSubmit = async e => {
+  const handleSubmit = e => {
     e.preventDefault();
-    setLoading(true);
-
-    try {
-      const validationErrors = validate();
-      if (Object.keys(validationErrors).length > 0) {
-        setErrors(validationErrors);
-        return;
-      }
-
-      setErrors({});
-      const response = await axios.post(
-        `${import.meta.env.VITE_BACKEND_API_URL}/user/register`,
-        {
-          email: formData.email,
-          password: formData.password,
-          firstName: formData.firstName,
-          lastName: formData.lastName,
-        },
-      );
-
-      if (response.status < 300) {
-        toast.success(
-          'Otp sent to the given email, redirecting to OTP window...',
-          {
-            autoClose: 3000,
-          },
-        );
-        localStorage.setItem('email', response.data?.data?.email);
-        setTimeout(() => {
-          navigate('/otp');
-        }, 3000);
-      } else {
-        toast.error('Failed to send otp', {
-          autoClose: 5000,
-        });
-      }
-    } catch (error) {
-      toast.error(error);
-    } finally {
-      setLoading(false);
-    }
+    if (validateForm()) register(formData);
   };
 
   return (
     <div className="flex flex-col items-center justify-center w-full h-full bg-[#161616] p-4 text-white relative">
-        <Link to={"/home"}>
-                <IoIosArrowBack className='absolute top-3 left-2' size={30}/>
-        </Link>
+      <Link to={'/home'}>
+        <IoIosArrowBack className="absolute top-3 left-2" size={30} />
+      </Link>
       <div className="w-full max-w-md bg-[#2a2a2a] rounded-lg shadow-md p-6">
         <div className="text-center mb-6">
           <h1 className="text-2xl font-bold text-white">Create Account</h1>
@@ -365,11 +293,11 @@ const Registration = () => {
 
         <div className="mt-6 text-center">
           <p className="text-sm text-gray-600">
-            Already have an account?{" "}
-            <Link to={"/signp"}>
-            <a href="#" className="text-blue-600 hover:underline font-medium">
-              Sign in
-            </a>
+            Already have an account?{' '}
+            <Link to={'/signp'}>
+              <a href="#" className="text-blue-600 hover:underline font-medium">
+                Sign in
+              </a>
             </Link>
           </p>
         </div>

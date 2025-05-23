@@ -1,10 +1,10 @@
-import { homevid } from "../constants/index1"
+import { homevid } from '../constants/index1';
 import { Link } from 'react-router';
-import { useState } from 'react';
+import { useSelector } from 'react-redux';
 import Dashboard from './Dashboard';
 
 const Intro = () => {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const isLoggedIn = useSelector(state => state.auth.isLoggedIn);
 
   return (
     <>
@@ -32,11 +32,11 @@ const Intro = () => {
             </p>
           </div>
           <div className="flex justify-center items-center mt-10">
-           <Link to={"/register"}>
-            <button className="w-35 h-10 bg-green-400 cursor-pointer">
+            <Link to={'/register'}>
+              <button className="w-35 h-10 bg-green-400 cursor-pointer">
                 Get Started! →
-            </button>
-          </Link>
+              </button>
+            </Link>
           </div>
           <div className="flex justify-center items-center mt-6">
             <div className="bg-gray-700 w-[75%] h-90 rounded-lg flex justify-center items-center">
