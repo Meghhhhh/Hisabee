@@ -1,66 +1,19 @@
-import { useState } from 'react';
+import { Link } from 'react-router';
 import { IoIosArrowBack } from 'react-icons/io';
-import { Link, useNavigate } from 'react-router';
-import { toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
-import axios from 'axios';
+import { useLoginForm } from '../hooks/useLoginForm';
 
 const Login = () => {
-  const navigate = useNavigate();
-
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [showPassword, setShowPassword] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
-
-  const handleSubmit = async e => {
-    e.preventDefault();
-    setError('');
-
-    if (!email || !password) {
-      setError('Please fill in all fields');
-      return;
-    }
-
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
-      setError('Please enter a valid email address');
-      return;
-    }
-
-    setLoading(true);
-    try {
-      const res = await axios.post(
-        `${import.meta.env.VITE_BACKEND_API_URL}/user/login`,
-        {
-          email,
-          password,
-        },
-        {
-          withCredentials: true,
-        },
-      );
-
-      if (res.status < 300) {
-        console.log(res);
-        toast.success(res.data?.message || 'Login successful', {
-          autoClose: 3000,
-        });
-        setTimeout(() => {
-          navigate('/home');
-        }, 3000);
-      } else {
-        toast.error('Failed to login', {
-          autoClose: 5000,
-        });
-      }
-    } catch (err) {
-      toast.error(err.response?.data?.data?.message || 'Login failed');
-    } finally {
-      setLoading(false);
-    }
-  };
+  const {
+    email,
+    password,
+    showPassword,
+    loading,
+    error,
+    setEmail,
+    setPassword,
+    setShowPassword,
+    handleSubmit,
+  } = useLoginForm();
 
   return (
     <div className="flex flex-col items-center justify-center w-full h-full bg-[#161616] p-4 text-white relative">
@@ -78,7 +31,7 @@ const Login = () => {
         </div>
 
         {error && (
-          <div className="mb-4 p-3 bg-red-100 text-red-800 border-l-4 border-red-500">
+          <div className="mb-4 p-3 bg-red-100 text-red-800 border-l-4 border-red-500 rounded">
             {error}
           </div>
         )}
@@ -115,6 +68,7 @@ const Login = () => {
             <div
               className="absolute inset-y-0 right-3 flex items-center cursor-pointer"
               onClick={() => setShowPassword(!showPassword)}
+              title="Toggle Password Visibility"
             >
               {showPassword ? '🙈' : '👁️'}
             </div>
@@ -130,7 +84,7 @@ const Login = () => {
         </button>
 
         <div className="mt-6 text-center text-sm text-gray-400">
-          Don't have an account?{' '}
+          Don’t have an account?{' '}
           <Link to="/register" className="text-blue-500 hover:underline">
             Sign up
           </Link>
