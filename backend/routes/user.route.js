@@ -2,6 +2,7 @@ import express from 'express';
 import {
   deleteUserById,
   getCurrentUser,
+  isUserLoggedIn,
   loginUser,
   logoutUser,
   refreshAccessToken,
@@ -20,6 +21,7 @@ router.post('/register', validateBody([`email`, `password`]), registerUser);
 router.post('/login', validateBody([`email`, `password`]), loginUser);
 router.post('/logout', logoutUser);
 router.delete('/delete', auth, deleteUserById);
+router.get('/is-user-loggedin', isUserLoggedIn);
 router.post('/verify-otp', verifyOtp);
 router.post('/resend-otp', resendOtp);
 router.post('/refresh-access-token', refreshAccessToken);
