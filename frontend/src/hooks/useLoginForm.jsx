@@ -49,7 +49,7 @@ export const useLoginForm = () => {
           autoClose: 3000,
         });
         dispatch(setIsLoggedIn(true));
-        setTimeout(() => navigate('/home'), 3000);
+        setTimeout(() => navigate('/home'), 2000);
       } else {
         dispatch(setIsLoggedIn(false));
         toast.error('Failed to login');

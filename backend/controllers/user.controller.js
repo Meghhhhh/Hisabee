@@ -311,3 +311,18 @@ export const updateProfile = asyncHandler(async (req, res) => {
     filterUserProps(updatedUser),
   );
 });
+
+export const isUserLoggedIn = asyncHandler(async (req, res) => {
+  const accessToken = req.cookies.accessToken;
+
+  if (!accessToken) {
+    return handleResponse(res, 401, 'Access token not found');
+  }
+
+  try {
+    jwt.verify(accessToken, process.env.ACCESS_TOKEN_SECRET);
+    return handleResponse(res, 200, 'User is logged In');
+  } catch (err) {
+    return handleResponse(res, 401, 'Unauthorised user');
+  }
+});

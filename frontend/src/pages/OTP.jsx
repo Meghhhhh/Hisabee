@@ -56,8 +56,8 @@ const OTP = () => {
         });
         localStorage.removeItem('email');
         setTimeout(() => {
-          navigate('/home');
-        }, 3000);
+          navigate('/signup');
+        }, 2000);
       } else {
         toast.error('Failed to send otp', {
           autoClose: 5000,
