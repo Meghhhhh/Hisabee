@@ -14,16 +14,6 @@ import ProtectedRoute from '../src/components/ProtectedRoute';
 import 'react-toastify/dist/ReactToastify.css';
 
 const App = () => {
-  // const router = createBrowserRouter([
-  //   { path: '/', element: <Home /> },
-  //   { path: '/home', element: <Home /> },
-  //   { path: '/profile', element: <Profile /> },
-  //   { path: '/signup', element: <SignUp /> },
-  //   { path: '/register', element: <Register /> },
-  //   { path: '/notifications', element: <Notifications /> },
-  //   { path: '/otp', element: <OTP /> },
-  // ]);
-
   useAuthCheck();
 
   const router = createBrowserRouter(

@@ -3,6 +3,7 @@ import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router';
 import { useSelector, useDispatch } from 'react-redux';
 import { setLoading } from '../../store/slice/loading.js';
+import { setIsLoggedIn } from '../../store/slice/isLoggedIn.js';
 
 const useRegisterUser = () => {
   const dispatch = useDispatch();
