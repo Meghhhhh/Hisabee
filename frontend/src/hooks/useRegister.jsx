@@ -28,14 +28,11 @@ const useRegisterUser = () => {
           autoClose: 3000,
         });
         localStorage.setItem('email', response.data?.data?.email);
-        dispatch(setIsLoggedIn(true));
-        setTimeout(() => navigate('/otp'), 3000);
+        setTimeout(() => navigate('/otp'), 2000);
       } else {
-        dispatch(setIsLoggedIn(false));
         toast.error('Failed to send OTP');
       }
     } catch (err) {
-      dispatch(setIsLoggedIn(false));
       toast.error(err.response?.data?.message || 'Registration failed');
     } finally {
       dispatch(setLoading(false));
