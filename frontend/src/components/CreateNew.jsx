@@ -338,7 +338,7 @@ const AddHisabPage = ({ onSave, onCancel }) => {
 };
 
 // Demo component to show how it works
-const HisabeCreate = () => {
+const CreateNew = () => {
 	const [showAddPage, setShowAddPage] = useState(true);
 
 	const handleSave = (hisabData) => {
@@ -374,4 +374,4 @@ const HisabeCreate = () => {
 	);
 };
 
-export default HisabeCreate;
+export default CreateNew;
