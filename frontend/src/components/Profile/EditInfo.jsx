@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { Camera, Upload, X } from "lucide-react";
+import { Link } from "react-router";
 
 const EditProfilePage = ({ user, onSave, onCancel }) => {
 	const [formData, setFormData] = useState({
@@ -48,12 +49,11 @@ const EditProfilePage = ({ user, onSave, onCancel }) => {
 		<div className="font-[Montserrat] relative max-w-4xl mx-auto p-6">
 			<div className="flex items-center justify-between mb-8">
 				<h1 className="text-4xl font-bold">Edit Profile</h1>
-				<button
-					onClick={onCancel}
-					className="p-2 hover:bg-gray-100 rounded-full transition"
-				>
-					<X size={24} />
-				</button>
+				<Link to={"/profile"}>
+					<button className="p-2 hover:bg-gray-100 rounded-full transition">
+						<X size={24} />
+					</button>
+				</Link>
 			</div>
 
 			<div className="space-y-8">
@@ -192,13 +192,15 @@ const EditProfilePage = ({ user, onSave, onCancel }) => {
 
 				{/* Action Buttons */}
 				<div className="flex justify-end space-x-4 pt-6">
-					<button
-						type="button"
-						onClick={onCancel}
-						className="px-6 py-3 border-2 border-gray-300 text-gray-700 rounded-xl hover:bg-gray-50 transition font-medium"
-					>
-						Cancel
-					</button>
+					<Link to={"/profile"}>
+						<button
+							type="button"
+							onClick={onCancel}
+							className="px-6 py-3 border-2 border-gray-300 text-gray-700 rounded-xl hover:bg-gray-50 transition font-medium"
+						>
+							Cancel
+						</button>
+					</Link>
 					<button
 						type="button"
 						onClick={() => handleSubmit()}

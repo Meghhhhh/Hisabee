@@ -7,6 +7,7 @@ import Notifications from "./pages/Notifications";
 import OTP from "./pages/OTP";
 import useAuthCheck from "./hooks/useAuthCheck";
 import EditInfo from "./components/Profile/EditInfo";
+import HisabeCreate from "./components/HisabeCreate";
 
 import { RouterProvider, createBrowserRouter } from "react-router";
 import { Route, createRoutesFromElements } from "react-router";
@@ -31,6 +32,7 @@ const App = () => {
 					<Route path="/profile" element={<Profile />} />
 					<Route path="/edit" element={<EditInfo />} />
 					<Route path="/notifications" element={<Notifications />} />
+					<Route path="/newhisab" element={<HisabeCreate />} />
 				</Route>
 			</>
 		)

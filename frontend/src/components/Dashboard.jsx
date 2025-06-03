@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Link } from 'react-router';
 import {
   ChevronDown,
   ChevronUp,
@@ -336,7 +337,9 @@ export default function EnhancedHisabComponent() {
           </div>
           <button className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg flex items-center gap-2 transition">
             <Plus size={18} />
+            <Link to={"/newhisab"}>
             <span>New Hisab</span>
+            </Link>
           </button>
         </div>
 
