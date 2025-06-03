@@ -1,3 +1,4 @@
+import { Link } from 'react-router';
 const ProfileOverview = ({ user }) => (
   <div className="font-[Montserrat] relative">
     {/* Avatar and Name */}
@@ -43,9 +44,12 @@ const ProfileOverview = ({ user }) => (
 
     {/* Edit Button */}
     <div className="absolute top-2.5 right-1.5">
+      <Link to={"/edit"}>
       <button className="px-4 py-2 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition">
         Edit Info
       </button>
+      
+      </Link>
     </div>
 
     <div className="absolute top-18 right-1.5">
