@@ -1,18 +1,19 @@
+import React from "react";
+import Home from "./pages/Home";
+import Profile from "./pages/Profile";
+import SignUp from "./pages/SignUp";
+import Register from "./pages/Register";
+import Notifications from "./pages/Notifications";
+import OTP from "./pages/OTP";
+import useAuthCheck from "./hooks/useAuthCheck";
+import EditInfo from "./components/Profile/EditInfo";
+import CreateNew from "./components/CreateNew";
 
-import React from 'react';
-import Home from './pages/Home';
-import Profile from './pages/Profile';
-import SignUp from './pages/SignUp';
-import Register from './pages/Register';
-import Notifications from './pages/Notifications';
-import OTP from './pages/OTP';
-import useAuthCheck from './hooks/useAuthCheck';
-
-import { RouterProvider, createBrowserRouter } from 'react-router';
-import { Route, createRoutesFromElements } from 'react-router';
-import { ToastContainer } from 'react-toastify';
-import ProtectedRoute from '../src/components/ProtectedRoute';
-import 'react-toastify/dist/ReactToastify.css';
+import { RouterProvider, createBrowserRouter } from "react-router";
+import { Route, createRoutesFromElements } from "react-router";
+import { ToastContainer } from "react-toastify";
+import ProtectedRoute from "../src/components/ProtectedRoute";
+import "react-toastify/dist/ReactToastify.css";
 
 const App = () => {
   useAuthCheck();
@@ -29,10 +30,12 @@ const App = () => {
         {/* Protected routes */}
         <Route element={<ProtectedRoute />}>
           <Route path="/profile" element={<Profile />} />
+          <Route path="/edit" element={<EditInfo />} />
           <Route path="/notifications" element={<Notifications />} />
+          <Route path="/newhisab" element={<CreateNew />} />
         </Route>
-      </>,
-    ),
+      </>
+    )
   );
 
   return (
