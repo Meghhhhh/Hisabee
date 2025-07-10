@@ -14,6 +14,7 @@ import { Route, createRoutesFromElements } from "react-router";
 import { ToastContainer } from "react-toastify";
 import ProtectedRoute from "../src/components/ProtectedRoute";
 import "react-toastify/dist/ReactToastify.css";
+import About from "./pages/About";
 
 const App = () => {
 	useAuthCheck();
@@ -26,6 +27,7 @@ const App = () => {
 				<Route path="/otp" element={<OTP />} />
 				<Route path="/" element={<Home />} />
 				<Route path="/home" element={<Home />} />
+				<Route path="/about" element={<About />} />
 
 				{/* Protected routes */}
 				<Route element={<ProtectedRoute />}>
