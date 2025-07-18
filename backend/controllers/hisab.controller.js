@@ -1,38 +1,38 @@
-import * as TripModel from '../models/trip.model.js';
+import * as HisabModel from '../models/hisab.model.js';
 import asyncHandler from '../utils/asyncHandler.js';
 
 export const getAllTrips = asyncHandler(async (req, res) => {
-  const trips = await TripModel.getAllTrips();
+  const trips = await HisabModel.getAllHisabs();
   res.json(trips);
 });
 
 export const getTripById = asyncHandler(async (req, res) => {
-  const trip = await TripModel.getTripById(req.params.id);
-  if (!trip) return res.status(404).json({ message: 'Trip not found' });
-  res.json(trip);
+  const hisab = await HisabModel.getHisabById(req.params.id);
+  if (!hisab) return res.status(404).json({ message: 'hisab not found' });
+  res.json(hisab);
 });
 
 export const createTrip = asyncHandler(async (req, res) => {
-  const trip = await TripModel.createTrip({
+  const hisab = await HisabModel.createHisab({
     ...req.body,
     created_by: req.user.user_id,
   });
-  res.status(201).json(trip);
+  res.status(201).json(hisab);
 });
 
 export const updateTrip = asyncHandler(async (req, res) => {
-  const trip = await TripModel.updateTrip(req.params.id, req.body);
-  res.json(trip);
+  const hisab = await HisabModel.updateHisab(req.params.id, req.body);
+  res.json(hisab);
 });
 
 export const deleteTrip = asyncHandler(async (req, res) => {
-  await TripModel.deleteTrip(req.params.id);
+  await HisabModel.deleteHisab(req.params.id);
   res.status(204).end();
 });
 
 export const addParticipant = asyncHandler(async (req, res) => {
   const { user_id, budget_contribution } = req.body;
-  const participant = await TripModel.addParticipant(
+  const participant = await HisabModel.addParticipant(
     req.params.id,
     user_id,
     budget_contribution,
@@ -42,6 +42,6 @@ export const addParticipant = asyncHandler(async (req, res) => {
 
 export const removeParticipant = asyncHandler(async (req, res) => {
   const { user_id } = req.body;
-  const removed = await TripModel.removeParticipant(req.params.id, user_id);
+  const removed = await HisabModel.removeParticipant(req.params.id, user_id);
   res.json(removed);
 });

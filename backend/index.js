@@ -9,7 +9,7 @@ import cookieParser from 'cookie-parser';
 import userRoute from './routes/user.route.js';
 import notificationRoute from './routes/notification.route.js';
 import cors from 'cors';
-import tripRoute from './routes/trip.route.js';
+import hisabRoute from './routes/hisab.route.js';
 import transactionRoute from './routes/transaction.route.js';
 
 const app = express();
@@ -49,7 +49,7 @@ createTables()
     // Routes
     app.use('/api/v1/user', userRoute);
     app.use('/api/v1/notifications', notificationRoute);
-    app.use('/api/v1/trips', tripRoute);
+    app.use('/api/v1/hisabs', hisabRoute);
     app.use('/api/v1/transactions', transactionRoute);
 
     // error handling
