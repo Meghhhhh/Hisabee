@@ -5,6 +5,8 @@ import { useSelector } from 'react-redux';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { useDispatch } from 'react-redux';
+import { addHisab } from '../../store/slice/hisabSlice.js';
 
 import {
   Plus,
@@ -25,6 +27,7 @@ const CreateNew = () => {
   });
 
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   const [contributors, setContributors] = useState([
     {
@@ -142,6 +145,7 @@ const CreateNew = () => {
       }
 
       // 3. Navigate or show success
+      dispatch(addHisab(hisab));
       navigate('/home');
     } catch (error) {
       toast.error(

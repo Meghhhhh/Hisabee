@@ -7,7 +7,41 @@ import {
 } from '../utils/queryHelper.js';
 import pool from '../config/postgres-db.js';
 
-export const getAllHisabs = async () => getAllEntries('hisabs');
+// {
+//   id: 1,
+//   title: 'Goa Trip',
+//   total_budget: 25000,
+//   spent: 18500,
+//   created_by: 'Rahul Sharma',
+//   created_at: '2025-04-28',
+//   contributors: ['Rahul Sharma', 'Priya Patel', 'Amit Kumar', 'Neha Singh'],
+//   transactions: [
+//     {
+//       description: 'Hotel Booking',
+//       amount: 12000,
+//       paid_by: 'Rahul Sharma',
+//       date: '2025-04-28',
+//       category: 'Accommodation',
+//     },
+//     {
+//       description: 'Travel Tickets',
+//       amount: 4500,
+//       paid_by: 'Priya Patel',
+//       date: '2025-04-29',
+//       category: 'Transportation',
+//     },
+//     {
+//       description: 'Dinner at Beach Shack',
+//       amount: 2000,
+//       paid_by: 'Amit Kumar',
+//       date: '2025-05-01',
+//       category: 'Food',
+//     },
+//   ],
+// },
+// export const getAllHisabs = async () => {
+  
+// };
 
 export const getHisabById = async id => {
   const hisab = await getEntriesByQuery('hisabs', 'hisab_id', id);
