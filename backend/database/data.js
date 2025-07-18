@@ -18,9 +18,10 @@ const createTableQueries = {
       CREATE TABLE IF NOT EXISTS friends (
         user_id UUID REFERENCES users(user_id) ON DELETE CASCADE,
         friend_id UUID REFERENCES users(user_id) ON DELETE CASCADE,
+        direction VARCHAR(10) CHECK (direction IN ('outgoing', 'incoming')) NOT NULL,
         created_at TIMESTAMP DEFAULT NOW(),
         status VARCHAR(20) CHECK (status IN ('pending', 'accepted', 'blocked')),
-        PRIMARY KEY (user_id, friend_id)
+        PRIMARY KEY (user_id, friend_id, direction)
       );
     `,
   hisabs: `

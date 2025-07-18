@@ -10,6 +10,11 @@ import {
   resendOtp,
   updateProfile,
   verifyOtp,
+  addFriend,
+  getOutgoingRequests,
+  getIncomingRequests,
+  acceptRequest,
+  rejectRequest,
 } from '../controllers/user.controller.js';
 import { validateBody } from '../middleware/bodyValidator.js';
 import auth from '../middleware/auth.middleware.js';
@@ -26,5 +31,10 @@ router.post('/verify-otp', verifyOtp);
 router.post('/resend-otp', resendOtp);
 router.post('/refresh-access-token', refreshAccessToken);
 router.patch('/update-profile', auth, updateProfile);
+router.post('/add-friend', auth, addFriend);
+router.get('/outgoing-requests', auth, getOutgoingRequests);
+router.get('/incoming-requests', auth, getIncomingRequests);
+router.post('/accept-request', auth, acceptRequest);
+router.post('/reject-request', auth, rejectRequest);
 
 export default router;

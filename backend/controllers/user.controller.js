@@ -6,6 +6,12 @@ import {
   deleteUser,
   createUser,
   getOneUserByQuery,
+  sendFriendRequest,
+  getUserIdByEmail,
+  getOutgoingFriendRequests,
+  getIncomingFriendRequests,
+  acceptFriendRequest,
+  rejectFriendRequest,
 } from '../models/user.model.js';
 import asyncHandler from '../utils/asyncHandler.js';
 import bcrypt from 'bcrypt';
@@ -325,4 +331,54 @@ export const isUserLoggedIn = asyncHandler(async (req, res) => {
   } catch (err) {
     return handleResponse(res, 401, 'Unauthorised user');
   }
+});
+
+export const addFriend = asyncHandler(async (req, res) => {
+  let { friend_id, email } = req.body;
+  const { user_id } = req.user;
+  if (!friend_id && !email)
+    return handleResponse(res, 400, 'Missing friend_id or email');
+  if (!friend_id && email) {
+    friend_id = await getUserIdByEmail(email);
+    if (!friend_id)
+      return handleResponse(res, 404, 'No user found with that email');
+  }
+  try {
+    const result = await sendFriendRequest(user_id, friend_id);
+    return handleResponse(res, 201, 'Friend request sent', result);
+  } catch (err) {
+    return handleResponse(res, 400, err.message);
+  }
+});
+
+export const getOutgoingRequests = asyncHandler(async (req, res) => {
+  const { user_id } = req.user;
+  const requests = await getOutgoingFriendRequests(user_id);
+  return handleResponse(res, 200, 'Outgoing friend requests fetched', requests);
+});
+
+export const getIncomingRequests = asyncHandler(async (req, res) => {
+  const { user_id } = req.user;
+  const requests = await getIncomingFriendRequests(user_id);
+  return handleResponse(res, 200, 'Incoming friend requests fetched', requests);
+});
+
+export const acceptRequest = asyncHandler(async (req, res) => {
+  const { user_id } = req.user;
+  const { friend_id } = req.body;
+  if (!friend_id) return handleResponse(res, 400, 'Missing friend_id');
+  const result = await acceptFriendRequest(user_id, friend_id);
+  if (!result)
+    return handleResponse(res, 404, 'Request not found or already handled');
+  return handleResponse(res, 200, 'Friend request accepted', result);
+});
+
+export const rejectRequest = asyncHandler(async (req, res) => {
+  const { user_id } = req.user;
+  const { friend_id } = req.body;
+  if (!friend_id) return handleResponse(res, 400, 'Missing friend_id');
+  const result = await rejectFriendRequest(user_id, friend_id);
+  if (!result)
+    return handleResponse(res, 404, 'Request not found or already handled');
+  return handleResponse(res, 200, 'Friend request rejected', result);
 });

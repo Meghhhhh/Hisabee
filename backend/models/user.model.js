@@ -64,6 +64,71 @@ export const deleteUser = async id => {
   return user;
 };
 
+export const sendFriendRequest = async (user_id, friend_id) => {
+  // Prevent duplicate requests or self-request
+  if (user_id === friend_id) throw new Error('Cannot add yourself as a friend');
+  // Check if already exists
+  const check = await pool.query(
+    'SELECT * FROM friends WHERE (user_id = $1 AND friend_id = $2) OR (user_id = $2 AND friend_id = $1)',
+    [user_id, friend_id],
+  );
+  if (check.rows.length > 0)
+    throw new Error('Friend request already exists or already friends');
+  // Insert friend request
+  const res = await pool.query(
+    'INSERT INTO friends (user_id, friend_id, status) VALUES ($1, $2, $3) RETURNING *',
+    [user_id, friend_id, 'pending'],
+  );
+  return res.rows[0];
+};
+
+export const getUserIdByEmail = async email => {
+  const user = await pool.query('SELECT user_id FROM users WHERE email = $1', [
+    email,
+  ]);
+  return user.rows[0]?.user_id || null;
+};
+
+export const getOutgoingFriendRequests = async user_id => {
+  const res = await pool.query(
+    `SELECT u.user_id, u.email, u.name, f.status
+     FROM friends f
+     JOIN users u ON u.user_id = f.friend_id
+     WHERE f.user_id = $1 AND f.status = 'pending'`,
+    [user_id],
+  );
+  return res.rows;
+};
+
+export const getIncomingFriendRequests = async user_id => {
+  const res = await pool.query(
+    `SELECT u.user_id, u.email, u.name, f.status
+     FROM friends f
+     JOIN users u ON u.user_id = f.user_id
+     WHERE f.friend_id = $1 AND f.status = 'pending'`,
+    [user_id],
+  );
+  return res.rows;
+};
+
+export const acceptFriendRequest = async (user_id, friend_id) => {
+  // user_id is the recipient, friend_id is the sender
+  const res = await pool.query(
+    `UPDATE friends SET status = 'accepted' WHERE user_id = $1 AND friend_id = $2 AND status = 'pending' RETURNING *`,
+    [friend_id, user_id],
+  );
+  return res.rows[0];
+};
+
+export const rejectFriendRequest = async (user_id, friend_id) => {
+  // user_id is the recipient, friend_id is the sender
+  const res = await pool.query(
+    `DELETE FROM friends WHERE user_id = $1 AND friend_id = $2 AND status = 'pending' RETURNING *`,
+    [friend_id, user_id],
+  );
+  return res.rows[0];
+};
+
 export const registerSchema = Joi.object({
   email: Joi.string().email().required().messages({
     'string.email': 'Email must be a valid email',

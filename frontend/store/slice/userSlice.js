@@ -10,6 +10,8 @@ const userSlice = createSlice({
     avatar: './avatar.png',
     history: [],
     friends: [],
+    notifications: [],
+    friendRequests: [],
   },
   reducers: {
     setUserData: (state, action) => {
@@ -28,8 +30,15 @@ const userSlice = createSlice({
       state.history = history;
       state.friends = friends;
     },
+    setNotifications: (state, action) => {
+      state.notifications = action.payload;
+    },
+    setFriendRequests: (state, action) => {
+      state.friendRequests = action.payload;
+    },
   },
 });
 
-export const { setUserData } = userSlice.actions;
+export const { setUserData, setNotifications, setFriendRequests } =
+  userSlice.actions;
 export default userSlice.reducer;
