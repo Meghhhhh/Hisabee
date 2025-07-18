@@ -16,7 +16,7 @@ import ProtectedRoute from '../src/components/ProtectedRoute';
 import 'react-toastify/dist/ReactToastify.css';
 import About from './pages/About';
 import { ThemeProvider, CssBaseline, createTheme } from '@mui/material';
-
+import Summary from './pages/Summary';
 const theme = createTheme();
 
 const App = () => {
@@ -38,6 +38,7 @@ const App = () => {
           <Route path="/edit" element={<EditInfo />} />
           <Route path="/notifications" element={<Notifications />} />
           <Route path="/newhisab" element={<CreateNew />} />
+          <Route path="/summary/:hisabId" element={<Summary />} />
         </Route>
       </>,
     ),

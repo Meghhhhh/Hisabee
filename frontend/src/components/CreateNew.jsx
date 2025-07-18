@@ -126,7 +126,6 @@ const CreateNew = () => {
 
       // 2. Add contributors (except creator)
       for (const c of contributors) {
-        if (!c.isCreator) {
           await axios.post(
             `${import.meta.env.VITE_BACKEND_API_URL}/hisabs/${
               hisab.hisab_id
@@ -141,7 +140,6 @@ const CreateNew = () => {
           );
           // Optionally show a toast for each contributor
           // toast.success(contribRes.data.message || 'Contributor added!');
-        }
       }
 
       // 3. Navigate or show success

@@ -11,7 +11,11 @@ export const getAllHisabs = asyncHandler(async (req, res) => {
   u.name AS created_by,
 
   (
-    SELECT json_agg(u2.name)
+    SELECT json_agg(json_build_object(
+      'user_id', u2.user_id,
+      'name', u2.name
+    )
+      )
     FROM hisab_contributors hc
     JOIN users u2 ON hc.user_id = u2.user_id
     WHERE hc.hisab_id = h.hisab_id
@@ -39,9 +43,45 @@ export const getAllHisabs = asyncHandler(async (req, res) => {
 });
 
 export const getHisabById = asyncHandler(async (req, res) => {
-  const hisab = await HisabModel.getHisabById(req.params.id);
+  const query = `SELECT 
+  h.hisab_id AS id,
+  h.title,
+  h.total_budget,
+  h.created_at,
+  u.name AS created_by,
+
+  (
+    SELECT json_agg(json_build_object(
+      'user_id', u2.user_id,
+      'name', u2.name
+    )
+      )
+    FROM hisab_contributors hc
+    JOIN users u2 ON hc.user_id = u2.user_id
+    WHERE hc.hisab_id = h.hisab_id
+  ) AS contributors,
+
+  (
+    SELECT json_agg(json_build_object(
+      'description', t.description,
+      'amount', t.amount,
+      'paid_by', u3.name,
+      'date', t.date,
+      'category', t.category
+    ))
+    FROM transactions t
+    JOIN users u3 ON t.paid_by = u3.user_id
+    WHERE t.hisab_id = h.hisab_id
+  ) AS transactions
+
+  FROM hisabs h
+  JOIN users u ON h.created_by = u.user_id
+  WHERE h.hisab_id = $1;
+`;
+
+  const hisab = await pool.query(query, [req.params.hisabId]);
   if (!hisab) return res.status(404).json({ message: 'hisab not found' });
-  res.json(hisab);
+  res.json(hisab.rows[0]);
 });
 
 export const createHisab = asyncHandler(async (req, res) => {
