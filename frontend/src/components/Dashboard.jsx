@@ -15,8 +15,7 @@ import {
 import { useDispatch, useSelector } from 'react-redux';
 import { setHisabs } from '../../store/slice/hisabSlice.js';
 import axios from 'axios';
-import { toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import { useNavigate } from 'react-router';
 
 export default function EnhancedHisabComponent() {
   const [expandedId, setExpandedId] = useState(null);
@@ -35,7 +34,7 @@ export default function EnhancedHisabComponent() {
   });
   const [selectedHisabId, setSelectedHisabId] = useState(null);
   const [showAllTransactions, setShowAllTransactions] = useState({});
-
+  const navigate = useNavigate();
   useEffect(() => {
     setLoading(true);
     const fetchHisabs = async () => {
@@ -257,25 +256,31 @@ export default function EnhancedHisabComponent() {
                             </button>
                             <button
                               className="text-green-600 hover:text-green-800 text-sm font-medium flex items-center gap-1 border border-green-600 rounded px-3 py-1 transition"
-                              onClick={async () => {
-                                try {
-                                  await axios.post(
-                                    `${
-                                      import.meta.env.VITE_BACKEND_API_URL
-                                    }/hisabs/${hisab.id}/summary`,
-                                    {},
-                                    { withCredentials: true },
-                                  );
-                                  toast.success(
-                                    'Summary generated successfully!',
-                                  );
-                                } catch {
-                                  toast.error('Failed to generate summary');
-                                }
-                              }}
+                              // onClick={async () => {
+                              //   try {
+                              //     await axios.post(
+                              //       `${
+                              //         import.meta.env.VITE_BACKEND_API_URL
+                              //       }/hisabs/${hisab.id}/summary`,
+                              //       {},
+                              //       { withCredentials: true },
+                              //     );
+                              //     toast.success(
+                              //       'Summary generated successfully!',
+                              //     );
+                              //   } catch {
+                              //     toast.error('Failed to generate summary');
+                              //   }
+                              // }}
                             >
                               <TrendingUp size={14} />
-                              Generate Summary
+                              <button
+                                onClick={() =>
+                                  navigate(`/summary/${hisab.id}`)
+                                }
+                              >
+                                Generate Summary
+                              </button>
                             </button>
                           </div>
                         </div>
