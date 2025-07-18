@@ -48,6 +48,7 @@ const createTableQueries = {
         paid_by UUID REFERENCES users(user_id) ON DELETE CASCADE,
         amount DECIMAL(10, 2),
         description TEXT,
+        category VARCHAR(50) CHECK (category IN ('Food', 'Transportation', 'Accommodation', 'Utilities', 'Venue', 'Miscellaneous')),
         date TIMESTAMP DEFAULT NOW()
       );
     `,

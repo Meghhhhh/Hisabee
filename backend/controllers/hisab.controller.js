@@ -1,18 +1,50 @@
 import * as HisabModel from '../models/hisab.model.js';
 import asyncHandler from '../utils/asyncHandler.js';
+import pool from '../config/postgres-db.js';
 
-export const getAllTrips = asyncHandler(async (req, res) => {
-  const trips = await HisabModel.getAllHisabs();
-  res.json(trips);
+export const getAllHisabs = asyncHandler(async (req, res) => {
+  const query = `SELECT 
+  h.hisab_id AS id,
+  h.title,
+  h.total_budget,
+  h.created_at,
+  u.name AS created_by,
+
+  (
+    SELECT json_agg(u2.name)
+    FROM hisab_contributors hc
+    JOIN users u2 ON hc.user_id = u2.user_id
+    WHERE hc.hisab_id = h.hisab_id
+  ) AS contributors,
+
+  (
+    SELECT json_agg(json_build_object(
+      'description', t.description,
+      'amount', t.amount,
+      'paid_by', u3.name,
+      'date', t.date,
+      'category', t.category
+    ))
+    FROM transactions t
+    JOIN users u3 ON t.paid_by = u3.user_id
+    WHERE t.hisab_id = h.hisab_id
+  ) AS transactions
+
+  FROM hisabs h
+  JOIN users u ON h.created_by = u.user_id
+  WHERE h.created_by = $1;
+`;
+  const hisabs = await pool.query(query, [req.user.user_id]);
+  return res.json(hisabs.rows);
 });
 
-export const getTripById = asyncHandler(async (req, res) => {
+export const getHisabById = asyncHandler(async (req, res) => {
   const hisab = await HisabModel.getHisabById(req.params.id);
   if (!hisab) return res.status(404).json({ message: 'hisab not found' });
   res.json(hisab);
 });
 
-export const createTrip = asyncHandler(async (req, res) => {
+export const createHisab = asyncHandler(async (req, res) => {
   const hisab = await HisabModel.createHisab({
     ...req.body,
     created_by: req.user.user_id,
@@ -20,12 +52,12 @@ export const createTrip = asyncHandler(async (req, res) => {
   res.status(201).json(hisab);
 });
 
-export const updateTrip = asyncHandler(async (req, res) => {
+export const updateHisab = asyncHandler(async (req, res) => {
   const hisab = await HisabModel.updateHisab(req.params.id, req.body);
   res.json(hisab);
 });
 
-export const deleteTrip = asyncHandler(async (req, res) => {
+export const deleteHisab = asyncHandler(async (req, res) => {
   await HisabModel.deleteHisab(req.params.id);
   res.status(204).end();
 });
