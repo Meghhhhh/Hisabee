@@ -11,7 +11,11 @@ export const getAllHisabs = asyncHandler(async (req, res) => {
   u.name AS created_by,
 
   (
-    SELECT json_agg(u2.name)
+    SELECT json_agg(json_build_object(
+      'user_id', u2.user_id,
+      'name', u2.name
+    )
+      )
     FROM hisab_contributors hc
     JOIN users u2 ON hc.user_id = u2.user_id
     WHERE hc.hisab_id = h.hisab_id

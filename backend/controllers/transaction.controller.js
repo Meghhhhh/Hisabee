@@ -1,5 +1,6 @@
 import * as TransactionModel from '../models/transaction.model.js';
 import asyncHandler from '../utils/asyncHandler.js';
+import * as UserModel from '../models/user.model.js';
 
 export const getAllTransactions = asyncHandler(async (req, res) => {
   const transactions = await TransactionModel.getAllTransactions();
@@ -15,7 +16,8 @@ export const getTransactionById = asyncHandler(async (req, res) => {
 
 export const createTransaction = asyncHandler(async (req, res) => {
   const transaction = await TransactionModel.createTransaction(req.body);
-  res.status(201).json(transaction);
+  const { name } = await UserModel.getUserById(req.body.paid_by);
+  res.status(201).json({ ...transaction, paid_by_user: name });
 });
 
 export const updateTransaction = asyncHandler(async (req, res) => {
