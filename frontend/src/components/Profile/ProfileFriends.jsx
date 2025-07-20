@@ -9,11 +9,11 @@ const ProfileFriends = ({ friends }) => (
         {friends.map(friend => (
           <div key={friend.id} className="flex flex-col items-center">
             <img
-              src={friend.avatar}
+              src={friend.avatar || '/Subject2.png'}
               alt={friend.name}
               className="w-16 h-16 rounded-full"
             />
-            <span className="mt-2 text-sm">{friend.name}</span>
+            <p className="mt-2 text-sm text-center">{friend.name}</p>
           </div>
         ))}
       </div>

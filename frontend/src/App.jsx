@@ -15,9 +15,7 @@ import { ToastContainer } from 'react-toastify';
 import ProtectedRoute from '../src/components/ProtectedRoute';
 import 'react-toastify/dist/ReactToastify.css';
 import About from './pages/About';
-import { ThemeProvider, CssBaseline, createTheme } from '@mui/material';
 import Summary from './pages/Summary';
-const theme = createTheme();
 
 const App = () => {
   useAuthCheck();
@@ -45,11 +43,10 @@ const App = () => {
   );
 
   return (
-    <ThemeProvider theme={theme}>
-      <CssBaseline />
+    <>
       <RouterProvider router={router} />
       <ToastContainer theme="dark" />
-    </ThemeProvider>
+    </>
   );
 };
 

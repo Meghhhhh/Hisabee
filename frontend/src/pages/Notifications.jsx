@@ -1,36 +1,6 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
-import {
-  AppBar,
-  Toolbar,
-  Typography,
-  Badge,
-  Tabs,
-  Tab,
-  Box,
-  Card,
-  CardContent,
-  CardActions,
-  Button,
-  IconButton,
-  Stack,
-  Divider,
-} from '@mui/material';
-import MailIcon from '@mui/icons-material/Mail';
-import WarningAmberIcon from '@mui/icons-material/WarningAmber';
-import InfoIcon from '@mui/icons-material/Info';
-import CheckCircleIcon from '@mui/icons-material/CheckCircle';
-import NotificationsIcon from '@mui/icons-material/Notifications';
-import DeleteIcon from '@mui/icons-material/Delete';
-import DoneIcon from '@mui/icons-material/Done';
-import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { useNavigate } from 'react-router';
-import Dialog from '@mui/material/Dialog';
-import DialogTitle from '@mui/material/DialogTitle';
-import DialogContent from '@mui/material/DialogContent';
-import DialogActions from '@mui/material/DialogActions';
-import TextField from '@mui/material/TextField';
-import PersonAddIcon from '@mui/icons-material/PersonAdd';
 import { toast } from 'react-toastify';
 import { useDispatch, useSelector } from 'react-redux';
 import {
@@ -46,11 +16,11 @@ const notificationTypes = [
 ];
 
 const iconMap = {
-  message: <MailIcon color="primary" />,
-  alert: <WarningAmberIcon color="error" />,
-  info: <InfoIcon color="secondary" />,
-  success: <CheckCircleIcon color="success" />,
-  default: <NotificationsIcon color="action" />,
+  message: '📧',
+  alert: '⚠️',
+  info: 'ℹ️',
+  success: '✅',
+  default: '🔔',
 };
 
 const Notifications = () => {
@@ -183,291 +153,246 @@ const Notifications = () => {
 
   if (loading) {
     return (
-      <Box p={4} textAlign="center">
+      <div style={{ padding: 32, textAlign: 'center' }}>
         Loading notifications...
-      </Box>
+      </div>
     );
   }
 
   if (error) {
     return (
-      <Box p={4} textAlign="center" color="error.main">
+      <div style={{ padding: 32, textAlign: 'center', color: 'red' }}>
         {error}
-      </Box>
+      </div>
     );
   }
 
   return (
-    <Box sx={{ bgcolor: 'background.default', minHeight: '100vh' }}>
-      <AppBar position="static" color="default" elevation={1}>
-        <Toolbar>
-          <IconButton
-            edge="start"
-            color="inherit"
-            onClick={() => navigate(-1)}
-            sx={{ mr: 2 }}
-          >
-            <ArrowBackIcon />
-          </IconButton>
-          <Typography variant="h6" sx={{ flexGrow: 1 }}>
-            Notifications
-          </Typography>
-          <Badge badgeContent={unreadCount} color="primary">
-            <NotificationsIcon />
-          </Badge>
-          <IconButton
-            color="primary"
-            onClick={() => setAddFriendOpen(true)}
-            sx={{ ml: 2 }}
-          >
-            <PersonAddIcon />
-          </IconButton>
-        </Toolbar>
-      </AppBar>
-      <Dialog open={addFriendOpen} onClose={() => setAddFriendOpen(false)}>
-        <DialogTitle>Add Friend</DialogTitle>
-        <DialogContent>
-          <TextField
-            autoFocus
-            margin="dense"
-            label="Friend's Email"
-            type="email"
-            fullWidth
-            value={friendEmail}
-            onChange={e => setFriendEmail(e.target.value)}
-            disabled={addFriendLoading}
-          />
-        </DialogContent>
-        <DialogActions>
-          <Button
-            onClick={() => setAddFriendOpen(false)}
-            disabled={addFriendLoading}
-          >
-            Cancel
-          </Button>
-          <Button
-            onClick={handleAddFriend}
-            disabled={addFriendLoading || !friendEmail}
-            variant="contained"
-          >
-            Send Request
-          </Button>
-        </DialogActions>
-      </Dialog>
-
-      <Box sx={{ p: 2 }}>
-        <Stack
-          direction={{ xs: 'column', sm: 'row' }}
-          justifyContent="space-between"
-          alignItems={{ xs: 'stretch', sm: 'center' }}
-          spacing={2}
-          mb={2}
+    <div style={{ background: '#f7f7f7', minHeight: '100vh' }}>
+      {/* Top Bar */}
+      <div style={{ background: '#fff', borderBottom: '1px solid #eee', display: 'flex', alignItems: 'center', padding: '12px 20px', position: 'sticky', top: 0, zIndex: 10 }}>
+        <button
+          onClick={() => navigate(-1)}
+          style={{ background: 'none', border: 'none', fontSize: 22, marginRight: 16, cursor: 'pointer' }}
+          title="Back"
         >
-          <Tabs
-            value={filter}
-            onChange={(_, v) => setFilter(v)}
-            textColor="primary"
-            indicatorColor="primary"
-            variant="scrollable"
-            scrollButtons="auto"
-            sx={{ minHeight: 40 }}
-          >
-            {notificationTypes.map(type => (
-              <Tab
-                key={type.value}
-                label={type.label}
-                value={type.value}
-                sx={{ minHeight: 40 }}
-              />
-            ))}
-          </Tabs>
+          ←
+        </button>
+        <div style={{ flex: 1, fontWeight: 600, fontSize: 20 }}>Notifications</div>
+        <div style={{ position: 'relative', marginRight: 16 }} title="Unread notifications">
+          <span style={{ fontSize: 22 }}>🔔</span>
+          {unreadCount > 0 && (
+            <span style={{ position: 'absolute', top: -6, right: -8, background: '#1976d2', color: '#fff', borderRadius: '50%', fontSize: 12, padding: '2px 6px', fontWeight: 600 }}>{unreadCount}</span>
+          )}
+        </div>
+        <button
+          onClick={() => setAddFriendOpen(true)}
+          style={{ background: 'none', border: 'none', fontSize: 22, cursor: 'pointer' }}
+          title="Add Friend"
+        >
+          ➕
+        </button>
+      </div>
 
-          <Stack direction="row" spacing={1}>
-            <Button
-              onClick={markAllAsRead}
-              variant="outlined"
-              size="small"
-              disabled={unreadCount === 0}
-              startIcon={<DoneIcon />}
-            >
-              Mark all read
-            </Button>
-            <Button
-              onClick={clearAll}
-              variant="outlined"
-              size="small"
-              color="error"
-              disabled={notifications.length === 0}
-              startIcon={<DeleteIcon />}
-            >
-              Clear all
-            </Button>
-          </Stack>
-        </Stack>
-
-        <Stack spacing={2} divider={<Divider flexItem />}>
-          {/* Incoming friend requests (pending) */}
-          {filter === 'message' &&
-            incomingRequests.length > 0 &&
-            incomingRequests.map(req => (
-              <Card key={req.user_id} variant="outlined">
-                <CardContent
-                  sx={{ display: 'flex', alignItems: 'center', gap: 2 }}
-                >
-                  <MailIcon color="primary" />
-                  <Box sx={{ flexGrow: 1 }}>
-                    <Typography variant="subtitle1" fontWeight={600}>
-                      {req.name || req.email}
-                    </Typography>
-                    <Typography variant="body2" color="text.secondary">
-                      {req.email}
-                    </Typography>
-                  </Box>
-                  <Box
-                    sx={{
-                      display: 'flex',
-                      flexDirection: 'column',
-                      alignItems: 'flex-end',
-                      mr: 2,
-                    }}
-                  >
-                    <Typography
-                      variant="caption"
-                      color="info.main"
-                      sx={{ mb: 0.5 }}
-                    >
-                      Incoming
-                    </Typography>
-                    <Typography variant="caption" color="text.secondary">
-                      {req.status}
-                    </Typography>
-                  </Box>
-                  {req.status === 'pending' && (
-                    <Stack direction="row" spacing={1}>
-                      <Button
-                        size="small"
-                        color="success"
-                        variant="contained"
-                        onClick={() => handleAccept(req.user_id)}
-                      >
-                        Accept
-                      </Button>
-                      <Button
-                        size="small"
-                        color="error"
-                        variant="outlined"
-                        onClick={() => handleReject(req.user_id)}
-                      >
-                        Reject
-                      </Button>
-                    </Stack>
-                  )}
-                </CardContent>
-              </Card>
-            ))}
-          {/* Outgoing friend requests (already present) */}
-          {filter === 'message' &&
-            friendRequests.length > 0 &&
-            friendRequests.map(req => (
-              <Card key={req.user_id} variant="outlined">
-                <CardContent
-                  sx={{ display: 'flex', alignItems: 'center', gap: 2 }}
-                >
-                  <MailIcon color="primary" />
-                  <Box sx={{ flexGrow: 1 }}>
-                    <Typography variant="subtitle1" fontWeight={600}>
-                      {req.name || req.email}
-                    </Typography>
-                    <Typography variant="body2" color="text.secondary">
-                      {req.email}
-                    </Typography>
-                  </Box>
-                  <Box
-                    sx={{
-                      display: 'flex',
-                      flexDirection: 'column',
-                      alignItems: 'flex-end',
-                    }}
-                  >
-                    <Typography
-                      variant="caption"
-                      color="warning.main"
-                      sx={{ mb: 0.5 }}
-                    >
-                      Outgoing
-                    </Typography>
-                    <Typography variant="caption" color="text.secondary">
-                      {req.status}
-                    </Typography>
-                  </Box>
-                </CardContent>
-              </Card>
-            ))}
-          {filteredNotifications.length > 0 ? (
-            filteredNotifications.map(notification => (
-              <Card
-                key={notification.id}
-                variant={notification.read ? 'outlined' : 'elevation'}
-                sx={{
-                  bgcolor: notification.read ? 'grey.100' : 'background.paper',
-                  boxShadow: notification.read ? 0 : 2,
-                }}
+      {/* Add Friend Dialog */}
+      {addFriendOpen && (
+        <div style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', background: 'rgba(0,0,0,0.25)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <div style={{ background: '#fff', borderRadius: 8, minWidth: 320, maxWidth: 400, padding: 24, boxShadow: '0 2px 16px rgba(0,0,0,0.15)' }}>
+            <div style={{ fontWeight: 600, fontSize: 18, marginBottom: 16 }}>Add Friend</div>
+            <input
+              type="email"
+              placeholder="Friend's Email"
+              value={friendEmail}
+              onChange={e => setFriendEmail(e.target.value)}
+              disabled={addFriendLoading}
+              style={{ width: '100%', padding: 8, fontSize: 16, marginBottom: 16, border: '1px solid #ccc', borderRadius: 4 }}
+            />
+            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8 }}>
+              <button
+                onClick={() => setAddFriendOpen(false)}
+                disabled={addFriendLoading}
+                style={{ padding: '6px 16px', borderRadius: 4, border: '1px solid #ccc', background: '#fff', cursor: 'pointer' }}
               >
-                <CardContent
-                  sx={{ display: 'flex', alignItems: 'center', gap: 2 }}
+                Cancel
+              </button>
+              <button
+                onClick={handleAddFriend}
+                disabled={addFriendLoading || !friendEmail}
+                style={{ padding: '6px 16px', borderRadius: 4, border: 'none', background: '#1976d2', color: '#fff', fontWeight: 600, cursor: addFriendLoading || !friendEmail ? 'not-allowed' : 'pointer' }}
+              >
+                Send Request
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Tabs and Actions */}
+      <div style={{ padding: 16, display: 'flex', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'space-between', gap: 16 }}>
+        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+          {notificationTypes.map(type => (
+            <button
+              key={type.value}
+              onClick={() => setFilter(type.value)}
+              style={{
+                padding: '6px 16px',
+                borderRadius: 20,
+                border: filter === type.value ? '2px solid #1976d2' : '1px solid #ccc',
+                background: filter === type.value ? '#e3f0fd' : '#fff',
+                color: filter === type.value ? '#1976d2' : '#333',
+                fontWeight: filter === type.value ? 600 : 400,
+                cursor: 'pointer',
+                fontSize: 15,
+                outline: 'none',
+                minWidth: 80,
+                transition: 'all 0.2s',
+              }}
+            >
+              {type.label}
+            </button>
+          ))}
+        </div>
+        <div style={{ display: 'flex', gap: 8 }}>
+          <button
+            onClick={markAllAsRead}
+            disabled={unreadCount === 0}
+            style={{
+              padding: '6px 12px',
+              borderRadius: 4,
+              border: '1px solid #1976d2',
+              background: unreadCount === 0 ? '#eee' : '#fff',
+              color: unreadCount === 0 ? '#aaa' : '#1976d2',
+              fontWeight: 500,
+              cursor: unreadCount === 0 ? 'not-allowed' : 'pointer',
+              fontSize: 14,
+            }}
+          >
+            ✔️ Mark all read
+          </button>
+          <button
+            onClick={clearAll}
+            disabled={notifications.length === 0}
+            style={{
+              padding: '6px 12px',
+              borderRadius: 4,
+              border: '1px solid #d32f2f',
+              background: notifications.length === 0 ? '#eee' : '#fff',
+              color: notifications.length === 0 ? '#aaa' : '#d32f2f',
+              fontWeight: 500,
+              cursor: notifications.length === 0 ? 'not-allowed' : 'pointer',
+              fontSize: 14,
+            }}
+          >
+            🗑️ Clear all
+          </button>
+        </div>
+      </div>
+
+      {/* Notifications List */}
+      <div style={{ padding: 16, maxWidth: 700, margin: '0 auto' }}>
+        {/* Incoming friend requests (pending) */}
+        {filter === 'message' &&
+          incomingRequests.length > 0 &&
+          incomingRequests.map(req => (
+            <div key={req.user_id} style={{ background: '#fff', border: '1px solid #e0e0e0', borderRadius: 8, marginBottom: 16, padding: 16, display: 'flex', alignItems: 'center', gap: 16 }}>
+              <span style={{ fontSize: 24 }}>📧</span>
+              <div style={{ flex: 1 }}>
+                <div style={{ fontWeight: 600, fontSize: 16 }}>{req.name || req.email}</div>
+                <div style={{ color: '#666', fontSize: 14 }}>{req.email}</div>
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', marginRight: 16 }}>
+                <span style={{ color: '#0288d1', fontSize: 12, marginBottom: 4 }}>Incoming</span>
+                <span style={{ color: '#888', fontSize: 12 }}>{req.status}</span>
+              </div>
+              {req.status === 'pending' && (
+                <div style={{ display: 'flex', gap: 8 }}>
+                  <button
+                    style={{ padding: '6px 12px', borderRadius: 4, border: 'none', background: '#43a047', color: '#fff', fontWeight: 600, cursor: 'pointer' }}
+                    onClick={() => handleAccept(req.user_id)}
+                  >
+                    Accept
+                  </button>
+                  <button
+                    style={{ padding: '6px 12px', borderRadius: 4, border: '1px solid #d32f2f', background: '#fff', color: '#d32f2f', fontWeight: 600, cursor: 'pointer' }}
+                    onClick={() => handleReject(req.user_id)}
+                  >
+                    Reject
+                  </button>
+                </div>
+              )}
+            </div>
+          ))}
+        {/* Outgoing friend requests */}
+        {filter === 'message' &&
+          friendRequests.length > 0 &&
+          friendRequests.map(req => (
+            <div key={req.user_id} style={{ background: '#fff', border: '1px solid #e0e0e0', borderRadius: 8, marginBottom: 16, padding: 16, display: 'flex', alignItems: 'center', gap: 16 }}>
+              <span style={{ fontSize: 24 }}>📧</span>
+              <div style={{ flex: 1 }}>
+                <div style={{ fontWeight: 600, fontSize: 16 }}>{req.name || req.email}</div>
+                <div style={{ color: '#666', fontSize: 14 }}>{req.email}</div>
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end' }}>
+                <span style={{ color: '#fbc02d', fontSize: 12, marginBottom: 4 }}>Outgoing</span>
+                <span style={{ color: '#888', fontSize: 12 }}>{req.status}</span>
+              </div>
+            </div>
+          ))}
+        {/* Notifications */}
+        {filteredNotifications.length > 0 ? (
+          filteredNotifications.map(notification => (
+            <div
+              key={notification.id}
+              style={{
+                background: notification.read ? '#f5f5f5' : '#fff',
+                border: '1px solid #e0e0e0',
+                borderRadius: 8,
+                marginBottom: 16,
+                padding: 16,
+                display: 'flex',
+                alignItems: 'center',
+                gap: 16,
+                boxShadow: notification.read ? 'none' : '0 2px 8px rgba(0,0,0,0.07)',
+              }}
+            >
+              <span style={{ fontSize: 24 }}>{iconMap[notification.type] || iconMap.default}</span>
+              <div style={{ flex: 1 }}>
+                <div style={{ fontWeight: 600, fontSize: 16, color: '#222' }}>{notification.title}</div>
+                <div style={{ color: '#666', fontSize: 14 }}>{notification.content}</div>
+                <div style={{ color: '#aaa', fontSize: 12 }}>{notification.time}</div>
+              </div>
+              <div style={{ display: 'flex', gap: 8 }}>
+                {!notification.read && (
+                  <button
+                    onClick={() => markAsRead(notification.id)}
+                    style={{ padding: '4px 10px', borderRadius: 4, border: '1px solid #1976d2', background: '#fff', color: '#1976d2', fontWeight: 500, cursor: 'pointer', fontSize: 13 }}
+                  >
+                    Mark read
+                  </button>
+                )}
+                <button
+                  onClick={() => deleteNotification(notification.id)}
+                  style={{ padding: '4px 10px', borderRadius: 4, border: '1px solid #d32f2f', background: '#fff', color: '#d32f2f', fontWeight: 500, cursor: 'pointer', fontSize: 13 }}
+                  title="Delete"
                 >
-                  {iconMap[notification.type] || iconMap.default}
-                  <Box sx={{ flexGrow: 1 }}>
-                    <Typography
-                      variant="subtitle1"
-                      fontWeight={600}
-                      color="text.primary"
-                    >
-                      {notification.title}
-                    </Typography>
-                    <Typography variant="body2" color="text.secondary">
-                      {notification.content}
-                    </Typography>
-                    <Typography variant="caption" color="text.disabled">
-                      {notification.time}
-                    </Typography>
-                  </Box>
-                  <Stack direction="row" spacing={1}>
-                    {!notification.read && (
-                      <Button
-                        onClick={() => markAsRead(notification.id)}
-                        size="small"
-                        color="primary"
-                        variant="text"
-                      >
-                        Mark read
-                      </Button>
-                    )}
-                    <IconButton
-                      onClick={() => deleteNotification(notification.id)}
-                      color="error"
-                      size="small"
-                    >
-                      <DeleteIcon />
-                    </IconButton>
-                  </Stack>
-                </CardContent>
-              </Card>
-            ))
-          ) : filter === 'message' ? (
-            friendRequests.length === 0 && incomingRequests.length === 0 ? (
-              <Box p={4} textAlign="center" color="text.secondary">
-                No friend requests to display.
-              </Box>
-            ) : null
-          ) : filteredNotifications.length === 0 ? (
-            <Box p={4} textAlign="center" color="text.secondary">
-              No notifications to display.
-            </Box>
-          ) : null}
-        </Stack>
-      </Box>
-    </Box>
+                  🗑️
+                </button>
+              </div>
+            </div>
+          ))
+        ) : filter === 'message' ? (
+          friendRequests.length === 0 && incomingRequests.length === 0 ? (
+            <div style={{ padding: 32, textAlign: 'center', color: '#888' }}>
+              No friend requests to display.
+            </div>
+          ) : null
+        ) : filteredNotifications.length === 0 ? (
+          <div style={{ padding: 32, textAlign: 'center', color: '#888' }}>
+            No notifications to display.
+          </div>
+        ) : null}
+      </div>
+    </div>
   );
 };
 
