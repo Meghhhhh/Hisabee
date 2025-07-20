@@ -32,7 +32,7 @@ const CreateNew = () => {
   const [contributors, setContributors] = useState([
     {
       id: 1,
-      user_id: useSelector(state => state.user.id),
+      user_id: useSelector(state => state.user.user_id),
       name: 'You',
       budget_contribution: '',
       isCreator: true,
@@ -125,6 +125,7 @@ const CreateNew = () => {
       toast.success(hisab.message || 'Hisab created successfully!');
 
       // 2. Add contributors (except creator)
+      console.log(contributors);
       for (const c of contributors) {
           await axios.post(
             `${import.meta.env.VITE_BACKEND_API_URL}/hisabs/${

@@ -36,7 +36,11 @@ export const getAllHisabs = asyncHandler(async (req, res) => {
 
   FROM hisabs h
   JOIN users u ON h.created_by = u.user_id
-  WHERE h.created_by = $1;
+  WHERE h.created_by = $1 OR EXISTS (
+    SELECT 1 
+    FROM hisab_contributors hc2 
+    WHERE hc2.hisab_id = h.hisab_id AND hc2.user_id = $1 
+  )
 `;
   const hisabs = await pool.query(query, [req.user.user_id]);
   return res.json(hisabs.rows);
