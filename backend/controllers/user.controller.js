@@ -65,12 +65,12 @@ const generateRefreshToken = user => {
 
 const generateAccessAndRefreshTokens = async userId => {
   const user = await getUserById(userId);
-  const accessToken = generateAccessToken(user);
-  const refreshToken = generateRefreshToken(user);
-
-  await updateUser(user.user_id, {
+  const refreshToken = generateRefreshToken(user);  
+  const newUser = await updateUser(user.user_id, {
     refresh_token: refreshToken,
   });
+
+  const accessToken = generateAccessToken(newUser);
 
   return { accessToken, refreshToken };
 };
@@ -141,8 +141,6 @@ export const loginUser = asyncHandler(async (req, res) => {
     user.user_id,
   );
 
-  // console.log(accessToken, refreshToken)
-
   res
     .cookie('refreshToken', refreshToken, cookieOptions)
     .cookie('accessToken', accessToken, cookieOptions)
@@ -155,6 +153,7 @@ export const loginUser = asyncHandler(async (req, res) => {
 });
 
 export const logoutUser = asyncHandler(async (req, res) => {
+  // console.log('req.user', req.user);
   const token = req.user.refresh_token;
   if (!token) return handleResponse(res, 401, 'No refresh token found');
   const decoded = jwt.verify(token, process.env.REFRESH_TOKEN_SECRET);
