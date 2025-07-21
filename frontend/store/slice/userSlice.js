@@ -15,11 +15,11 @@ const userSlice = createSlice({
   reducers: {
     setUserData: (state, action) => {
       const {
-        user_id,
-        name,
-        email,
-        payment_refrence,
-        phone_number,
+        user_id = null,
+        name = null,
+        email = null,
+        payment_refrence = null,
+        phone_number = null,
         friends = [],
         hisabs = [],
       } = action.payload;

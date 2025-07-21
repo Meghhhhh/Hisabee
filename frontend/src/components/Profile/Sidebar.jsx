@@ -1,20 +1,31 @@
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { IoIosArrowBack } from 'react-icons/io';
+import axios from 'axios';
+import { toast } from 'react-toastify';
+import { setUserData } from '../../../store/slice/userSlice';
+import { setIsLoggedIn } from '../../../store/slice/isLoggedIn';
+import { useDispatch } from 'react-redux';
 
 const Sidebar = ({ activeTab, setActiveTab }) => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const tabs = [
     { key: 'overview', label: 'Profile Overview' },
     { key: 'history', label: 'History' },
     { key: 'friends', label: 'Friends' },
   ];
 
-  const handleLogout = () => {
-    // Clear user session (adjust as needed for your auth logic)
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
-    navigate('/login');
+  const handleLogout = async () => {
+    const res = await axios.post(
+      `${import.meta.env.VITE_BACKEND_API_URL}/user/logout`,
+      {},
+      { withCredentials: true },
+    );
+    dispatch(setUserData({}));
+    dispatch(setIsLoggedIn(false));
+    toast.success(res.data.message);
+    navigate('/home');
   };
 
   return (
