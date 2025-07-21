@@ -31,6 +31,13 @@ const userSlice = createSlice({
       state.friends = friends;
       state.hisabs = hisabs;
     },
+    updateUserData: (state, action) => {
+      const { firstName, lastName, email, payment_refrence, phone_number } = action.payload;
+      state.name = [firstName, lastName].filter(Boolean).join(' ');
+      state.email = email;
+      state.payment_refrence = payment_refrence;
+      state.phone_number = phone_number;
+    },
     setNotifications: (state, action) => {
       state.notifications = action.payload;
     },
@@ -40,6 +47,6 @@ const userSlice = createSlice({
   },
 });
 
-export const { setUserData, setNotifications, setFriendRequests } =
+export const { setUserData, setNotifications, setFriendRequests, updateUserData } =
   userSlice.actions;
 export default userSlice.reducer;
