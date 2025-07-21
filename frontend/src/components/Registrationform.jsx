@@ -294,7 +294,7 @@ const Registration = () => {
         <div className="mt-6 text-center">
           <p className="text-sm text-gray-600">
             Already have an account?{' '}
-            <Link to={'/signp'}>
+            <Link to={'/signup'}>
               <a href="#" className="text-blue-600 hover:underline font-medium">
                 Sign in
               </a>
