@@ -24,20 +24,20 @@ const Navbar = () => {
 				{/* Desktop Nav */}
 				<div className="flex-1 flex justify-end items-center gap-2 sm:gap-3 lg:gap-4">
 					{/* Support Button - Always visible */}
-					<a
-						href="/support"
+					<Link
+						to="/about"
 						className="hidden sm:flex items-center gap-1 px-2 sm:px-3 py-1 bg-gradient-to-r from-blue-500/20 to-cyan-500/20 rounded-lg border border-blue-400/20 text-white hover:from-blue-500/30 hover:to-cyan-500/30 transition-colors"
 					>
 						<CgHeadset size={20} />
 						<span>About</span>
-					</a>
-					<a
-						href="/support"
+					</Link>
+					<Link
+						to="/support"
 						className="hidden sm:flex items-center gap-1 px-2 sm:px-3 py-1 bg-gradient-to-r from-blue-500/20 to-cyan-500/20 rounded-lg border border-blue-400/20 text-white hover:from-blue-500/30 hover:to-cyan-500/30 transition-colors"
 					>
 						<CgHeadset size={20} />
 						<span>Support</span>
-					</a>
+					</Link>
 					{/* New Hisab Button: Only visible when logged in */}
 					{isLoggedIn && (
 						<Link
