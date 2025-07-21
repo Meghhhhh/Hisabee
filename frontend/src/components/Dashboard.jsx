@@ -17,7 +17,7 @@ import {
 	AlertCircle,
 } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
-import { setHisabs } from "../../store/slice/hisabSlice";
+import { setHisabs, updateHisab } from "../../store/slice/hisabSlice";
 import axios from "axios";
 
 export default function EnhancedHisabComponent() {
@@ -29,7 +29,6 @@ export default function EnhancedHisabComponent() {
 	const hisabsPerPage = 5;
 	const dispatch = useDispatch();
 	const [showModal, setShowModal] = useState(false);
-	const [transactions, setTransactions] = useState([]);
 	const [transactionForm, setTransactionForm] = useState({
 		amount: "",
 		description: "",
@@ -492,11 +491,14 @@ export default function EnhancedHisabComponent() {
 										},
 										{ withCredentials: true }
 									);
+									dispatch(updateHisab({
+										id: selectedHisabId,
+										transactions: res.data
+									}));
 									setSpentMap((prev) => ({
 										...prev,
 										[selectedHisabId]: (prev[selectedHisabId] || 0) + amount,
 									}));
-									setTransactions([...transactions, res.data]);
 									setShowModal(false);
 									setTransactionForm({
 										amount: "",

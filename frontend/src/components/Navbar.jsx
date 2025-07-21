@@ -10,7 +10,7 @@ import { useSelector } from "react-redux";
 const Navbar = () => {
 	const isLoggedIn = useSelector((state) => state.auth.isLoggedIn);
 	const [menuOpen, setMenuOpen] = useState(false);
-
+	const avatar = useSelector((state) => state.user.avatar);
 	const toggleMenu = () => setMenuOpen(!menuOpen);
 
 	return (
@@ -52,20 +52,17 @@ const Navbar = () => {
 					{isLoggedIn ? (
 						<div className="flex gap-2 sm:gap-4">
 							<Link to="/profile" title="Profile">
-								<CgProfile
-									className="text-white hover:text-cyan-300"
-									size={24}
-								/>
+								<img src={avatar} alt="profile" className="w-7 h-7 rounded-full" />
 							</Link>
 							<Link to="/notifications" title="Notifications">
 								<CiBellOn
 									className="text-white hover:text-cyan-300"
-									size={24}
+									size={30}
 								/>
 							</Link>
-							<Link to="/logout" title="Logout">
+							{/* <Link to="/logout" title="Logout">
 								<CiLogout className="text-white hover:text-red-300" size={24} />
-							</Link>
+							</Link> */}
 						</div>
 					) : (
 						<Link
@@ -119,7 +116,7 @@ const Navbar = () => {
 										className="p-2 bg-gray-700 rounded-full"
 										onClick={toggleMenu}
 									>
-										<CgProfile size={28} className="text-white" />
+										<img src={avatar} alt="profile" className="w-8 h-8 rounded-full" />
 									</Link>
 									<Link
 										to="/notifications"
