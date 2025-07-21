@@ -1,5 +1,9 @@
 import { Link } from 'react-router';
-const ProfileOverview = ({ user }) => (
+import { useSelector } from 'react-redux';
+
+const ProfileOverview = () => {
+  const user = useSelector(state => state.user);
+  return (
   <div className="font-[Montserrat] relative">
     {/* Avatar and Name */}
     <div className="flex items-center">
@@ -61,6 +65,7 @@ const ProfileOverview = ({ user }) => (
         />
       </div>
   </div>
-);
+  );
+};
 
 export default ProfileOverview;

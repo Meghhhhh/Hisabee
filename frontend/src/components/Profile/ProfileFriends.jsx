@@ -1,6 +1,8 @@
-import React from 'react';
+import { useSelector } from 'react-redux';
 
-const ProfileFriends = ({ friends }) => (
+const ProfileFriends = () => {
+  const friends = useSelector(state => state.user.friends);
+  return (
   <div>
     <h3 className="text-xl font-semibold mb-4">Friends</h3>
 
@@ -21,6 +23,7 @@ const ProfileFriends = ({ friends }) => (
       <div className="text-gray-500 text-sm">No friends found.</div>
     )}
   </div>
-);
+  );
+};
 
 export default ProfileFriends;

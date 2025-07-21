@@ -3,21 +3,18 @@ import Sidebar from '../components/Profile/Sidebar';
 import ProfileOverview from '../components/Profile/ProfileOverview';
 import ProfileHistory from '../components/Profile/ProfileHistory';
 import ProfileFriends from '../components/Profile/ProfileFriends';
-import { useSelector } from 'react-redux';
 
 const Profile = () => {
   const [activeTab, setActiveTab] = useState('overview');
 
-  const user = useSelector(state => state.user);
-
   const renderContent = () => {
     switch (activeTab) {
       case 'overview':
-        return <ProfileOverview user={user} />;
+        return <ProfileOverview />;
       case 'history':
-        return <ProfileHistory history={user.history || []} />;
+        return <ProfileHistory />;
       case 'friends':
-        return <ProfileFriends friends={user.friends || []} />;
+        return <ProfileFriends />;
       default:
         return null;
     }

@@ -1,4 +1,7 @@
-const ProfileHistory = ({ history }) => {
+import { useSelector } from 'react-redux';
+
+const ProfileHistory = () => {
+  const history = useSelector(state => state.user.history);
   return (
     <div>
       <h3 className="text-xl font-semibold mb-4">History</h3>
