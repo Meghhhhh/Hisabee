@@ -197,22 +197,23 @@ const Notifications = () => {
         ))}
       </div>
 
-      <div className="relative z-10 max-w-7xl mx-auto pb-12 px-4 sm:px-6 md:px-8">
+      <div className="relative z-10 max-w-7xl mx-auto pb-12 px-2 sm:px-4 md:px-8">
         {/* Header */}
-        <div className="flex items-center gap-2 mt-10 mb-8">
-          <button
-            onClick={() => navigate(-1)}
-            className="p-2 bg-white/10 rounded-full hover:bg-white/20 transition"
-            title="Back"
-          >
-            ←
-          </button>
-          <h1 className="text-3xl font-bold bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-400 bg-clip-text text-transparent">
-            Notifications
-          </h1>
-          <div className="ml-auto flex items-center gap-4">
+        <div className="flex flex-col sm:flex-row items-center gap-2 mt-6 sm:mt-10 mb-6 sm:mb-8">
+          <div className="flex items-center w-full sm:w-auto">
+            <button
+              onClick={() => navigate(-1)}
+              className="p-2 bg-white/10 rounded-full hover:bg-white/20 transition mr-2"
+              title="Back"
+            >
+              ←
+            </button>
+            <h1 className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-400 bg-clip-text text-transparent">
+              Notifications
+            </h1>
+          </div>
+          <div className="ml-auto flex items-center gap-2 sm:gap-4 w-full sm:w-auto justify-end">
             <div className="relative" title="Unread notifications">
-              
               {unreadCount > 0 && (
                 <span className="absolute -top-2 -right-2 bg-indigo-500 text-white rounded-full text-xs px-2 py-0.5 font-bold">
                   {unreadCount}
@@ -231,29 +232,31 @@ const Notifications = () => {
 
         {/* Add Friend Dialog */}
         {addFriendOpen && (
-          <div className="fixed inset-0 bg-black/40 z-50 flex items-center justify-center">
-            <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-8 border border-white/10 shadow-2xl w-full max-w-xs mx-4">
-              <div className="font-bold text-lg mb-4 text-white">Add Friend</div>
+          <div className="fixed inset-0 bg-black/40 z-50 flex items-center justify-center px-2">
+            <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-4 sm:p-8 border border-white/10 shadow-2xl w-full max-w-xs mx-2">
+              <div className="font-bold text-lg mb-4 text-white">
+                Add Friend
+              </div>
               <input
                 type="email"
                 placeholder="Friend's Email"
                 value={friendEmail}
                 onChange={e => setFriendEmail(e.target.value)}
                 disabled={addFriendLoading}
-                className="w-full px-4 py-2 mb-4 rounded-lg border border-white/20 bg-white/10 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-400/40 focus:border-indigo-400/40 transition"
+                className="w-full px-4 py-2 mb-4 rounded-lg border border-white/20 bg-white/10 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-400/40 focus:border-indigo-400/40 transition text-sm"
               />
               <div className="flex justify-end gap-2">
                 <button
                   onClick={() => setAddFriendOpen(false)}
                   disabled={addFriendLoading}
-                  className="px-4 py-2 rounded-lg border border-white/20 bg-white/10 text-white hover:bg-white/20 transition"
+                  className="px-4 py-2 rounded-lg border border-white/20 bg-white/10 text-white hover:bg-white/20 transition text-sm"
                 >
                   Cancel
                 </button>
                 <button
                   onClick={handleAddFriend}
                   disabled={addFriendLoading || !friendEmail}
-                  className="px-4 py-2 rounded-lg bg-gradient-to-r from-indigo-500 to-purple-500 text-white font-semibold hover:from-indigo-600 hover:to-purple-600 transition-all duration-300 transform hover:scale-105 shadow-md"
+                  className="px-4 py-2 rounded-lg bg-gradient-to-r from-indigo-500 to-purple-500 text-white font-semibold hover:from-indigo-600 hover:to-purple-600 transition-all duration-300 transform hover:scale-105 shadow-md text-sm"
                 >
                   Send Request
                 </button>
@@ -263,13 +266,13 @@ const Notifications = () => {
         )}
 
         {/* Tabs and Actions */}
-        <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
-          <div className="flex gap-2 flex-wrap">
+        <div className="flex flex-col sm:flex-row flex-wrap items-center justify-between gap-2 sm:gap-4 mb-4 sm:mb-6">
+          <div className="flex gap-1 sm:gap-2 flex-wrap">
             {notificationTypes.map(type => (
               <button
                 key={type.value}
                 onClick={() => setFilter(type.value)}
-                className={`px-4 py-2 rounded-full border transition-all duration-200 text-sm font-semibold ${
+                className={`px-3 sm:px-4 py-1.5 sm:py-2 rounded-full border transition-all duration-200 text-xs sm:text-sm font-semibold ${
                   filter === type.value
                     ? 'border-indigo-500 bg-indigo-500/10 text-indigo-300'
                     : 'border-white/10 bg-white/5 text-white hover:bg-white/10'
@@ -279,11 +282,11 @@ const Notifications = () => {
               </button>
             ))}
           </div>
-          <div className="flex gap-2">
+          <div className="flex gap-1 sm:gap-2">
             <button
               onClick={markAllAsRead}
               disabled={unreadCount === 0}
-              className={`px-4 py-2 rounded-lg border font-medium text-sm transition-all duration-200 ${
+              className={`px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg border font-medium text-xs sm:text-sm transition-all duration-200 ${
                 unreadCount === 0
                   ? 'border-white/10 bg-white/5 text-gray-500 cursor-not-allowed'
                   : 'border-indigo-500 bg-indigo-500/10 text-indigo-300 hover:bg-indigo-500/20'
@@ -294,7 +297,7 @@ const Notifications = () => {
             <button
               onClick={clearAll}
               disabled={notifications.length === 0}
-              className={`px-4 py-2 rounded-lg border font-medium text-sm transition-all duration-200 ${
+              className={`px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg border font-medium text-xs sm:text-sm transition-all duration-200 ${
                 notifications.length === 0
                   ? 'border-white/10 bg-white/5 text-gray-500 cursor-not-allowed'
                   : 'border-pink-500 bg-pink-500/10 text-pink-300 hover:bg-pink-500/20'
@@ -306,31 +309,40 @@ const Notifications = () => {
         </div>
 
         {/* Notifications List */}
-        <div className="space-y-4">
+        <div className="space-y-3 sm:space-y-4">
           {/* Incoming friend requests (pending) */}
           {filter === 'message' &&
             incomingRequests.length > 0 &&
             incomingRequests.map(req => (
-              <div key={req.user_id} className="backdrop-blur-sm bg-white/5 rounded-xl p-4 border border-white/10 flex items-center gap-4">
-                <span className="text-2xl">📧</span>
+              <div
+                key={req.user_id}
+                className="backdrop-blur-sm bg-white/5 rounded-xl p-3 sm:p-4 border border-white/10 flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4"
+              >
+                <span className="text-xl sm:text-2xl">📧</span>
                 <div className="flex-1">
-                  <div className="font-semibold text-lg text-white">{req.name || req.email}</div>
-                  <div className="text-gray-400 text-sm">{req.email}</div>
+                  <div className="font-semibold text-base sm:text-lg text-white">
+                    {req.name || req.email}
+                  </div>
+                  <div className="text-gray-400 text-xs sm:text-sm">
+                    {req.email}
+                  </div>
                 </div>
-                <div className="flex flex-col items-end mr-4">
-                  <span className="text-indigo-400 text-xs mb-1">Incoming</span>
+                <div className="flex flex-row sm:flex-col items-end sm:mr-4 gap-1 sm:gap-0">
+                  <span className="text-indigo-400 text-xs mb-0 sm:mb-1">
+                    Incoming
+                  </span>
                   <span className="text-gray-400 text-xs">{req.status}</span>
                 </div>
                 {req.status === 'pending' && (
-                  <div className="flex gap-2">
+                  <div className="flex gap-1 sm:gap-2 mt-2 sm:mt-0">
                     <button
-                      className="px-4 py-2 rounded-lg bg-gradient-to-r from-green-500 to-emerald-500 text-white font-semibold hover:from-green-600 hover:to-emerald-600 transition-all duration-300 transform hover:scale-105 shadow-md"
+                      className="px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg bg-gradient-to-r from-green-500 to-emerald-500 text-white font-semibold hover:from-green-600 hover:to-emerald-600 transition-all duration-300 transform hover:scale-105 shadow-md text-xs sm:text-base"
                       onClick={() => handleAccept(req.user_id)}
                     >
                       Accept
                     </button>
                     <button
-                      className="px-4 py-2 rounded-lg border border-pink-500 text-pink-400 hover:bg-pink-500/10 transition-all duration-300"
+                      className="px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg border border-pink-500 text-pink-400 hover:bg-pink-500/10 transition-all duration-300 text-xs sm:text-base"
                       onClick={() => handleReject(req.user_id)}
                     >
                       Reject
@@ -343,14 +355,23 @@ const Notifications = () => {
           {filter === 'message' &&
             friendRequests.length > 0 &&
             friendRequests.map(req => (
-              <div key={req.user_id} className="backdrop-blur-sm bg-white/5 rounded-xl p-4 border border-white/10 flex items-center gap-4">
-                <span className="text-2xl">📧</span>
+              <div
+                key={req.user_id}
+                className="backdrop-blur-sm bg-white/5 rounded-xl p-3 sm:p-4 border border-white/10 flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4"
+              >
+                <span className="text-xl sm:text-2xl">📧</span>
                 <div className="flex-1">
-                  <div className="font-semibold text-lg text-white">{req.name || req.email}</div>
-                  <div className="text-gray-400 text-sm">{req.email}</div>
+                  <div className="font-semibold text-base sm:text-lg text-white">
+                    {req.name || req.email}
+                  </div>
+                  <div className="text-gray-400 text-xs sm:text-sm">
+                    {req.email}
+                  </div>
                 </div>
-                <div className="flex flex-col items-end">
-                  <span className="text-yellow-400 text-xs mb-1">Outgoing</span>
+                <div className="flex flex-row sm:flex-col items-end gap-1 sm:gap-0">
+                  <span className="text-yellow-400 text-xs mb-0 sm:mb-1">
+                    Outgoing
+                  </span>
                   <span className="text-gray-400 text-xs">{req.status}</span>
                 </div>
               </div>
@@ -360,28 +381,38 @@ const Notifications = () => {
             filteredNotifications.map(notification => (
               <div
                 key={notification.id}
-                className={`backdrop-blur-sm rounded-xl p-4 border border-white/10 flex items-center gap-4 shadow-md ${
-                  notification.read ? 'bg-white/5' : 'bg-gradient-to-r from-indigo-500/10 to-purple-500/10'
+                className={`backdrop-blur-sm rounded-xl p-3 sm:p-4 border border-white/10 flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4 shadow-md ${
+                  notification.read
+                    ? 'bg-white/5'
+                    : 'bg-gradient-to-r from-indigo-500/10 to-purple-500/10'
                 }`}
               >
-                <span className="text-2xl">{iconMap[notification.type] || iconMap.default}</span>
+                <span className="text-xl sm:text-2xl">
+                  {iconMap[notification.type] || iconMap.default}
+                </span>
                 <div className="flex-1">
-                  <div className="font-semibold text-lg text-white">{notification.title}</div>
-                  <div className="text-gray-400 text-sm">{notification.content}</div>
-                  <div className="text-gray-500 text-xs">{notification.time}</div>
+                  <div className="font-semibold text-base sm:text-lg text-white">
+                    {notification.title}
+                  </div>
+                  <div className="text-gray-400 text-xs sm:text-sm">
+                    {notification.content}
+                  </div>
+                  <div className="text-gray-500 text-xs">
+                    {notification.time}
+                  </div>
                 </div>
-                <div className="flex gap-2">
+                <div className="flex gap-1 sm:gap-2 mt-2 sm:mt-0">
                   {!notification.read && (
                     <button
                       onClick={() => markAsRead(notification.id)}
-                      className="px-3 py-1 rounded-lg border border-indigo-500 text-indigo-300 bg-indigo-500/10 hover:bg-indigo-500/20 font-medium text-xs transition-all duration-200"
+                      className="px-2 sm:px-3 py-1 rounded-lg border border-indigo-500 text-indigo-300 bg-indigo-500/10 hover:bg-indigo-500/20 font-medium text-xs transition-all duration-200"
                     >
                       Mark read
                     </button>
                   )}
                   <button
                     onClick={() => deleteNotification(notification.id)}
-                    className="px-3 py-1 rounded-lg border border-pink-500 text-pink-400 bg-pink-500/10 hover:bg-pink-500/20 font-medium text-xs transition-all duration-200"
+                    className="px-2 sm:px-3 py-1 rounded-lg border border-pink-500 text-pink-400 bg-pink-500/10 hover:bg-pink-500/20 font-medium text-xs transition-all duration-200"
                     title="Delete"
                   >
                     🗑️
@@ -391,12 +422,12 @@ const Notifications = () => {
             ))
           ) : filter === 'message' ? (
             friendRequests.length === 0 && incomingRequests.length === 0 ? (
-              <div className="py-16 text-center text-gray-500 text-lg">
+              <div className="py-16 text-center text-gray-500 text-base sm:text-lg">
                 No friend requests to display.
               </div>
             ) : null
           ) : filteredNotifications.length === 0 ? (
-            <div className="py-16 text-center text-gray-500 text-lg">
+            <div className="py-16 text-center text-gray-500 text-base sm:text-lg">
               No notifications to display.
             </div>
           ) : null}
