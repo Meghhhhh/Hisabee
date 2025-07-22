@@ -18,6 +18,7 @@ import About from "./pages/About";
 import Summary from "./pages/Summary";
 import Forget from "./pages/Forget";
 import Support from "./pages/Support";
+import NotFound from "./pages/NotFound";
 
 const App = () => {
 	useAuthCheck();
@@ -33,6 +34,7 @@ const App = () => {
 				<Route path="/home" element={<Home />} />
 				<Route path="/about" element={<About />} />
 				<Route path="/support" element={<Support />} />
+				<Route path="*" element={<NotFound />} />
 
 				{/* Protected routes */}
 				<Route element={<ProtectedRoute />}>

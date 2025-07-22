@@ -55,7 +55,6 @@ const Notifications = () => {
             { withCredentials: true },
           ),
         ]);
-        console.log(notiRes.data?.data);
         const notificationsData = (notiRes.data?.data || []).map(n => ({
           id: n.notification_id,
           type: n.type,
@@ -64,7 +63,6 @@ const Notifications = () => {
           time: new Date(n.created_at).toLocaleString(),
           read: n.is_read,
         }));
-        console.log(notificationsData);
         dispatch(setNotifications(notificationsData));
         dispatch(setFriendRequests(outgoingRes.data?.data || []));
         setIncomingRequests(incomingRes.data?.data || []);
@@ -155,244 +153,254 @@ const Notifications = () => {
 
   if (loading) {
     return (
-      <div style={{ padding: 32, textAlign: 'center' }}>
-        Loading notifications...
+      <div className="min-h-screen flex items-center justify-center bg-black text-white">
+        <div className="backdrop-blur-sm bg-white/5 rounded-3xl p-8 border border-white/10 shadow-2xl inline-block">
+          <div className="animate-pulse flex flex-col items-center">
+            <div className="w-20 h-20 rounded-full bg-gradient-to-r from-indigo-500/40 to-purple-500/40 flex items-center justify-center mb-4">
+              <div className="w-10 h-10 bg-white/60 rounded-full"></div>
+            </div>
+            <h2 className="text-xl font-semibold text-transparent bg-gradient-to-r from-indigo-300 to-purple-300 bg-clip-text">
+              Loading notifications...
+            </h2>
+          </div>
+        </div>
       </div>
     );
   }
 
   if (error) {
     return (
-      <div style={{ padding: 32, textAlign: 'center', color: 'red' }}>
+      <div className="min-h-screen flex items-center justify-center bg-black text-red-400 text-xl">
         {error}
       </div>
     );
   }
 
   return (
-    <div style={{ background: '#f7f7f7', minHeight: '100vh' }}>
-      {/* Top Bar */}
-      <div style={{ background: '#fff', borderBottom: '1px solid #eee', display: 'flex', alignItems: 'center', padding: '12px 20px', position: 'sticky', top: 0, zIndex: 10 }}>
-        <button
-          onClick={() => navigate(-1)}
-          style={{ background: 'none', border: 'none', fontSize: 22, marginRight: 16, cursor: 'pointer' }}
-          title="Back"
-        >
-          ←
-        </button>
-        <div style={{ flex: 1, fontWeight: 600, fontSize: 20 }}>Notifications</div>
-        <div style={{ position: 'relative', marginRight: 16 }} title="Unread notifications">
-          <span style={{ fontSize: 22 }}>🔔</span>
-          {unreadCount > 0 && (
-            <span style={{ position: 'absolute', top: -6, right: -8, background: '#1976d2', color: '#fff', borderRadius: '50%', fontSize: 12, padding: '2px 6px', fontWeight: 600 }}>{unreadCount}</span>
-          )}
-        </div>
-        <button
-          onClick={() => setAddFriendOpen(true)}
-          style={{ background: 'none', border: 'none', fontSize: 22, cursor: 'pointer' }}
-          title="Add Friend"
-        >
-          ➕
-        </button>
+    <div className="min-h-screen bg-black text-white relative overflow-hidden">
+      {/* Animated background */}
+      <div className="absolute inset-0 z-0 pointer-events-none">
+        <div className="absolute top-20 left-20 w-72 h-72 bg-gradient-to-r from-green-500/20 to-emerald-500/20 rounded-full blur-3xl animate-pulse"></div>
+        <div className="absolute bottom-32 right-32 w-96 h-96 bg-gradient-to-r from-blue-500/20 to-cyan-500/20 rounded-full blur-3xl animate-pulse delay-1000"></div>
+        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-80 h-80 bg-gradient-to-r from-indigo-500/10 to-purple-500/10 rounded-full blur-3xl animate-pulse delay-500"></div>
+        {[...Array(12)].map((_, i) => (
+          <div
+            key={i}
+            className="absolute w-2 h-2 bg-gradient-to-r from-cyan-400 to-purple-400 rounded-full opacity-30 animate-pulse"
+            style={{
+              left: `${Math.random() * 100}%`,
+              top: `${Math.random() * 100}%`,
+              animationDelay: `${Math.random() * 3}s`,
+              animationDuration: `${2 + Math.random() * 3}s`,
+            }}
+          />
+        ))}
       </div>
 
-      {/* Add Friend Dialog */}
-      {addFriendOpen && (
-        <div style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', background: 'rgba(0,0,0,0.25)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-          <div style={{ background: '#fff', borderRadius: 8, minWidth: 320, maxWidth: 400, padding: 24, boxShadow: '0 2px 16px rgba(0,0,0,0.15)' }}>
-            <div style={{ fontWeight: 600, fontSize: 18, marginBottom: 16 }}>Add Friend</div>
-            <input
-              type="email"
-              placeholder="Friend's Email"
-              value={friendEmail}
-              onChange={e => setFriendEmail(e.target.value)}
-              disabled={addFriendLoading}
-              style={{ width: '100%', padding: 8, fontSize: 16, marginBottom: 16, border: '1px solid #ccc', borderRadius: 4 }}
-            />
-            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8 }}>
-              <button
-                onClick={() => setAddFriendOpen(false)}
-                disabled={addFriendLoading}
-                style={{ padding: '6px 16px', borderRadius: 4, border: '1px solid #ccc', background: '#fff', cursor: 'pointer' }}
-              >
-                Cancel
-              </button>
-              <button
-                onClick={handleAddFriend}
-                disabled={addFriendLoading || !friendEmail}
-                style={{ padding: '6px 16px', borderRadius: 4, border: 'none', background: '#1976d2', color: '#fff', fontWeight: 600, cursor: addFriendLoading || !friendEmail ? 'not-allowed' : 'pointer' }}
-              >
-                Send Request
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Tabs and Actions */}
-      <div style={{ padding: 16, display: 'flex', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'space-between', gap: 16 }}>
-        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-          {notificationTypes.map(type => (
-            <button
-              key={type.value}
-              onClick={() => setFilter(type.value)}
-              style={{
-                padding: '6px 16px',
-                borderRadius: 20,
-                border: filter === type.value ? '2px solid #1976d2' : '1px solid #ccc',
-                background: filter === type.value ? '#e3f0fd' : '#fff',
-                color: filter === type.value ? '#1976d2' : '#333',
-                fontWeight: filter === type.value ? 600 : 400,
-                cursor: 'pointer',
-                fontSize: 15,
-                outline: 'none',
-                minWidth: 80,
-                transition: 'all 0.2s',
-              }}
-            >
-              {type.label}
-            </button>
-          ))}
-        </div>
-        <div style={{ display: 'flex', gap: 8 }}>
+      <div className="relative z-10 max-w-7xl mx-auto pb-12 px-4 sm:px-6 md:px-8">
+        {/* Header */}
+        <div className="flex items-center gap-2 mt-10 mb-8">
           <button
-            onClick={markAllAsRead}
-            disabled={unreadCount === 0}
-            style={{
-              padding: '6px 12px',
-              borderRadius: 4,
-              border: '1px solid #1976d2',
-              background: unreadCount === 0 ? '#eee' : '#fff',
-              color: unreadCount === 0 ? '#aaa' : '#1976d2',
-              fontWeight: 500,
-              cursor: unreadCount === 0 ? 'not-allowed' : 'pointer',
-              fontSize: 14,
-            }}
+            onClick={() => navigate(-1)}
+            className="p-2 bg-white/10 rounded-full hover:bg-white/20 transition"
+            title="Back"
           >
-            ✔️ Mark all read
+            ←
           </button>
-          <button
-            onClick={clearAll}
-            disabled={notifications.length === 0}
-            style={{
-              padding: '6px 12px',
-              borderRadius: 4,
-              border: '1px solid #d32f2f',
-              background: notifications.length === 0 ? '#eee' : '#fff',
-              color: notifications.length === 0 ? '#aaa' : '#d32f2f',
-              fontWeight: 500,
-              cursor: notifications.length === 0 ? 'not-allowed' : 'pointer',
-              fontSize: 14,
-            }}
-          >
-            🗑️ Clear all
-          </button>
-        </div>
-      </div>
-
-      {/* Notifications List */}
-      <div style={{ padding: 16, maxWidth: 700, margin: '0 auto' }}>
-        {/* Incoming friend requests (pending) */}
-        {filter === 'message' &&
-          incomingRequests.length > 0 &&
-          incomingRequests.map(req => (
-            <div key={req.user_id} style={{ background: '#fff', border: '1px solid #e0e0e0', borderRadius: 8, marginBottom: 16, padding: 16, display: 'flex', alignItems: 'center', gap: 16 }}>
-              <span style={{ fontSize: 24 }}>📧</span>
-              <div style={{ flex: 1 }}>
-                <div style={{ fontWeight: 600, fontSize: 16 }}>{req.name || req.email}</div>
-                <div style={{ color: '#666', fontSize: 14 }}>{req.email}</div>
-              </div>
-              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', marginRight: 16 }}>
-                <span style={{ color: '#0288d1', fontSize: 12, marginBottom: 4 }}>Incoming</span>
-                <span style={{ color: '#888', fontSize: 12 }}>{req.status}</span>
-              </div>
-              {req.status === 'pending' && (
-                <div style={{ display: 'flex', gap: 8 }}>
-                  <button
-                    style={{ padding: '6px 12px', borderRadius: 4, border: 'none', background: '#43a047', color: '#fff', fontWeight: 600, cursor: 'pointer' }}
-                    onClick={() => handleAccept(req.user_id)}
-                  >
-                    Accept
-                  </button>
-                  <button
-                    style={{ padding: '6px 12px', borderRadius: 4, border: '1px solid #d32f2f', background: '#fff', color: '#d32f2f', fontWeight: 600, cursor: 'pointer' }}
-                    onClick={() => handleReject(req.user_id)}
-                  >
-                    Reject
-                  </button>
-                </div>
+          <h1 className="text-3xl font-bold bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-400 bg-clip-text text-transparent">
+            Notifications
+          </h1>
+          <div className="ml-auto flex items-center gap-4">
+            <div className="relative" title="Unread notifications">
+              
+              {unreadCount > 0 && (
+                <span className="absolute -top-2 -right-2 bg-indigo-500 text-white rounded-full text-xs px-2 py-0.5 font-bold">
+                  {unreadCount}
+                </span>
               )}
             </div>
-          ))}
-        {/* Outgoing friend requests */}
-        {filter === 'message' &&
-          friendRequests.length > 0 &&
-          friendRequests.map(req => (
-            <div key={req.user_id} style={{ background: '#fff', border: '1px solid #e0e0e0', borderRadius: 8, marginBottom: 16, padding: 16, display: 'flex', alignItems: 'center', gap: 16 }}>
-              <span style={{ fontSize: 24 }}>📧</span>
-              <div style={{ flex: 1 }}>
-                <div style={{ fontWeight: 600, fontSize: 16 }}>{req.name || req.email}</div>
-                <div style={{ color: '#666', fontSize: 14 }}>{req.email}</div>
-              </div>
-              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end' }}>
-                <span style={{ color: '#fbc02d', fontSize: 12, marginBottom: 4 }}>Outgoing</span>
-                <span style={{ color: '#888', fontSize: 12 }}>{req.status}</span>
-              </div>
-            </div>
-          ))}
-        {/* Notifications */}
-        {filteredNotifications.length > 0 ? (
-          filteredNotifications.map(notification => (
-            <div
-              key={notification.id}
-              style={{
-                background: notification.read ? '#f5f5f5' : '#fff',
-                border: '1px solid #e0e0e0',
-                borderRadius: 8,
-                marginBottom: 16,
-                padding: 16,
-                display: 'flex',
-                alignItems: 'center',
-                gap: 16,
-                boxShadow: notification.read ? 'none' : '0 2px 8px rgba(0,0,0,0.07)',
-              }}
+            <button
+              onClick={() => setAddFriendOpen(true)}
+              className="p-2 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-full text-white hover:from-indigo-600 hover:to-purple-600 transition-all duration-300 transform hover:scale-105 shadow-md text-base flex items-center gap-2"
+              title="Add Friend"
             >
-              <span style={{ fontSize: 24 }}>{iconMap[notification.type] || iconMap.default}</span>
-              <div style={{ flex: 1 }}>
-                <div style={{ fontWeight: 600, fontSize: 16, color: '#222' }}>{notification.title}</div>
-                <div style={{ color: '#666', fontSize: 14 }}>{notification.content}</div>
-                <div style={{ color: '#aaa', fontSize: 12 }}>{notification.time}</div>
-              </div>
-              <div style={{ display: 'flex', gap: 8 }}>
-                {!notification.read && (
-                  <button
-                    onClick={() => markAsRead(notification.id)}
-                    style={{ padding: '4px 10px', borderRadius: 4, border: '1px solid #1976d2', background: '#fff', color: '#1976d2', fontWeight: 500, cursor: 'pointer', fontSize: 13 }}
-                  >
-                    Mark read
-                  </button>
-                )}
+              ＋
+            </button>
+          </div>
+        </div>
+
+        {/* Add Friend Dialog */}
+        {addFriendOpen && (
+          <div className="fixed inset-0 bg-black/40 z-50 flex items-center justify-center">
+            <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-8 border border-white/10 shadow-2xl w-full max-w-xs mx-4">
+              <div className="font-bold text-lg mb-4 text-white">Add Friend</div>
+              <input
+                type="email"
+                placeholder="Friend's Email"
+                value={friendEmail}
+                onChange={e => setFriendEmail(e.target.value)}
+                disabled={addFriendLoading}
+                className="w-full px-4 py-2 mb-4 rounded-lg border border-white/20 bg-white/10 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-400/40 focus:border-indigo-400/40 transition"
+              />
+              <div className="flex justify-end gap-2">
                 <button
-                  onClick={() => deleteNotification(notification.id)}
-                  style={{ padding: '4px 10px', borderRadius: 4, border: '1px solid #d32f2f', background: '#fff', color: '#d32f2f', fontWeight: 500, cursor: 'pointer', fontSize: 13 }}
-                  title="Delete"
+                  onClick={() => setAddFriendOpen(false)}
+                  disabled={addFriendLoading}
+                  className="px-4 py-2 rounded-lg border border-white/20 bg-white/10 text-white hover:bg-white/20 transition"
                 >
-                  🗑️
+                  Cancel
+                </button>
+                <button
+                  onClick={handleAddFriend}
+                  disabled={addFriendLoading || !friendEmail}
+                  className="px-4 py-2 rounded-lg bg-gradient-to-r from-indigo-500 to-purple-500 text-white font-semibold hover:from-indigo-600 hover:to-purple-600 transition-all duration-300 transform hover:scale-105 shadow-md"
+                >
+                  Send Request
                 </button>
               </div>
             </div>
-          ))
-        ) : filter === 'message' ? (
-          friendRequests.length === 0 && incomingRequests.length === 0 ? (
-            <div style={{ padding: 32, textAlign: 'center', color: '#888' }}>
-              No friend requests to display.
-            </div>
-          ) : null
-        ) : filteredNotifications.length === 0 ? (
-          <div style={{ padding: 32, textAlign: 'center', color: '#888' }}>
-            No notifications to display.
           </div>
-        ) : null}
+        )}
+
+        {/* Tabs and Actions */}
+        <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
+          <div className="flex gap-2 flex-wrap">
+            {notificationTypes.map(type => (
+              <button
+                key={type.value}
+                onClick={() => setFilter(type.value)}
+                className={`px-4 py-2 rounded-full border transition-all duration-200 text-sm font-semibold ${
+                  filter === type.value
+                    ? 'border-indigo-500 bg-indigo-500/10 text-indigo-300'
+                    : 'border-white/10 bg-white/5 text-white hover:bg-white/10'
+                }`}
+              >
+                {type.label}
+              </button>
+            ))}
+          </div>
+          <div className="flex gap-2">
+            <button
+              onClick={markAllAsRead}
+              disabled={unreadCount === 0}
+              className={`px-4 py-2 rounded-lg border font-medium text-sm transition-all duration-200 ${
+                unreadCount === 0
+                  ? 'border-white/10 bg-white/5 text-gray-500 cursor-not-allowed'
+                  : 'border-indigo-500 bg-indigo-500/10 text-indigo-300 hover:bg-indigo-500/20'
+              }`}
+            >
+              ✔️ Mark all read
+            </button>
+            <button
+              onClick={clearAll}
+              disabled={notifications.length === 0}
+              className={`px-4 py-2 rounded-lg border font-medium text-sm transition-all duration-200 ${
+                notifications.length === 0
+                  ? 'border-white/10 bg-white/5 text-gray-500 cursor-not-allowed'
+                  : 'border-pink-500 bg-pink-500/10 text-pink-300 hover:bg-pink-500/20'
+              }`}
+            >
+              🗑️ Clear all
+            </button>
+          </div>
+        </div>
+
+        {/* Notifications List */}
+        <div className="space-y-4">
+          {/* Incoming friend requests (pending) */}
+          {filter === 'message' &&
+            incomingRequests.length > 0 &&
+            incomingRequests.map(req => (
+              <div key={req.user_id} className="backdrop-blur-sm bg-white/5 rounded-xl p-4 border border-white/10 flex items-center gap-4">
+                <span className="text-2xl">📧</span>
+                <div className="flex-1">
+                  <div className="font-semibold text-lg text-white">{req.name || req.email}</div>
+                  <div className="text-gray-400 text-sm">{req.email}</div>
+                </div>
+                <div className="flex flex-col items-end mr-4">
+                  <span className="text-indigo-400 text-xs mb-1">Incoming</span>
+                  <span className="text-gray-400 text-xs">{req.status}</span>
+                </div>
+                {req.status === 'pending' && (
+                  <div className="flex gap-2">
+                    <button
+                      className="px-4 py-2 rounded-lg bg-gradient-to-r from-green-500 to-emerald-500 text-white font-semibold hover:from-green-600 hover:to-emerald-600 transition-all duration-300 transform hover:scale-105 shadow-md"
+                      onClick={() => handleAccept(req.user_id)}
+                    >
+                      Accept
+                    </button>
+                    <button
+                      className="px-4 py-2 rounded-lg border border-pink-500 text-pink-400 hover:bg-pink-500/10 transition-all duration-300"
+                      onClick={() => handleReject(req.user_id)}
+                    >
+                      Reject
+                    </button>
+                  </div>
+                )}
+              </div>
+            ))}
+          {/* Outgoing friend requests */}
+          {filter === 'message' &&
+            friendRequests.length > 0 &&
+            friendRequests.map(req => (
+              <div key={req.user_id} className="backdrop-blur-sm bg-white/5 rounded-xl p-4 border border-white/10 flex items-center gap-4">
+                <span className="text-2xl">📧</span>
+                <div className="flex-1">
+                  <div className="font-semibold text-lg text-white">{req.name || req.email}</div>
+                  <div className="text-gray-400 text-sm">{req.email}</div>
+                </div>
+                <div className="flex flex-col items-end">
+                  <span className="text-yellow-400 text-xs mb-1">Outgoing</span>
+                  <span className="text-gray-400 text-xs">{req.status}</span>
+                </div>
+              </div>
+            ))}
+          {/* Notifications */}
+          {filteredNotifications.length > 0 ? (
+            filteredNotifications.map(notification => (
+              <div
+                key={notification.id}
+                className={`backdrop-blur-sm rounded-xl p-4 border border-white/10 flex items-center gap-4 shadow-md ${
+                  notification.read ? 'bg-white/5' : 'bg-gradient-to-r from-indigo-500/10 to-purple-500/10'
+                }`}
+              >
+                <span className="text-2xl">{iconMap[notification.type] || iconMap.default}</span>
+                <div className="flex-1">
+                  <div className="font-semibold text-lg text-white">{notification.title}</div>
+                  <div className="text-gray-400 text-sm">{notification.content}</div>
+                  <div className="text-gray-500 text-xs">{notification.time}</div>
+                </div>
+                <div className="flex gap-2">
+                  {!notification.read && (
+                    <button
+                      onClick={() => markAsRead(notification.id)}
+                      className="px-3 py-1 rounded-lg border border-indigo-500 text-indigo-300 bg-indigo-500/10 hover:bg-indigo-500/20 font-medium text-xs transition-all duration-200"
+                    >
+                      Mark read
+                    </button>
+                  )}
+                  <button
+                    onClick={() => deleteNotification(notification.id)}
+                    className="px-3 py-1 rounded-lg border border-pink-500 text-pink-400 bg-pink-500/10 hover:bg-pink-500/20 font-medium text-xs transition-all duration-200"
+                    title="Delete"
+                  >
+                    🗑️
+                  </button>
+                </div>
+              </div>
+            ))
+          ) : filter === 'message' ? (
+            friendRequests.length === 0 && incomingRequests.length === 0 ? (
+              <div className="py-16 text-center text-gray-500 text-lg">
+                No friend requests to display.
+              </div>
+            ) : null
+          ) : filteredNotifications.length === 0 ? (
+            <div className="py-16 text-center text-gray-500 text-lg">
+              No notifications to display.
+            </div>
+          ) : null}
+        </div>
       </div>
     </div>
   );
