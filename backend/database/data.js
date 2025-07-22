@@ -30,6 +30,7 @@ const createTableQueries = {
         created_by UUID REFERENCES users(user_id) ON DELETE CASCADE NOT NULL,
         title VARCHAR(255) NOT NULL,
         total_budget DECIMAL(10, 2),
+        total_contribution DECIMAL(10, 2),
         created_at TIMESTAMP DEFAULT NOW()
       );
     `,
@@ -49,7 +50,8 @@ const createTableQueries = {
         amount DECIMAL(10, 2),
         description TEXT,
         category VARCHAR(50) CHECK (category IN ('Food', 'Transportation', 'Accommodation', 'Utilities', 'Venue', 'Miscellaneous')),
-        date TIMESTAMP DEFAULT NOW()
+        date TIMESTAMP DEFAULT NOW(),
+        paid_through_contribution BOOLEAN DEFAULT FALSE
       );
     `,
   transaction_contributors: `
