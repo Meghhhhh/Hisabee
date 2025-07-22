@@ -1,5 +1,7 @@
 import React from "react";
 import { Github, Linkedin } from "lucide-react";
+import { Link } from "react-router";
+import { IoIosArrowBack } from "react-icons/io";
 
 const About = () => {
 	return (
@@ -25,9 +27,15 @@ const About = () => {
 					/>
 				))}
 			</div>
-			
-				
+
 			<div className="max-w-4xl mx-auto text-center relative z-10">
+				{/* Back button */}
+				<Link to="/home">
+					<IoIosArrowBack
+						size={26}
+						className="absolute top-4 left-4 z-50 backdrop-blur-sm bg-emerald-500/10 rounded-full p-1.5 border border-emerald-400/20 hover:bg-emerald-500/20 transition-all"
+					/>
+				</Link>
 				{/* Main header with gradient text */}
 				<div className="mb-12">
 					<h1 className="text-6xl font-bold mb-6 bg-gradient-to-r from-cyan-400 via-purple-400 to-pink-400 bg-clip-text text-transparent animate-pulse">
