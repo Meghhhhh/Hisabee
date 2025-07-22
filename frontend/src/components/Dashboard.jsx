@@ -380,7 +380,7 @@ export default function EnhancedHisabComponent() {
                                       <div className="text-xs sm:text-sm text-gray-300 flex flex-wrap items-center gap-1 sm:gap-2">
                                         <span>{formatDate(txn.date)}</span>
                                         <span>•</span>
-                                        <span>Paid by {txn.paid_by_user}</span>
+                                        <span>Paid by {txn.paid_by}</span>
                                       </div>
                                     </div>
                                   </div>
