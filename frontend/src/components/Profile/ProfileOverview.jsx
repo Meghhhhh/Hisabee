@@ -25,7 +25,7 @@ const ProfileOverview = () => {
           </div>
           <div className="">
             <h4 className="text-sm text-gray-500">Phone</h4>
-            <p className="font-medium">{user.phone || 'Not provided'}</p>
+            <p className="font-medium">{user.phone_number || 'Not provided'}</p>
           </div>
           <div className="">
             <h4 className="text-sm text-gray-500">Payment Method</h4>

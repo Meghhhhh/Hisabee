@@ -1,24 +1,30 @@
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router";
 import {
-	ChevronDown,
-	ChevronUp,
-	Users,
-	Calendar,
-	Wallet,
-	DollarSign,
-	TrendingUp,
-	Plus,
-	ChevronLeft,
-	ChevronRight,
-	Mail,
-	ArrowLeft,
-	Check,
-	AlertCircle,
-} from "lucide-react";
-import { useDispatch, useSelector } from "react-redux";
-import { setHisabs, updateHisab } from "../../store/slice/hisabSlice";
-import axios from "axios";
+  ChevronDown,
+  ChevronUp,
+  Users,
+  Calendar,
+  Wallet,
+  DollarSign,
+  TrendingUp,
+  Plus,
+  ChevronLeft,
+  ChevronRight,
+  Mail,
+  ArrowLeft,
+  Check,
+  AlertCircle,
+  Trash2, // Add Trash2 icon
+} from 'lucide-react';
+import { useDispatch, useSelector } from 'react-redux';
+import {
+  setHisabs,
+  updateHisab,
+  deleteHisab,
+} from '../../store/slice/hisabSlice';
+import axios from 'axios';
+import { toast } from 'react-toastify';
 
 export default function EnhancedHisabComponent() {
 	// State and logic from your original
@@ -143,27 +149,46 @@ export default function EnhancedHisabComponent() {
 		);
 	}
 
-	// Main component
-	return (
-		<div className="min-h-screen flex items-center justify-center bg-black text-white relative overflow-hidden">
-			{/* Dynamic animated background (Like ForgetPassword) */}
-			<div className="absolute inset-0 z-0 pointer-events-none">
-				<div className="absolute top-20 left-20 w-72 h-72 bg-gradient-to-r from-green-500/20 to-emerald-500/20 rounded-full blur-3xl animate-pulse"></div>
-				<div className="absolute bottom-32 right-32 w-96 h-96 bg-gradient-to-r from-blue-500/20 to-cyan-500/20 rounded-full blur-3xl animate-pulse delay-1000"></div>
-				<div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-80 h-80 bg-gradient-to-r from-indigo-500/10 to-purple-500/10 rounded-full blur-3xl animate-pulse delay-500"></div>
-				{[...Array(12)].map((_, i) => (
-					<div
-						key={i}
-						className="absolute w-2 h-2 bg-gradient-to-r from-cyan-400 to-purple-400 rounded-full opacity-30 animate-pulse"
-						style={{
-							left: `${Math.random() * 100}%`,
-							top: `${Math.random() * 100}%`,
-							animationDelay: `${Math.random() * 3}s`,
-							animationDuration: `${2 + Math.random() * 3}s`,
-						}}
-					/>
-				))}
-			</div>
+  // Delete hisab handler
+  const handleDeleteHisab = async id => {
+    setError('');
+    try {
+      await axios.delete(
+        `${import.meta.env.VITE_BACKEND_API_URL}/hisabs/${id}`,
+        { withCredentials: true },
+      );
+      dispatch(deleteHisab(id));
+      toast.success('Hisab deleted successfully');
+    } catch (err) {
+      setError(
+        err.response?.data?.message ||
+          'Failed to delete hisab. Please try again.',
+      );
+      setTimeout(() => setError(''), 4000);
+    }
+  };
+
+  // Main component
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-black text-white relative overflow-hidden">
+      {/* Dynamic animated background (Like ForgetPassword) */}
+      <div className="absolute inset-0 z-0 pointer-events-none">
+        <div className="absolute top-20 left-20 w-72 h-72 bg-gradient-to-r from-green-500/20 to-emerald-500/20 rounded-full blur-3xl animate-pulse"></div>
+        <div className="absolute bottom-32 right-32 w-96 h-96 bg-gradient-to-r from-blue-500/20 to-cyan-500/20 rounded-full blur-3xl animate-pulse delay-1000"></div>
+        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-80 h-80 bg-gradient-to-r from-indigo-500/10 to-purple-500/10 rounded-full blur-3xl animate-pulse delay-500"></div>
+        {[...Array(12)].map((_, i) => (
+          <div
+            key={i}
+            className="absolute w-2 h-2 bg-gradient-to-r from-cyan-400 to-purple-400 rounded-full opacity-30 animate-pulse"
+            style={{
+              left: `${Math.random() * 100}%`,
+              top: `${Math.random() * 100}%`,
+              animationDelay: `${Math.random() * 3}s`,
+              animationDuration: `${2 + Math.random() * 3}s`,
+            }}
+          />
+        ))}
+      </div>
 
 			<div className="relative z-10 pb-8 px-4 sm:px-6 md:px-8 w-full max-w-7xl mx-auto">
 				{/* Header */}
@@ -240,83 +265,98 @@ export default function EnhancedHisabComponent() {
 								: "bg-green-400";
 						const remaining = hisab.total_budget - (spentMap[hisab.id] || 0);
 
-						return (
-							<div
-								key={hisab.id}
-								className="backdrop-blur-sm bg-white/5 rounded-3xl shadow-2xl border border-white/10 overflow-hidden mb-6"
-							>
-								<div
-									onClick={() => toggleHisab(hisab.id)}
-									className="cursor-pointer hover:bg-white/5 transition p-5"
-								>
-									<div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 sm:gap-4">
-										<div className="flex-1">
-											<div className="flex items-center gap-2 mb-2">
-												<div className="w-8 h-8 bg-gradient-to-r from-blue-400 to-purple-400 rounded-lg flex items-center justify-center">
-													<Wallet className="w-4 h-4 text-white" />
-												</div>
-												<h3 className="text-lg sm:text-xl font-semibold text-white">
-													{hisab.title}
-												</h3>
-											</div>
-											<div className="flex flex-wrap items-center text-xs sm:text-sm text-gray-300 gap-2 sm:gap-4">
-												<div className="flex items-center gap-1">
-													<Users size={12} />
-													<span>{hisab.contributors?.length} members</span>
-												</div>
-												<div className="flex items-center gap-1">
-													<Calendar size={12} />
-													<span>{formatDate(hisab.created_at)}</span>
-												</div>
-											</div>
-										</div>
-										<div className="flex flex-col items-end">
-											<div className="flex items-center gap-1">
-												<span className="text-base sm:text-lg font-medium text-white">
-													₹{(spentMap[hisab.id] || 0).toLocaleString()}
-												</span>
-												<span className="text-xs sm:text-sm text-gray-300">
-													/ ₹{hisab.total_budget?.toLocaleString()}
-												</span>
-											</div>
-											{expandedId === hisab.id ? (
-												<ChevronUp className="text-gray-300 mt-1 sm:mt-2" />
-											) : (
-												<ChevronDown className="text-gray-300 mt-1 sm:mt-2" />
-											)}
-										</div>
-									</div>
-									<div className="mt-3">
-										<div className="w-full bg-gray-400/10 rounded-full h-2">
-											<div
-												className={`${progressColor} h-2 rounded-full transition-all duration-500`}
-												style={{ width: `${progress}%` }}
-											></div>
-										</div>
-									</div>
-								</div>
-
-								{/* Expanded content */}
-								{expandedId === hisab.id && (
-									<div className="border-t border-white/10 px-5 py-4 bg-gray-400/5 backdrop-blur-sm">
-										<div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 mb-4 sm:mb-6">
-											<div className="bg-gradient-to-r from-indigo-500/10 to-purple-500/10 p-4 rounded-2xl border border-indigo-400/10">
-												<div className="text-xs sm:text-sm font-medium text-gray-300 mb-1">
-													Created By
-												</div>
-												<div className="font-medium text-white">
-													{hisab.created_by}
-												</div>
-											</div>
-											<div className="bg-gradient-to-r from-blue-500/10 to-cyan-500/10 p-4 rounded-2xl border border-blue-400/10">
-												<div className="text-xs sm:text-sm font-medium text-gray-300 mb-1">
-													Remaining Budget
-												</div>
-												<div className="font-medium text-cyan-400">
-													₹{remaining < 0 ? 0 : remaining.toLocaleString()}
-												</div>
-											</div>
-										</div>
+            return (
+              <div
+                key={hisab.id}
+                className="backdrop-blur-sm bg-white/5 rounded-3xl shadow-2xl border border-white/10 overflow-hidden"
+              >
+                <div
+                  onClick={() => toggleHisab(hisab.id)}
+                  className="cursor-pointer hover:bg-white/5 transition p-5 flex justify-between items-start"
+                >
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2 mb-2">
+                      <div className="w-8 h-8 bg-gradient-to-r from-blue-400 to-purple-400 rounded-lg flex items-center justify-center">
+                        <Wallet className="w-4 h-4 text-white" />
+                      </div>
+                      <h3 className="text-lg sm:text-xl font-semibold text-white">
+                        {hisab.title}
+                      </h3>
+                    </div>
+                    <div className="flex flex-wrap items-center text-xs sm:text-sm text-gray-300 gap-2 sm:gap-4">
+                      <div className="flex items-center gap-1">
+                        <Users size={12} />
+                        <span>{hisab.contributors?.length} members</span>
+                      </div>
+                      <div className="flex items-center gap-1">
+                        <Calendar size={12} />
+                        <span>{formatDate(hisab.created_at)}</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="flex flex-col items-end gap-2">
+                    <div className="flex items-center gap-1">
+                      <span className="text-base sm:text-lg font-medium text-white">
+                        ₹{(spentMap[hisab.id] || 0).toLocaleString()}
+                      </span>
+                      <span className="text-xs sm:text-sm text-gray-300">
+                        / ₹{hisab.total_budget?.toLocaleString()}
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-2 mt-1 sm:mt-2">
+                      <button
+                        onClick={e => {
+                          e.stopPropagation();
+                          if (
+                            window.confirm(
+                              'Are you sure you want to delete this hisab?',
+                            )
+                          ) {
+                            handleDeleteHisab(hisab.id);
+                          }
+                        }}
+                        className="p-2 rounded-full hover:bg-red-500/20 transition"
+                        title="Delete Hisab"
+                      >
+                        <Trash2 className="text-red-400" size={20} />
+                      </button>
+                      {expandedId === hisab.id ? (
+                        <ChevronUp className="text-gray-300" />
+                      ) : (
+                        <ChevronDown className="text-gray-300" />
+                      )}
+                    </div>
+                  </div>
+                </div>
+                <div className="mt-3">
+                  <div className="w-full bg-gray-400/10 rounded-full h-2">
+                    <div
+                      className={`${progressColor} h-2 rounded-full transition-all duration-500`}
+                      style={{ width: `${progress}%` }}
+                    ></div>
+                  </div>
+                </div>
+                {/* Expanded content */}
+                {expandedId === hisab.id && (
+                  <div className="border-t border-white/10 px-5 py-4 bg-gray-400/5 backdrop-blur-sm">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 mb-4 sm:mb-6">
+                      <div className="bg-gradient-to-r from-indigo-500/10 to-purple-500/10 p-4 rounded-2xl border border-indigo-400/10">
+                        <div className="text-xs sm:text-sm font-medium text-gray-300 mb-1">
+                          Created By
+                        </div>
+                        <div className="font-medium text-white">
+                          {hisab.created_by}
+                        </div>
+                      </div>
+                      <div className="bg-gradient-to-r from-blue-500/10 to-cyan-500/10 p-4 rounded-2xl border border-blue-400/10">
+                        <div className="text-xs sm:text-sm font-medium text-gray-300 mb-1">
+                          Remaining Budget
+                        </div>
+                        <div className="font-medium text-cyan-400">
+                          ₹{remaining < 0 ? 0 : remaining.toLocaleString()}
+                        </div>
+                      </div>
+                    </div>
 
 										<div className="mb-4">
 											<h4 className="font-medium text-gray-300 mb-2 text-sm sm:text-base">

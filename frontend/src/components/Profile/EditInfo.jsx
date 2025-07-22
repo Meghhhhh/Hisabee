@@ -7,17 +7,17 @@ import { toast } from "react-toastify";
 import axios from "axios";
 
 const EditProfilePage = () => {
-	const dispatch = useDispatch();
-	const user = useSelector((state) => state.user);
-	const navigate = useNavigate();
-	const [formData, setFormData] = useState({
-		name: user.name || "",
-		email: user.email || "",
-		phone: user.phone || "",
-		payment_method: user.payment_method || "",
-		avatar: user.avatar || "",
-		qrCode: user.qrCode || "/Subject2.png",
-	});
+  const dispatch = useDispatch();
+  const user = useSelector(state => state.user);
+  const navigate = useNavigate();
+  const [formData, setFormData] = useState({
+    name: user.name || '',
+    email: user.email || '',
+    phone: user.phone_number || '',
+    payment_method: user.payment_method || '',
+    avatar: user.avatar || '',
+    qrCode: user.qrCode || '/Subject2.png',
+  });
 
 	const [previewAvatar, setPreviewAvatar] = useState(user.avatar || "");
 	const [previewQR, setPreviewQR] = useState(user.qrCode || "/Subject2.png");
