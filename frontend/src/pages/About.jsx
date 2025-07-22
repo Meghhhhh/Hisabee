@@ -170,7 +170,7 @@ const About = () => {
 								Backend
 							</span>
 							<span className="px-3 py-1 bg-pink-500/30 rounded-full text-xs text-pink-200">
-								Real-time
+								Full Stack
 							</span>
 						</div>
 						<div className="mt-4 flex justify-center space-x-4">
@@ -208,10 +208,13 @@ const About = () => {
 						</p>
 						<div className="mt-4 flex justify-center space-x-2">
 							<span className="px-3 py-1 bg-green-500/30 rounded-full text-xs text-green-200">
-								Product
+								Frontend
 							</span>
 							<span className="px-3 py-1 bg-emerald-500/30 rounded-full text-xs text-emerald-200">
 								Testing
+							</span>
+							<span className="px-3 py-1 bg-emerald-500/30 rounded-full text-xs text-emerald-200">
+								UI/UX
 							</span>
 						</div>
 						<div className="mt-4 flex justify-center space-x-4">
@@ -241,7 +244,7 @@ const About = () => {
 						management
 					</p>
 					<button className="px-8 py-3 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-full font-semibold text-white hover:from-indigo-600 hover:to-purple-600 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-purple-500/30">
-						Start Your Journey
+						<Link to="/home">Start Your Journey</Link>
 					</button>
 				</div>
 			</div>
