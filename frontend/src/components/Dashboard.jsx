@@ -15,10 +15,16 @@ import {
   ArrowLeft,
   Check,
   AlertCircle,
+  Trash2, // Add Trash2 icon
 } from 'lucide-react';
 import { useDispatch, useSelector } from 'react-redux';
-import { setHisabs, updateHisab } from '../../store/slice/hisabSlice';
+import {
+  setHisabs,
+  updateHisab,
+  deleteHisab,
+} from '../../store/slice/hisabSlice';
 import axios from 'axios';
+import { toast } from 'react-toastify';
 
 export default function EnhancedHisabComponent() {
   // State and logic from your original
@@ -143,6 +149,25 @@ export default function EnhancedHisabComponent() {
     );
   }
 
+  // Delete hisab handler
+  const handleDeleteHisab = async id => {
+    setError('');
+    try {
+      await axios.delete(
+        `${import.meta.env.VITE_BACKEND_API_URL}/hisabs/${id}`,
+        { withCredentials: true },
+      );
+      dispatch(deleteHisab(id));
+      toast.success('Hisab deleted successfully');
+    } catch (err) {
+      setError(
+        err.response?.data?.message ||
+          'Failed to delete hisab. Please try again.',
+      );
+      setTimeout(() => setError(''), 4000);
+    }
+  };
+
   // Main component
   return (
     <div className="min-h-screen flex items-center justify-center bg-black text-white relative overflow-hidden">
@@ -215,55 +240,70 @@ export default function EnhancedHisabComponent() {
               >
                 <div
                   onClick={() => toggleHisab(hisab.id)}
-                  className="cursor-pointer hover:bg-white/5 transition p-5"
+                  className="cursor-pointer hover:bg-white/5 transition p-5 flex justify-between items-start"
                 >
-                  <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 sm:gap-4">
-                    <div className="flex-1">
-                      <div className="flex items-center gap-2 mb-2">
-                        <div className="w-8 h-8 bg-gradient-to-r from-blue-400 to-purple-400 rounded-lg flex items-center justify-center">
-                          <Wallet className="w-4 h-4 text-white" />
-                        </div>
-                        <h3 className="text-lg sm:text-xl font-semibold text-white">
-                          {hisab.title}
-                        </h3>
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2 mb-2">
+                      <div className="w-8 h-8 bg-gradient-to-r from-blue-400 to-purple-400 rounded-lg flex items-center justify-center">
+                        <Wallet className="w-4 h-4 text-white" />
                       </div>
-                      <div className="flex flex-wrap items-center text-xs sm:text-sm text-gray-300 gap-2 sm:gap-4">
-                        <div className="flex items-center gap-1">
-                          <Users size={12} />
-                          <span>{hisab.contributors?.length} members</span>
-                        </div>
-                        <div className="flex items-center gap-1">
-                          <Calendar size={12} />
-                          <span>{formatDate(hisab.created_at)}</span>
-                        </div>
+                      <h3 className="text-lg sm:text-xl font-semibold text-white">
+                        {hisab.title}
+                      </h3>
+                    </div>
+                    <div className="flex flex-wrap items-center text-xs sm:text-sm text-gray-300 gap-2 sm:gap-4">
+                      <div className="flex items-center gap-1">
+                        <Users size={12} />
+                        <span>{hisab.contributors?.length} members</span>
+                      </div>
+                      <div className="flex items-center gap-1">
+                        <Calendar size={12} />
+                        <span>{formatDate(hisab.created_at)}</span>
                       </div>
                     </div>
-                    <div className="flex flex-col items-end">
-                      <div className="flex items-center gap-1">
-                        <span className="text-base sm:text-lg font-medium text-white">
-                          ₹{(spentMap[hisab.id] || 0).toLocaleString()}
-                        </span>
-                        <span className="text-xs sm:text-sm text-gray-300">
-                          / ₹{hisab.total_budget?.toLocaleString()}
-                        </span>
-                      </div>
+                  </div>
+                  <div className="flex flex-col items-end gap-2">
+                    <div className="flex items-center gap-1">
+                      <span className="text-base sm:text-lg font-medium text-white">
+                        ₹{(spentMap[hisab.id] || 0).toLocaleString()}
+                      </span>
+                      <span className="text-xs sm:text-sm text-gray-300">
+                        / ₹{hisab.total_budget?.toLocaleString()}
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-2 mt-1 sm:mt-2">
+                      <button
+                        onClick={e => {
+                          e.stopPropagation();
+                          if (
+                            window.confirm(
+                              'Are you sure you want to delete this hisab?',
+                            )
+                          ) {
+                            handleDeleteHisab(hisab.id);
+                          }
+                        }}
+                        className="p-2 rounded-full hover:bg-red-500/20 transition"
+                        title="Delete Hisab"
+                      >
+                        <Trash2 className="text-red-400" size={20} />
+                      </button>
                       {expandedId === hisab.id ? (
-                        <ChevronUp className="text-gray-300 mt-1 sm:mt-2" />
+                        <ChevronUp className="text-gray-300" />
                       ) : (
-                        <ChevronDown className="text-gray-300 mt-1 sm:mt-2" />
+                        <ChevronDown className="text-gray-300" />
                       )}
                     </div>
                   </div>
-                  <div className="mt-3">
-                    <div className="w-full bg-gray-400/10 rounded-full h-2">
-                      <div
-                        className={`${progressColor} h-2 rounded-full transition-all duration-500`}
-                        style={{ width: `${progress}%` }}
-                      ></div>
-                    </div>
+                </div>
+                <div className="mt-3">
+                  <div className="w-full bg-gray-400/10 rounded-full h-2">
+                    <div
+                      className={`${progressColor} h-2 rounded-full transition-all duration-500`}
+                      style={{ width: `${progress}%` }}
+                    ></div>
                   </div>
                 </div>
-
                 {/* Expanded content */}
                 {expandedId === hisab.id && (
                   <div className="border-t border-white/10 px-5 py-4 bg-gray-400/5 backdrop-blur-sm">

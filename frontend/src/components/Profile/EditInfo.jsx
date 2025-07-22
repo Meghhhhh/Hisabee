@@ -13,7 +13,7 @@ const EditProfilePage = () => {
   const [formData, setFormData] = useState({
     name: user.name || '',
     email: user.email || '',
-    phone: user.phone || '',
+    phone: user.phone_number || '',
     payment_method: user.payment_method || '',
     avatar: user.avatar || '',
     qrCode: user.qrCode || '/Subject2.png',
