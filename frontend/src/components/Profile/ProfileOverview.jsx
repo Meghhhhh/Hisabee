@@ -36,24 +36,23 @@ const ProfileOverview = () => {
         </div>
       </div>
 
-      {/* Edit Button styled as + New Hisab */}
-      <div className="absolute top-2.5 right-1.5 md:static md:mt-6 md:flex md:justify-end">
+      {/* QR Code Section with Edit Button and QR code in a row, slightly higher */}
+      <div className="mt-4 md:absolute md:top-10 md:right-1.5 w-full md:w-auto flex flex-row items-center justify-center gap-6">
         <Link to={'/edit'}>
           <button className="px-4 md:px-5 py-2 md:py-3 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-full font-semibold text-white hover:from-indigo-600 hover:to-purple-600 transition-all duration-300 transform hover:scale-105 shadow-md text-sm md:text-base flex items-center gap-2">
             Edit Info
           </button>
         </Link>
-      </div>
-
-      <div className="mt-8 md:absolute md:top-18 md:right-1.5 w-full md:w-auto flex flex-col items-center">
-        <h4 className="text-base md:text-lg text-gray-500 text-center">
-          QR code
-        </h4>
-        <img
-          src="/Subject2.png"
-          alt=""
-          className="border-4 border-black h-[250px] mx-auto"
-        />
+        <div className="flex flex-col items-center">
+          <h4 className="text-base md:text-lg text-gray-500 text-center">
+            QR code
+          </h4>
+          <img
+            src="/Subject2.png"
+            alt=""
+            className="border-4 border-black h-[250px] mx-auto"
+          />
+        </div>
       </div>
     </div>
   );

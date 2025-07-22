@@ -222,7 +222,7 @@ const Notifications = () => {
             </div>
             <button
               onClick={() => setAddFriendOpen(true)}
-              className="p-2 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-full text-white hover:from-indigo-600 hover:to-purple-600 transition-all duration-300 transform hover:scale-105 shadow-md text-base flex items-center gap-2"
+              className="flex items-center justify-center w-12 h-12 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-full text-white text-3xl border-4 border-white/20 shadow-lg hover:from-indigo-600 hover:to-purple-600 transition-all duration-300 transform hover:scale-110 focus:outline-none focus:ring-2 focus:ring-indigo-400/40 focus:ring-offset-2"
               title="Add Friend"
             >
               ＋
