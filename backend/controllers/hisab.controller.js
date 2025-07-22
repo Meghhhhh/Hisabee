@@ -14,7 +14,8 @@ export const getAllHisabs = asyncHandler(async (req, res) => {
   (
     SELECT json_agg(json_build_object(
       'user_id', u2.user_id,
-      'name', u2.name
+      'name', u2.name,
+      'budget_contribution', hc.budget_contribution
     )
       )
     FROM hisab_contributors hc
@@ -64,7 +65,8 @@ export const getHisabById = asyncHandler(async (req, res) => {
   (
     SELECT json_agg(json_build_object(
       'user_id', u2.user_id,
-      'name', u2.name
+      'name', u2.name,
+      'budget_contribution', hc.budget_contribution
     )
       )
     FROM hisab_contributors hc

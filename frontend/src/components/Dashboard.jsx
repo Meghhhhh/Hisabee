@@ -268,7 +268,7 @@ export default function EnhancedHisabComponent() {
             return (
               <div
                 key={hisab.id}
-                className="backdrop-blur-sm bg-white/5 rounded-3xl shadow-2xl border border-white/10 overflow-hidden"
+                className="backdrop-blur-sm bg-white/5 rounded-3xl shadow-2xl border border-white/10 overflow-hidden mt-5"
               >
                 <div
                   onClick={() => toggleHisab(hisab.id)}

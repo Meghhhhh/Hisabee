@@ -29,16 +29,16 @@ const Sidebar = ({ activeTab, setActiveTab }) => {
   };
 
   return (
-    <aside className="w-64 bg-gray-800 text-white p-6 flex flex-col h-screen justify-between">
-      <div>
-        <h2 className="text-xl font-bold mb-6 flex items-center gap-3">
+    <aside className="w-full md:w-64 bg-gray-800 text-white p-3 md:p-6 flex flex-row md:flex-col h-auto md:h-screen items-center md:items-stretch md:justify-between">
+      <div className="w-full flex flex-row md:flex-col items-center md:items-start md:gap-10">
+        <h2 className="text-lg md:text-xl font-bold mb-0 md:mb-6 flex items-center gap-3 w-auto md:w-full">
           <Link to={'/home'} className="cursor-pointer">
             {' '}
             <IoIosArrowBack />{' '}
           </Link>
           Back to home
         </h2>
-        <ul className="space-y-2">
+        <ul className="flex flex-row md:flex-col space-x-2 md:space-x-0 md:space-y-6 ml-4 md:ml-0 w-full">
           {tabs.map(tab => (
             <li key={tab.key}>
               <button
