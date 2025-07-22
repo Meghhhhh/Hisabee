@@ -6,11 +6,11 @@ const ProfileOverview = () => {
   return (
     <div className="font-[Montserrat] relative">
       {/* Avatar and Name */}
-      <div className="flex flex-col md:flex-row items-center md:items-start">
+      <div className="flex items-center">
         <img
           src={user.avatar}
           alt="User avatar"
-          className="w-32 h-32 md:w-52 md:h-52 rounded-full shadow-2xl border-4 border-black"
+          className="w-52 h-52 rounded-full shadow-2xl border-4 border-black"
         />
         <h2 className="text-3xl md:text-5xl font-bold mt-4 md:mt-0 md:ml-5 ">
           {user.name}
@@ -18,9 +18,9 @@ const ProfileOverview = () => {
       </div>
 
       {/* Contact Section */}
-      <div className="flex flex-col md:flex-row my-6 md:space-x-4">
+      <div className="flex my-6 space-x-4">
         {/* Contact Info */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-gray-700 w-full md:w-[50%] ">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-gray-700 w-[50%] ">
           <div className="">
             <h4 className="text-sm text-gray-500 ">Email</h4>
             <p className="font-medium">{user.email}</p>
@@ -52,7 +52,7 @@ const ProfileOverview = () => {
         <img
           src="/Subject2.png"
           alt=""
-          className="border-4 border-black h-40 md:h-[250px] mx-auto"
+          className="border-4 border-black h-[250px] mx-auto"
         />
       </div>
     </div>
