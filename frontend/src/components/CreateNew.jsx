@@ -356,7 +356,7 @@ const CreateNew = () => {
 				{/* Action buttons */}
 				<div className="flex justify-end gap-4 mt-6">
 					<button className="px-6 py-3 bg-transparent rounded-lg border-2 border-emerald-400/50 text-emerald-400 hover:bg-emerald-500/10 transition-all hover:scale-105 font-medium">
-						Cancel
+						<Link to={"/home"}>Cancel</Link>
 					</button>
 					<button
 						onClick={handleSubmit}
