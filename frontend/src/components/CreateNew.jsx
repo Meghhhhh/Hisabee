@@ -13,6 +13,7 @@ const CreateNew = () => {
 	const [formData, setFormData] = useState({
 		title: "",
 		total_budget: "",
+		total_contribution: 0,
 		created_by: useSelector((state) => state.user.id),
 	});
 
@@ -104,7 +105,7 @@ const CreateNew = () => {
 				{
 					title: formData.title,
 					total_budget: parseFloat(formData.total_budget),
-					currency_code: "INR",
+					total_contribution: totalContributions || 0,
 				},
 				{
 					withCredentials: true,

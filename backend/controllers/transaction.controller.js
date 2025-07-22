@@ -16,8 +16,12 @@ export const getTransactionById = asyncHandler(async (req, res) => {
 
 export const createTransaction = asyncHandler(async (req, res) => {
   const transaction = await TransactionModel.createTransaction(req.body);
-  const { name } = await UserModel.getUserById(req.body.paid_by);
-  res.status(201).json({ ...transaction, paid_by_user: name });
+  if (req.body.paid_through_contribution) { 
+    res.status(201).json({ ...transaction, paid_by_user: 'Contribution' });
+  } else {
+    const { name } = await UserModel.getUserById(req.body.paid_by);
+    res.status(201).json({ ...transaction, paid_by_user: name });
+  }
 });
 
 export const updateTransaction = asyncHandler(async (req, res) => {

@@ -11,6 +11,8 @@ const userSlice = createSlice({
     avatar: './avatar.png',
     friends: [],
     hisabs: [],
+    notifications: [],
+    friendRequests: [],
   },
   reducers: {
     setUserData: (state, action) => {
@@ -22,6 +24,8 @@ const userSlice = createSlice({
         phone_number = null,
         friends = [],
         hisabs = [],
+        notifications = [],
+        friendRequests = [],
       } = action.payload;
       state.user_id = user_id;
       state.name = name;
@@ -30,6 +34,8 @@ const userSlice = createSlice({
       state.phone_number = phone_number;
       state.friends = friends;
       state.hisabs = hisabs;
+      state.notifications = notifications;
+      state.friendRequests = friendRequests;
     },
     updateUserData: (state, action) => {
       const { firstName, lastName, email, payment_refrence, phone_number } = action.payload;

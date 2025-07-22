@@ -7,6 +7,7 @@ export const getAllHisabs = asyncHandler(async (req, res) => {
   h.hisab_id AS id,
   h.title,
   h.total_budget,
+  h.total_contribution,
   h.created_at,
   u.name AS created_by,
 
@@ -25,12 +26,17 @@ export const getAllHisabs = asyncHandler(async (req, res) => {
     SELECT json_agg(json_build_object(
       'description', t.description,
       'amount', t.amount,
-      'paid_by', u3.name,
+      'paid_by', 
+      CASE 
+        WHEN t.paid_by IS NOT NULL THEN u3.name 
+        ELSE 'Contribution' 
+      END,
       'date', t.date,
-      'category', t.category
+      'category', t.category,
+      'paid_through_contribution', t.paid_through_contribution
     ))
     FROM transactions t
-    JOIN users u3 ON t.paid_by = u3.user_id
+    LEFT JOIN users u3 ON t.paid_by = u3.user_id
     WHERE t.hisab_id = h.hisab_id
   ) AS transactions
 
@@ -51,6 +57,7 @@ export const getHisabById = asyncHandler(async (req, res) => {
   h.hisab_id AS id,
   h.title,
   h.total_budget,
+  h.total_contribution,
   h.created_at,
   u.name AS created_by,
 
@@ -69,12 +76,17 @@ export const getHisabById = asyncHandler(async (req, res) => {
     SELECT json_agg(json_build_object(
       'description', t.description,
       'amount', t.amount,
-      'paid_by', u3.name,
+      'paid_by', 
+      CASE 
+        WHEN t.paid_by IS NOT NULL THEN u3.name 
+        ELSE 'Contribution' 
+      END,
       'date', t.date,
-      'category', t.category
+      'category', t.category,
+      'paid_through_contribution', t.paid_through_contribution
     ))
     FROM transactions t
-    JOIN users u3 ON t.paid_by = u3.user_id
+    LEFT JOIN users u3 ON t.paid_by = u3.user_id
     WHERE t.hisab_id = h.hisab_id
   ) AS transactions
 
