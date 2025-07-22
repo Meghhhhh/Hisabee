@@ -104,7 +104,6 @@ const CreateNew = () => {
 				{
 					title: formData.title,
 					total_budget: parseFloat(formData.total_budget),
-					currency_code: "INR",
 				},
 				{
 					withCredentials: true,

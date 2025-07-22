@@ -55,6 +55,7 @@ const Notifications = () => {
             { withCredentials: true },
           ),
         ]);
+        console.log(notiRes.data?.data);
         const notificationsData = (notiRes.data?.data || []).map(n => ({
           id: n.notification_id,
           type: n.type,
@@ -63,6 +64,7 @@ const Notifications = () => {
           time: new Date(n.created_at).toLocaleString(),
           read: n.is_read,
         }));
+        console.log(notificationsData);
         dispatch(setNotifications(notificationsData));
         dispatch(setFriendRequests(outgoingRes.data?.data || []));
         setIncomingRequests(incomingRes.data?.data || []);
