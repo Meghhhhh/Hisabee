@@ -9,73 +9,104 @@ const currency = amount => `₹${parseFloat(amount).toLocaleString()}`;
 const calculateBalances = hisab => {
   const { contributors = [], transactions = [] } = hisab;
 
-  // Initialize each user's balance (amount they are owed)
+  if (contributors.length === 0) {
+    return { settlements: [], perPerson: [], userMap: {} };
+  }
+
   const userMap = {};
+
+  // Step 1: Initialize user map with initial budget contributions
   contributors.forEach(c => {
+    const initialContribution = parseFloat(c.budget_contribution || 0);
     userMap[c.user_id] = {
       name: c.name,
-      paid: 0,
+      paid: initialContribution, // Start with initial budget contribution
       owes: 0,
     };
   });
 
-  // Process each transaction
-  for (const tx of transactions) {
-    if (tx.paid_through_contribution) {
-      // Paid from common pool: nothing owed
-      continue;
+  // Step 2: Add additional out-of-pocket payments (ignore "Contribution" transactions)
+  transactions.forEach(tx => {
+    const amount = parseFloat(tx.amount || 0);
+    
+    // Skip transactions paid by "Contribution" - these are from the budget pool
+    if (tx.paid_by === 'Contribution' || tx.paid_by === 'contribution') {
+      return;
     }
+    
+    // Find the payer and add to their paid amount
+    const payer = contributors.find(c => c.name === tx.paid_by || c.user_id === tx.paid_by);
+    if (payer && userMap[payer.user_id]) {
+      userMap[payer.user_id].paid += amount;
+    }
+  });
 
-    const payerId = contributors.find(c => c.name === tx.paid_by)?.user_id;
-    if (!payerId) continue;
+  // Step 3: Calculate total expenses - sum of ALL transactions
+  const totalExpenses = transactions.reduce((sum, tx) => sum + parseFloat(tx.amount || 0), 0);
+    
+    // If "Contribution" means it was spent from the initial budget pool
 
-    const splitAmount = tx.amount / contributors.length;
-    contributors.forEach(c => {
-      if (c.user_id === payerId) {
-        userMap[c.user_id].paid += tx.amount - splitAmount;
-      } else {
-        userMap[c.user_id].owes += splitAmount;
-      }
-    });
-  }
+  // Step 4: Calculate equal share per person
+  const equalShare = totalExpenses / contributors.length;
 
-  // Calculate settlements
-  // const balances = [];
+  // Step 5: Set what each person owes (their equal share)
+  contributors.forEach(c => {
+    userMap[c.user_id].owes = equalShare;
+  });
+
+  // Step 5: Calculate net balances and create settlements
   const creditors = [];
   const debtors = [];
 
   for (const id in userMap) {
-    const net = userMap[id].paid - userMap[id].owes;
-    if (net > 0) {
-      creditors.push({ id, ...userMap[id], balance: net });
-    } else if (net < 0) {
-      debtors.push({ id, ...userMap[id], balance: -net });
+    const user = userMap[id];
+    const netBalance = user.paid - user.owes;
+    user.netBalance = netBalance;
+    
+    if (netBalance > 0.01) {
+      creditors.push({ id, ...user, balance: netBalance });
+    } else if (netBalance < -0.01) {
+      debtors.push({ id, ...user, balance: Math.abs(netBalance) });
     }
   }
 
-  // Simple greedy settlement
-  let settlements = [];
-  let i = 0,
-    j = 0;
+  // Step 6: Generate settlements using greedy algorithm
+  const settlements = [];
+  let i = 0, j = 0;
+
+  // Sort for better settlement optimization
+  debtors.sort((a, b) => b.balance - a.balance);
+  creditors.sort((a, b) => b.balance - a.balance);
+
   while (i < debtors.length && j < creditors.length) {
     const debtor = debtors[i];
     const creditor = creditors[j];
-    const amount = Math.min(debtor.balance, creditor.balance);
+    const settlementAmount = Math.min(debtor.balance, creditor.balance);
 
-    settlements.push({
-      from: debtor.name,
-      to: creditor.name,
-      amount: parseFloat(amount.toFixed(2)),
-    });
+    if (settlementAmount > 0.01) {
+      settlements.push({
+        from: debtor.name,
+        to: creditor.name,
+        amount: parseFloat(settlementAmount.toFixed(2)),
+      });
+    }
 
-    debtor.balance -= amount;
-    creditor.balance -= amount;
+    debtor.balance -= settlementAmount;
+    creditor.balance -= settlementAmount;
 
     if (debtor.balance < 0.01) i++;
     if (creditor.balance < 0.01) j++;
   }
 
-  return settlements;
+  // Step 7: Create per person summary
+  const perPerson = contributors.map(c => ({
+    name: c.name,
+    paid: userMap[c.user_id].paid,
+    owes: userMap[c.user_id].owes,
+    netBalance: userMap[c.user_id].netBalance,
+  }));
+
+  return { settlements, perPerson, userMap };
 };
 
 const Summary = () => {
@@ -83,14 +114,12 @@ const Summary = () => {
   const hisab = useSelector(state =>
     state.hisabs.hisabs.find(h => h.id === hisabId),
   );
-  const settlements = calculateBalances(hisab);
+  
   if (!hisab)
     return <div className="text-center mt-10">Failed to load summary.</div>;
 
   const { contributors = [], transactions = [] } = hisab;
-
-  // Remove balances, perPerson, settlements
-  // Only use contributors and transactions for display
+  const { settlements, perPerson } = calculateBalances(hisab);
 
   const downloadPDF = () => {
     const doc = new jsPDF();
@@ -107,12 +136,33 @@ const Summary = () => {
         t.description,
         currency(t.amount),
         t.category,
-        contributors.find(c => c.user_id === t.paid_by)?.name || t.paid_by,
+        contributors.find(c => c.user_id === t.paid_by || c.name === t.paid_by)?.name || t.paid_by,
         new Date(t.date).toLocaleDateString(),
       ]),
     });
     doc.save(`hisab-summary-${hisab.title}.pdf`);
   };
+
+  // Calculate total spent
+  const totalSpent = transactions.reduce(
+    (sum, t) => sum + (parseFloat(t.amount) || 0),
+    0,
+  );
+
+  // Calculate spending by category
+  const categorySpending = transactions.reduce((acc, t) => {
+    acc[t.category] = (acc[t.category] || 0) + parseFloat(t.amount || 0);
+    return acc;
+  }, {});
+
+  // Find most generous contributor
+  const paidMap = {};
+  contributors.forEach(c => (paidMap[c.name] = 0));
+  transactions.forEach(t => {
+    const payerName = contributors.find(c => c.user_id === t.paid_by || c.name === t.paid_by)?.name || t.paid_by;
+    paidMap[payerName] = (paidMap[payerName] || 0) + parseFloat(t.amount || 0);
+  });
+  const mostGenerous = Object.entries(paidMap).reduce((a, b) => b[1] > a[1] ? b : a);
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -120,25 +170,38 @@ const Summary = () => {
         <h1 className="text-3xl font-bold mb-4 text-center">
           Summary for {hisab.title}
         </h1>
+
         <div className="mb-6">
+          <div className="text-lg font-semibold">
+            Total Budget:{' '}
+            <span className="text-indigo-600">
+              {currency(contributors.reduce((sum, c) => sum + parseFloat(c.budget_contribution || 0), 0))}
+            </span>
+          </div>
+          <div className="text-lg font-semibold">
+            Additional Expenses:{' '}
+            <span className="text-indigo-600">
+              {currency(transactions.reduce((sum, t) => {
+                if (t.paid_by === 'Contribution' || t.paid_by === 'contribution') return sum;
+                return sum + parseFloat(t.amount || 0);
+              }, 0))}
+            </span>
+          </div>
           <div className="text-lg font-semibold">
             Total Spent:{' '}
             <span className="text-indigo-600">
-              {currency(
-                transactions.reduce(
-                  (sum, t) => sum + (parseFloat(t.amount) || 0),
-                  0,
-                ),
-              )}
+              {currency(totalSpent)}
             </span>
           </div>
         </div>
+
         <div className="mb-4 text-gray-700 text-center">
           <span className="font-semibold">Total Transactions:</span>{' '}
           <span className="text-indigo-600 font-bold">
             {transactions.length}
           </span>
         </div>
+
         <div className="bg-white rounded-xl shadow p-6 mb-8">
           <h2 className="text-xl font-semibold mb-4 text-indigo-700">
             Spending by Category
@@ -151,13 +214,7 @@ const Summary = () => {
               </tr>
             </thead>
             <tbody>
-              {Object.entries(
-                transactions.reduce((acc, t) => {
-                  acc[t.category] =
-                    (acc[t.category] || 0) + parseFloat(t.amount || 0);
-                  return acc;
-                }, {}),
-              ).map(([cat, amt], idx) => (
+              {Object.entries(categorySpending).map(([cat, amt], idx) => (
                 <tr
                   key={idx}
                   className={`text-center ${
@@ -171,30 +228,19 @@ const Summary = () => {
             </tbody>
           </table>
         </div>
+
         <div className="bg-white rounded-xl shadow p-6 mb-8">
           <h2 className="text-lg font-semibold mb-2 text-indigo-700">
             Most Generous Contributor
           </h2>
           <div className="text-lg">
-            {(() => {
-              const paidMap = {};
-              hisab.contributors.forEach(c => (paidMap[c.name] = 0));
-              transactions.forEach(t => {
-                paidMap[t.paid_by] =
-                  (paidMap[t.paid_by] || 0) + parseFloat(t.amount || 0);
-              });
-              const max = Object.entries(paidMap).reduce((a, b) =>
-                b[1] > a[1] ? b : a,
-              );
-              return (
-                <span>
-                  {max[0]} paid the most:{' '}
-                  <span className="text-indigo-600">{currency(max[1])}</span>
-                </span>
-              );
-            })()}
+            <span>
+              {mostGenerous[0]} paid the most:{' '}
+              <span className="text-indigo-600">{currency(mostGenerous[1])}</span>
+            </span>
           </div>
         </div>
+
         <div className="bg-white rounded-xl shadow p-6 mb-8">
           <h2 className="text-xl font-semibold mb-4 text-indigo-700">
             All Transactions
@@ -221,8 +267,7 @@ const Summary = () => {
                   <td className="py-2 px-4">{currency(t.amount)}</td>
                   <td className="py-2 px-4">{t.category}</td>
                   <td className="py-2 px-4">
-                    {contributors.find(c => c.user_id === t.paid_by)?.name ||
-                      t.paid_by}
+                    {contributors.find(c => c.user_id === t.paid_by || c.name === t.paid_by)?.name || t.paid_by}
                   </td>
                   <td className="py-2 px-4">
                     {new Date(t.date).toLocaleDateString()}
@@ -232,12 +277,58 @@ const Summary = () => {
             </tbody>
           </table>
         </div>
+
+        <div className="bg-white rounded-xl shadow p-6 mb-8">
+          <h2 className="text-xl font-semibold mb-4 text-indigo-700">
+            Per Person Summary
+          </h2>
+          <table className="w-full border rounded overflow-hidden">
+            <thead>
+              <tr className="bg-indigo-50">
+                <th className="py-2 px-4">Name</th>
+                <th className="py-2 px-4">Initial Budget</th>
+                <th className="py-2 px-4">Additional Paid</th>
+                <th className="py-2 px-4">Total Paid</th>
+                <th className="py-2 px-4">Fair Share</th>
+                <th className="py-2 px-4">Net Balance</th>
+              </tr>
+            </thead>
+            <tbody>
+              {perPerson.map((person, idx) => {
+                const initialBudget = parseFloat(contributors.find(c => c.name === person.name)?.budget_contribution || 0);
+                const additionalPaid = person.paid - initialBudget;
+                return (
+                  <tr
+                    key={idx}
+                    className={`text-center ${
+                      idx % 2 === 0 ? 'bg-gray-50' : ''
+                    } hover:bg-indigo-50`}
+                  >
+                    <td className="py-2 px-4">{person.name}</td>
+                    <td className="py-2 px-4">{currency(initialBudget)}</td>
+                    <td className="py-2 px-4">{currency(additionalPaid)}</td>
+                    <td className="py-2 px-4">{currency(person.paid)}</td>
+                    <td className="py-2 px-4">{currency(person.owes)}</td>
+                    <td
+                      className={`py-2 px-4 font-bold ${
+                        person.netBalance >= 0 ? 'text-green-600' : 'text-red-600'
+                      }`}
+                    >
+                      {person.netBalance >= 0 ? '+' : ''}{currency(person.netBalance)}
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+
         <div className="bg-white rounded-xl shadow p-6 mb-8">
           <h2 className="text-xl font-semibold mb-4 text-indigo-700">
             Settlements
           </h2>
           {settlements.length === 0 ? (
-            <div className="text-gray-500">No settlements needed.</div>
+            <div className="text-gray-500 text-center">All settled! No payments needed.</div>
           ) : (
             <table className="w-full border rounded overflow-hidden">
               <thead>
@@ -266,63 +357,7 @@ const Summary = () => {
             </table>
           )}
         </div>
-        <div className="bg-white rounded-xl shadow p-6 mb-8">
-          <h2 className="text-xl font-semibold mb-4 text-indigo-700">
-            Per Person Summary
-          </h2>
-          <table className="w-full border rounded overflow-hidden">
-            <thead>
-              <tr className="bg-indigo-50">
-                <th className="py-2 px-4">Name</th>
-                <th className="py-2 px-4">Paid</th>
-                <th className="py-2 px-4">Owes</th>
-                <th className="py-2 px-4">Net Balance</th>
-              </tr>
-            </thead>
-            <tbody>
-              {hisab.contributors.map((c, idx) => {
-                const user = (() => {
-                  // Recalculate per person paid/owes
-                  const { contributors = [], transactions = [] } = hisab;
-                  let paid = 0,
-                    owes = 0;
-                  for (const tx of transactions) {
-                    if (tx.paid_through_contribution) continue;
-                    const payerId = contributors.find(
-                      cc => cc.name === tx.paid_by,
-                    )?.user_id;
-                    const splitAmount = tx.amount / contributors.length;
-                    if (c.user_id === payerId) {
-                      paid += tx.amount - splitAmount;
-                    } else {
-                      owes += splitAmount;
-                    }
-                  }
-                  return { paid, owes, net: paid - owes };
-                })();
-                return (
-                  <tr
-                    key={idx}
-                    className={`text-center ${
-                      idx % 2 === 0 ? 'bg-gray-50' : ''
-                    } hover:bg-indigo-50`}
-                  >
-                    <td className="py-2 px-4">{c.name}</td>
-                    <td className="py-2 px-4">{currency(user.paid)}</td>
-                    <td className="py-2 px-4">{currency(user.owes)}</td>
-                    <td
-                      className={`py-2 px-4 font-bold ${
-                        user.net >= 0 ? 'text-green-600' : 'text-red-600'
-                      }`}
-                    >
-                      {currency(user.net)}
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        </div>
+
         <div className="flex justify-center">
           <button
             className="px-6 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition font-medium shadow"
