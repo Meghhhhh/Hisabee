@@ -148,8 +148,8 @@ const CreateNew = () => {
 		<div className="min-h-screen px-6 py-12 bg-black text-white relative overflow-hidden">
 			{/* Animated background */}
 			<div className="absolute inset-0 overflow-hidden pointer-events-none">
-				<div className="absolute top-20 left-10 w-64 h-64 bg-gradient-to-r from-emerald-500/20 to-green-400/20 rounded-full blur-2xl animate-pulse" />
-				<div className="absolute bottom-32 right-20 w-80 h-80 bg-gradient-to-r from-green-400/20 to-cyan-400/20 rounded-full blur-2xl animate-pulse delay-1000" />
+				<div className="absolute top-20 left-10 w-64 h-64 bg-gradient-to-r from-indigo-500/20 to-purple-500/20 rounded-full blur-2xl animate-pulse" />
+				<div className="absolute bottom-32 right-20 w-80 h-80 bg-gradient-to-r from-blue-400/20 to-cyan-400/20 rounded-full blur-2xl animate-pulse delay-1000" />
 			</div>
 
 			{/* Floating particles */}
@@ -157,7 +157,7 @@ const CreateNew = () => {
 				{[...Array(20)].map((_, i) => (
 					<div
 						key={i}
-						className="absolute w-2 h-2 bg-gradient-to-r from-emerald-400 to-green-400 rounded-full opacity-20 animate-pulse"
+						className="absolute w-2 h-2 bg-gradient-to-r from-indigo-400 to-purple-400 rounded-full opacity-20 animate-pulse"
 						style={{
 							left: `${Math.random() * 100}%`,
 							top: `${Math.random() * 100}%`,
@@ -172,11 +172,11 @@ const CreateNew = () => {
 				{/* Header */}
 				<div className="mb-8 flex items-center gap-2">
 					<Link to="/home">
-						<button className="p-2 backdrop-blur-sm bg-emerald-500/10 rounded-lg border border-emerald-400/20 hover:bg-emerald-500/20 transition-all hover:scale-95">
-							<ChevronLeft size={24} className="text-emerald-400" />
+						<button className="p-2 backdrop-blur-sm bg-indigo-500/10 rounded-lg border border-indigo-400/20 hover:bg-indigo-500/20 transition-all hover:scale-95">
+							<ChevronLeft size={24} className="text-indigo-400" />
 						</button>
 					</Link>
-					<h1 className="text-3xl font-bold bg-gradient-to-r from-emerald-400 to-green-400 bg-clip-text text-transparent">
+					<h1 className="text-3xl font-bold bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent">
 						Create New Trip
 					</h1>
 				</div>
@@ -188,13 +188,13 @@ const CreateNew = () => {
 				{/* Form Card */}
 				<div className="backdrop-blur-sm bg-white/5 rounded-2xl p-6 md:p-8 border border-white/10 shadow-lg mb-6">
 					<div className="mb-6">
-						<h2 className="text-xl font-semibold text-emerald-300 mb-4 flex items-center gap-2">
+						<h2 className="text-xl font-semibold text-indigo-300 mb-4 flex items-center gap-2">
 							<Calendar size={20} />
 							Basic Information
 						</h2>
 						<div className="grid grid-cols-1 md:grid-cols-2 gap-6">
 							<div>
-								<label className="block text-sm font-medium text-emerald-200 mb-2">
+								<label className="block text-sm font-medium text-indigo-200 mb-2">
 									Trip Title *
 								</label>
 								<input
@@ -202,15 +202,15 @@ const CreateNew = () => {
 									value={formData.title}
 									onChange={(e) => handleInputChange("title", e.target.value)}
 									placeholder="e.g., Goa Trip, Monthly Expenses"
-									className="w-full px-4 py-3 bg-black/40 rounded-lg border border-emerald-400/30 focus:outline-none focus:ring-2 focus:ring-emerald-400/50 transition placeholder-gray-500"
+									className="w-full px-4 py-3 bg-black/40 rounded-lg border border-indigo-400/30 focus:outline-none focus:ring-2 focus:ring-indigo-400/50 transition placeholder-gray-500"
 								/>
 							</div>
 							<div>
-								<label className="block text-sm font-medium text-emerald-200 mb-2">
+								<label className="block text-sm font-medium text-indigo-200 mb-2">
 									Total Budget *
 								</label>
 								<div className="relative">
-									<span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-emerald-400 font-bold text-lg">
+									<span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-indigo-400 font-bold text-lg">
 										₹
 									</span>
 									<input
@@ -220,7 +220,7 @@ const CreateNew = () => {
 											handleInputChange("total_budget", e.target.value)
 										}
 										placeholder="0.00"
-										className="w-full pl-8 pr-4 py-3 bg-black/40 rounded-lg border border-emerald-400/30 focus:outline-none focus:ring-2 focus:ring-emerald-400/50 transition placeholder-gray-500"
+										className="w-full pl-8 pr-4 py-3 bg-black/40 rounded-lg border border-indigo-400/30 focus:outline-none focus:ring-2 focus:ring-indigo-400/50 transition placeholder-gray-500"
 									/>
 								</div>
 							</div>
@@ -229,14 +229,14 @@ const CreateNew = () => {
 
 					<div>
 						<div className="flex items-center justify-between mb-4">
-							<h2 className="text-xl font-semibold text-emerald-300 flex items-center gap-2">
+							<h2 className="text-xl font-semibold text-indigo-300 flex items-center gap-2">
 								<Users size={20} />
 								Members (
 								{contributors.filter((c) => c.user_id && c.name).length})
 							</h2>
 							<button
 								onClick={addContributor}
-								className="px-4 py-2 bg-gradient-to-r from-emerald-500 to-green-500 text-white rounded-lg flex items-center gap-2 hover:from-emerald-600 hover:to-green-600 transition-all hover:scale-105"
+								className="px-4 py-2 bg-gradient-to-r from-indigo-500 to-purple-500 text-white rounded-lg flex items-center gap-2 hover:from-indigo-600 hover:to-purple-600 transition-all hover:scale-105"
 							>
 								<UserPlus size={16} /> Add Member
 							</button>
@@ -250,11 +250,11 @@ const CreateNew = () => {
 								>
 									<div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
 										<div>
-											<span className="block text-sm font-medium text-emerald-200 mb-2">
+											<span className="block text-sm font-medium text-indigo-200 mb-2">
 												Member
 											</span>
 											{contributor.isCreator ? (
-												<div className="px-4 py-3 bg-gradient-to-r from-emerald-500/20 to-green-500/20 text-emerald-300 rounded-lg font-medium">
+												<div className="px-4 py-3 bg-gradient-to-r from-indigo-500/20 to-purple-500/20 text-indigo-300 rounded-lg font-medium">
 													You (Creator)
 												</div>
 											) : (
@@ -263,7 +263,7 @@ const CreateNew = () => {
 													onChange={(e) =>
 														handleUserSelect(contributor.id, e.target.value)
 													}
-													className="w-full px-4 py-3 bg-black/40 rounded-lg border border-emerald-400/30 focus:outline-none focus:ring-2 focus:ring-emerald-400/50 transition"
+													className="w-full px-4 py-3 bg-black/40 rounded-lg border border-indigo-400/30 focus:outline-none focus:ring-2 focus:ring-indigo-400/50 transition"
 												>
 													<option value="">Select a member</option>
 													{availableUsers.map((user) => (
@@ -275,11 +275,11 @@ const CreateNew = () => {
 											)}
 										</div>
 										<div>
-											<span className="block text-sm font-medium text-emerald-200 mb-2">
+											<span className="block text-sm font-medium text-indigo-200 mb-2">
 												Budget
 											</span>
 											<div className="relative">
-												<span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-emerald-400 font-bold text-lg">
+												<span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-indigo-400 font-bold text-lg">
 													₹
 												</span>
 												<input
@@ -293,7 +293,7 @@ const CreateNew = () => {
 														)
 													}
 													placeholder="0.00"
-													className="w-full pl-8 pr-4 py-3 bg-black/40 rounded-lg border border-emerald-400/30 focus:outline-none focus:ring-2 focus:ring-emerald-400/50 transition placeholder-gray-500"
+													className="w-full pl-8 pr-4 py-3 bg-black/40 rounded-lg border border-indigo-400/30 focus:outline-none focus:ring-2 focus:ring-indigo-400/50 transition placeholder-gray-500"
 												/>
 											</div>
 										</div>
@@ -313,13 +313,13 @@ const CreateNew = () => {
 						</div>
 
 						{formData.total_budget && (
-							<div className="mt-6 backdrop-blur-sm bg-white/10 rounded-lg p-4 border border-green-400/20">
-								<h3 className="font-medium text-emerald-200 mb-3">
+							<div className="mt-6 backdrop-blur-sm bg-white/10 rounded-lg p-4 border border-indigo-400/20">
+								<h3 className="font-medium text-indigo-200 mb-3">
 									Budget Summary
 								</h3>
 								<div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-center">
 									<div>
-										<div className="text-sm text-emerald-200/80">
+										<div className="text-sm text-indigo-200/80">
 											Total Budget
 										</div>
 										<div className="text-xl font-bold text-white">
@@ -327,21 +327,21 @@ const CreateNew = () => {
 										</div>
 									</div>
 									<div>
-										<div className="text-sm text-emerald-200/80">
+										<div className="text-sm text-indigo-200/80">
 											Total Contributions
 										</div>
-										<div className="text-xl font-bold text-emerald-400">
+										<div className="text-xl font-bold text-indigo-400">
 											₹{totalContributions.toLocaleString()}
 										</div>
 									</div>
 									<div>
-										<div className="text-sm text-emerald-200/80">
+										<div className="text-sm text-indigo-200/80">
 											{budgetDifference >= 0 ? "Remaining" : "Over Budget"}
 										</div>
 										<div
 											className={`text-xl font-bold ${
 												budgetDifference >= 0
-													? "text-green-400"
+													? "text-cyan-400"
 													: "text-red-400"
 											}`}
 										>
@@ -356,12 +356,12 @@ const CreateNew = () => {
 
 				{/* Action buttons */}
 				<div className="flex justify-end gap-4 mt-6">
-					<button className="px-6 py-3 bg-transparent rounded-lg border-2 border-emerald-400/50 text-emerald-400 hover:bg-emerald-500/10 transition-all hover:scale-105 font-medium">
+					<button className="px-6 py-3 bg-transparent rounded-lg border-2 border-indigo-400/50 text-indigo-400 hover:bg-indigo-500/10 transition-all hover:scale-105 font-medium">
 						<Link to={"/home"}>Cancel</Link>
 					</button>
 					<button
 						onClick={handleSubmit}
-						className="px-6 py-3 bg-gradient-to-r from-emerald-500 to-green-500 text-white rounded-lg hover:from-emerald-600 hover:to-green-600 transition-all hover:scale-105 font-medium"
+						className="px-6 py-3 bg-gradient-to-r from-indigo-500 to-purple-500 text-white rounded-lg hover:from-indigo-600 hover:to-purple-600 transition-all hover:scale-105 font-medium"
 					>
 						Create Hisab
 					</button>

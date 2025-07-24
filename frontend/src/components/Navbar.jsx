@@ -18,7 +18,7 @@ const Navbar = () => {
 			<nav className="w-full h-8 sm:h-[25px] flex items-center screen-max-width gap-6">
 				{/* Logo */}
 				<Link to="/home" className="flex-shrink-0">
-					<img src={logoImg} alt="logo-hisabee" width={37} height={25} />
+					<img src={logoImg} alt="logo-hisabee" width={40} height={25} />
 				</Link>
 
 				{/* Desktop Nav */}

@@ -16,6 +16,11 @@ import {
   Check,
   AlertCircle,
   Trash2, // Add Trash2 icon
+  Info,
+  BarChart2,
+  Star,
+  Calendar as CalendarIcon,
+  Sparkles,
 } from 'lucide-react';
 import { useDispatch, useSelector } from 'react-redux';
 import {
@@ -45,6 +50,7 @@ export default function EnhancedHisabComponent() {
 	const [showAllTransactions, setShowAllTransactions] = useState({});
 	const [error, setError] = useState("");
 	const navigate = useNavigate();
+	const user = useSelector((state) => state.user);
 
 	// Fetch hisabs
 	useEffect(() => {
@@ -78,6 +84,58 @@ export default function EnhancedHisabComponent() {
 		});
 		setSpentMap(newSpentMap);
 	}, [hisabs]);
+
+	// Helper: Get all transactions across hisabs
+	const allTransactions = hisabs.flatMap(h => (h.transactions || []).map(txn => ({...txn, hisabTitle: h.title})));
+	const recentTransactions = allTransactions.sort((a, b) => new Date(b.date) - new Date(a.date)).slice(0, 3);
+	const totalSpent = allTransactions.reduce((sum, txn) => sum + (parseFloat(txn.amount) || 0), 0);
+	const totalBudget = hisabs.reduce((sum, h) => sum + (parseFloat(h.total_budget) || 0), 0);
+
+	// Tips/Info
+	const tips = [
+	  "Tip: Click on a Hisab to expand and see details!",
+	  "Did you know? You can add contributors to split expenses easily.",
+	  "Use the summary button to get a quick overview of your group spending.",
+	  "Hover over transaction categories for color-coded insights!"
+	];
+	const [tipIndex, setTipIndex] = useState(0);
+	useEffect(() => {
+	  const interval = setInterval(() => setTipIndex(i => (i + 1) % tips.length), 6000);
+	  return () => clearInterval(interval);
+	}, []);
+
+	// For leaderboard and events
+	const contributorSpend = {};
+	allTransactions.forEach(txn => {
+	  if (txn.paid_by && txn.paid_by !== 'CONTRIBUTION') {
+	    contributorSpend[txn.paid_by] = (contributorSpend[txn.paid_by] || 0) + parseFloat(txn.amount || 0);
+	  }
+	});
+	const contributorsList = hisabs.flatMap(h => h.contributors || []);
+	const uniqueContributors = Array.from(new Map(contributorsList.map(c => [c.user_id, c])).values());
+	const leaderboard = uniqueContributors
+	  .map(c => ({ ...c, spent: contributorSpend[c.user_id] || 0 }))
+	  .sort((a, b) => b.spent - a.spent)
+	  .slice(0, 3);
+
+	const quotes = [
+	  "Alone we can do so little; together we can do so much. – Helen Keller",
+	  "Many hands make light work.",
+	  "Great things in business are never done by one person. – Steve Jobs",
+	  "A budget is telling your money where to go instead of wondering where it went. – Dave Ramsey",
+	  "Teamwork divides the task and multiplies the success."
+	];
+	const [quoteIndex, setQuoteIndex] = useState(0);
+	useEffect(() => {
+	  const interval = setInterval(() => setQuoteIndex(i => (i + 1) % quotes.length), 8000);
+	  return () => clearInterval(interval);
+	}, []);
+
+	// Recent/Upcoming events (use hisab titles and created_at)
+	const events = hisabs
+	  .map(h => ({ title: h.title, date: h.created_at }))
+	  .sort((a, b) => new Date(b.date) - new Date(a.date))
+	  .slice(0, 3);
 
 	// Contributors for selected modal
 	const contributors = selectedHisabId
@@ -191,53 +249,123 @@ export default function EnhancedHisabComponent() {
       </div>
 
 			<div className="relative z-10 pb-8 px-4 sm:px-6 md:px-8 w-full max-w-7xl mx-auto">
-				{/* Header */}
-				<div
-					className={`rounded-2xl p-4 sm:p-6 mb-6 max-w-md w-full mx-auto relative overflow-hidden ${
-						hisabs.length > 0
-							? "bg-transparent shadow-none backdrop-filter-none border-none p-0 max-w-full"
-							: ""
-					}`}
-					style={
-						hisabs.length > 0
-							? {}
-							: {
-									background: "rgba(255, 255, 255, 0.05)",
-									boxShadow: "0 8px 24px rgba(0, 0, 0, 0.18)",
-									backdropFilter: "blur(12px)",
-									border: "1px solid rgba(255, 255, 255, 0.08)",
-							  }
-					}
-				>
-					<div
-						className={
-							hisabs.length !== 0
-								? "mt-2 sm:mt-3 mb-2 flex flex-col justify-center sm:flex-row items-start sm:items-center gap-3"
-								: "flex flex-col justify-center items-center mt-2 gap-4"
-						}
-					>
-						<div>
-							<h1 className=" text-2xl sm:text-3xl font-bold text-white">
-								Your Hisabs
-							</h1>
-							{hisabs.length === 0 && (
-								<p className="text-gray-300">
-									Keep your shared bills in check and forget the hassle of
-									settling up later! Effortlessly stay on top of expenses with
-									your crew, so everyone always knows who owes what.
-								</p>
-							)}
+				{/* Welcome Banner */}
+				<div className="rounded-2xl bg-gradient-to-r from-indigo-500/20 to-purple-500/20 p-5 mb-6 flex flex-col md:flex-row items-center justify-between gap-4 shadow-lg border border-white/10 animate-fade-in">
+					<div>
+						<h2 className="text-2xl font-bold text-white mb-1 flex items-center gap-2">
+							<Sparkles className="text-indigo-300 animate-pulse" size={24} />
+							Welcome{user?.name ? `, ${user.name}` : ''}!
+						</h2>
+						<p className="text-gray-300 text-sm italic">"Track, split, and settle with ease. Your financial harmony starts here!"</p>
+						<div className="mt-3 text-indigo-200 text-xs italic animate-fade-in-slow">{quotes[quoteIndex]}</div>
+					</div>
+					<div className="flex gap-6 mt-4 md:mt-0">
+						<div className="flex flex-col items-center">
+							<span className="text-lg font-bold text-indigo-300 animate-count">{hisabs.length}</span>
+							<span className="text-xs text-gray-400">Hisabs</span>
 						</div>
-						{hisabs.length === 0 && (
-							<div>
-								<Link
-									to="/newhisab"
-									className="px-10 py-10 pt-20 pb-20 sm:py-1 text-sm bg-gradient-to-r from-indigo-500 to-purple-500 rounded-full font-semibold text-white hover:from-indigo-600 hover:to-purple-600 transition-all duration-300 transform hover:scale-105 flex items-center justify-center gap-2 w-full sm:w-auto"
-								>
-									<Plus size={16} />
-									<span>New Hisab</span>
-								</Link>
+						<div className="flex flex-col items-center">
+							<span className="text-lg font-bold text-green-300 animate-count">₹{totalSpent.toLocaleString()}</span>
+							<span className="text-xs text-gray-400">Total Spent</span>
+						</div>
+						<div className="flex flex-col items-center">
+							<span className="text-lg font-bold text-cyan-300 animate-count">₹{(totalBudget - totalSpent).toLocaleString()}</span>
+							<span className="text-xs text-gray-400">Remaining</span>
+						</div>
+					</div>
+				</div>
+
+				{/* Financial Overview & Leaderboard */}
+				<div className="flex flex-col md:flex-row gap-6 mb-8">
+					{/* Financial Overview Card */}
+					<div className="flex-1 bg-white/5 rounded-2xl p-5 border border-white/10 shadow-md animate-fade-in flex flex-col items-center">
+						<h3 className="text-lg font-semibold text-white mb-3 flex items-center gap-2">
+							<BarChart2 size={18} /> Financial Overview
+						</h3>
+						{/* Static Bar Chart */}
+						<div className="w-full flex flex-col items-center mb-4">
+							<div className="w-full h-6 flex items-end gap-2">
+								<div className="h-6 bg-indigo-500 rounded-l-lg" style={{ width: `${Math.min((totalSpent / (totalBudget || 1)) * 100, 100)}%`, minWidth: '10%' }}></div>
+								<div className="h-6 bg-cyan-500 rounded-r-lg" style={{ width: `${Math.max(100 - (totalSpent / (totalBudget || 1)) * 100, 0)}%`, minWidth: '10%' }}></div>
 							</div>
+							<div className="flex justify-between w-full text-xs text-gray-400 mt-1">
+								<span>Spent</span>
+								<span>Budget</span>
+							</div>
+						</div>
+						<div className="flex justify-between w-full text-sm text-gray-300">
+							<span>₹{totalSpent.toLocaleString()}</span>
+							<span>of ₹{totalBudget.toLocaleString()}</span>
+						</div>
+					</div>
+					{/* Leaderboard */}
+					<div className="w-full md:w-72 flex-shrink-0 bg-white/5 rounded-2xl p-5 border border-white/10 shadow-md flex flex-col items-center animate-fade-in">
+						<h3 className="text-lg font-semibold text-white mb-3 flex items-center gap-2">
+							<Star size={18} className="text-yellow-300" /> Top Contributors
+						</h3>
+						{leaderboard.length === 0 ? (
+							<p className="text-gray-400 text-sm">No contributors yet.</p>
+						) : (
+							<ul className="space-y-2 w-full">
+								{leaderboard.map((c, idx) => (
+									<li key={c.user_id} className="flex items-center gap-2 bg-gradient-to-r from-indigo-500/10 to-purple-500/10 rounded-lg p-2">
+										<span className="font-bold text-indigo-200">#{idx + 1}</span>
+										<span className="flex-1 text-white font-medium truncate">{c.name}</span>
+										<span className="text-green-300 font-semibold">₹{c.spent.toLocaleString()}</span>
+									</li>
+								))}
+							</ul>
+						)}
+					</div>
+				</div>
+
+				{/* Recent Activity Feed & Tips */}
+				<div className="flex flex-col md:flex-row gap-6 mb-8">
+					<div className="flex-1 bg-white/5 rounded-2xl p-5 border border-white/10 shadow-md animate-fade-in">
+						<h3 className="text-lg font-semibold text-white mb-3 flex items-center gap-2">
+							<TrendingUp size={18} /> Recent Activity
+						</h3>
+						{recentTransactions.length === 0 ? (
+							<p className="text-gray-400 text-sm">No recent transactions yet.</p>
+						) : (
+							<ul className="space-y-3">
+								{recentTransactions.map((txn, idx) => (
+									<li key={idx} className="flex items-center gap-3 hover:bg-white/10 rounded-lg p-2 transition">
+										<span className={`w-8 h-8 rounded-lg flex items-center justify-center text-white ${getCategoryColor(txn.category)}`}>{txn.category === "Food" ? <DollarSign size={14}/> : txn.category === "Transportation" ? <TrendingUp size={14}/> : txn.category === "Accommodation" ? <Wallet size={14}/> : txn.category === "Utilities" ? <Wallet size={14}/> : txn.category === "Venue" ? <Users size={14}/> : <DollarSign size={14}/>}</span>
+										<div className="flex-1">
+											<div className="font-medium text-white text-sm">{txn.description}</div>
+											<div className="text-xs text-gray-400">{txn.hisabTitle} • {formatDate(txn.date)}</div>
+										</div>
+										<span className="font-semibold text-green-400 text-sm">₹{txn.amount?.toLocaleString()}</span>
+									</li>
+								))}
+							</ul>
+						)}
+					</div>
+					<div className="w-full md:w-72 flex-shrink-0 bg-white/5 rounded-2xl p-5 border border-white/10 shadow-md flex flex-col items-center justify-center animate-fade-in">
+						<Info size={28} className="text-indigo-300 mb-2 animate-bounce" />
+						<div className="text-base text-indigo-200 text-center font-medium mb-2">Did you know?</div>
+						<div className="text-sm text-gray-300 text-center italic min-h-[48px]">{tips[tipIndex]}</div>
+					</div>
+				</div>
+
+				{/* Upcoming/Recent Events */}
+				<div className="mb-8">
+					<div className="bg-white/5 rounded-2xl p-5 border border-white/10 shadow-md animate-fade-in">
+						<h3 className="text-lg font-semibold text-white mb-3 flex items-center gap-2">
+							<CalendarIcon size={18} /> Recent/Upcoming Events
+						</h3>
+						{events.length === 0 ? (
+							<p className="text-gray-400 text-sm">No events yet.</p>
+						) : (
+							<ul className="space-y-2">
+								{events.map((e, idx) => (
+									<li key={idx} className="flex items-center gap-2 bg-gradient-to-r from-blue-500/10 to-cyan-500/10 rounded-lg p-2">
+										<span className="font-medium text-white truncate">{e.title}</span>
+										<span className="text-xs text-gray-400">{formatDate(e.date)}</span>
+									</li>
+								))}
+							</ul>
 						)}
 					</div>
 				</div>
@@ -540,6 +668,23 @@ export default function EnhancedHisabComponent() {
 					</div>
 				)}
 			</div>
+
+			{/* Floating Action Button for New Hisab */}
+			<Link
+				to="/newhisab"
+				className="fixed bottom-8 right-8 z-50 group"
+				title="Create New Hisab"
+			>
+				<button
+					className="w-16 h-16 rounded-full bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 shadow-2xl flex items-center justify-center text-white text-3xl font-bold border-4 border-white/20 animate-fab-glow group-hover:scale-110 transition-transform duration-300 focus:outline-none"
+					style={{ boxShadow: '0 4px 32px 0 rgba(99,102,241,0.4)' }}
+				>
+					<Plus size={36} className="drop-shadow-lg" />
+				</button>
+				<span className="absolute -top-8 right-1/2 translate-x-1/2 bg-black/80 text-white text-xs rounded px-3 py-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none shadow-lg">
+					New Hisab
+				</span>
+			</Link>
 
 			{/* Modern Glass Card Modal */}
 			{showModal && (

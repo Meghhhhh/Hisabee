@@ -1,7 +1,7 @@
 import React from "react";
 import { Github, Linkedin } from "lucide-react";
 import { Link } from "react-router";
-import { IoIosArrowBack } from "react-icons/io";
+import { ChevronLeft } from "lucide-react";
 
 const About = () => {
 	return (
@@ -29,20 +29,23 @@ const About = () => {
 			</div>
 
 			<div className="max-w-4xl mx-auto text-center relative z-10">
-				{/* Back button */}
-				<Link to="/home">
-					<IoIosArrowBack
-						size={26}
-						className="absolute top-4 left-4 z-50 backdrop-blur-sm bg-emerald-500/10 rounded-full p-1.5 border border-emerald-400/20 hover:bg-emerald-500/20 transition-all"
-					/>
-				</Link>
-				{/* Main header with gradient text */}
-				<div className="mb-12">
-					<h1 className="text-6xl font-bold mb-6 bg-gradient-to-r from-cyan-400 via-purple-400 to-pink-400 bg-clip-text text-transparent animate-pulse">
-						About Hisabee
-					</h1>
-					<div className="w-32 h-1 bg-gradient-to-r from-cyan-400 to-purple-400 mx-auto rounded-full"></div>
+				{/* Back button and header */}
+				<div className="relative mb-12 mt-10 flex items-center" style={{ minHeight: '56px' }}>
+					<div className="flex-1 flex items-center">
+						<Link to="/home">
+							<button className="p-2 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-full text-white hover:from-indigo-600 hover:to-purple-600 transition-all duration-300 shadow-md focus:outline-none">
+								<ChevronLeft size={20} />
+							</button>
+						</Link>
+					</div>
+					<div className="flex-1 flex items-center justify-center">
+						<h1 className="text-5xl font-bold bg-gradient-to-r from-cyan-400 via-purple-400 to-pink-400 bg-clip-text text-transparent animate-pulse mb-0">
+							About Hisabee
+						</h1>
+					</div>
+					<div className="flex-1" />
 				</div>
+				<div className="w-32 h-1 bg-gradient-to-r from-cyan-400 to-purple-400 mx-auto rounded-full mb-12"></div>
 
 				{/* Hero section with glass morphism */}
 				<div className="backdrop-blur-sm bg-white/5 rounded-3xl p-8 mb-12 border border-white/10 shadow-2xl hover:bg-white/10 transition-all duration-500">

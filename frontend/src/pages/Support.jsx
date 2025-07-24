@@ -1,4 +1,6 @@
 import React from "react";
+import { Link } from "react-router";
+import { ChevronLeft } from "lucide-react";
 
 const Support = () => {
   return (
@@ -24,12 +26,23 @@ const Support = () => {
 
       <div className="relative z-10 w-full max-w-2xl mx-auto pb-12 px-4 sm:px-6 md:px-8">
         {/* Hero Section */}
-        <div className="text-center mb-12 mt-10">
-          <h1 className="text-4xl font-bold mb-4 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-400 text-transparent bg-clip-text">SUPPORT</h1>
-          <p className="text-lg text-gray-300 max-w-2xl mx-auto">
-            We're here to help you. Find answers, ask questions, or contact our team directly.
-          </p>
+        <div className="relative mb-12 mt-10 flex items-center" style={{ minHeight: '56px' }}>
+          <div className="flex-1 flex items-center">
+            <Link to="/home">
+              <button className="p-2 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-full text-white hover:from-indigo-600 hover:to-purple-600 transition-all duration-300 shadow-md focus:outline-none">
+                <ChevronLeft size={24} />
+              </button>
+            </Link>
+          </div>
+          <div className="flex-1 flex items-center justify-center">
+            <h1 className="text-4xl font-bold bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-400 text-transparent bg-clip-text mb-0">SUPPORT</h1>
+          </div>
+          <div className="flex-1" />
         </div>
+
+        <p className="text-lg text-gray-300 max-w-2xl mx-auto">
+          We're here to help you. Find answers, ask questions, or contact our team directly.
+        </p>
 
         {/* Contact Form */}
         <div className="backdrop-blur-sm bg-white/5 rounded-3xl p-8 border border-white/10 shadow-2xl mb-12">
