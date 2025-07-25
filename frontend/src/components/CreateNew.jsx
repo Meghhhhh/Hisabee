@@ -87,10 +87,10 @@ const CreateNew = () => {
 			return;
 		}
 
-		if (!formData.total_budget || parseFloat(formData.total_budget) <= 0) {
-			toast.error("Please enter a valid total budget");
-			return;
-		}
+		// if (!formData.total_budget || parseFloat(formData.total_budget) <= 0) {
+		// 	toast.error("Please enter a valid total budget");
+		// 	return;
+		// }
 
 		const validContributors = contributors.filter((c) => c.user_id && c.name);
 		if (validContributors.length === 0) {
