@@ -6,6 +6,7 @@ import axios from "axios";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { addHisab } from "../../store/slice/hisabSlice.js";
+import { setLoading } from "../../store/slice/loading.js";
 
 import { Users, Calendar, UserPlus, Trash2, ChevronLeft } from "lucide-react";
 
@@ -16,9 +17,9 @@ const CreateNew = () => {
 		total_contribution: 0,
 		created_by: useSelector((state) => state.user.id),
 	});
-
 	const navigate = useNavigate();
 	const dispatch = useDispatch();
+	const loading = useSelector((state) => state.loading.loading);
 
 	const [contributors, setContributors] = useState([
 		{
@@ -87,6 +88,18 @@ const CreateNew = () => {
 			return;
 		}
 
+		if (parseFloat(formData.total_budget) != calculateTotalContributions()) {
+			toast.error("Please enter a valid total initial contribution");
+			return;
+		}
+
+		// Prevent submission if any non-creator contributor is missing user_id or name
+		const invalidContributor = contributors.some(c => !c.isCreator && (!c.user_id || !c.name));
+		if (invalidContributor) {
+			toast.error("Please select a member for each contributor.");
+			return;
+		}
+
 		// if (!formData.total_budget || parseFloat(formData.total_budget) <= 0) {
 		// 	toast.error("Please enter a valid total budget");
 		// 	return;
@@ -100,6 +113,7 @@ const CreateNew = () => {
 
 		try {
 			// 1. Create the hisab -- currency_code is now always 'INR'
+			dispatch(setLoading(true));
 			const res = await axios.post(
 				`${import.meta.env.VITE_BACKEND_API_URL}/hisabs`,
 				{
@@ -137,6 +151,8 @@ const CreateNew = () => {
 				error.response?.data?.message ||
 					"Something went wrong. Please try again."
 			);
+		} finally {
+			dispatch(setLoading(false));
 		}
 	};
 
@@ -207,7 +223,7 @@ const CreateNew = () => {
 							</div>
 							<div>
 								<label className="block text-sm font-medium text-indigo-200 mb-2">
-									Total Budget *
+									Total Initial Contribution *
 								</label>
 								<div className="relative">
 									<span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-indigo-400 font-bold text-lg">
@@ -356,14 +372,23 @@ const CreateNew = () => {
 
 				{/* Action buttons */}
 				<div className="flex justify-end gap-4 mt-6">
-					<button className="px-6 py-3 bg-transparent rounded-lg border-2 border-indigo-400/50 text-indigo-400 hover:bg-indigo-500/10 transition-all hover:scale-105 font-medium">
+					<button
+						disabled={loading}
+						className="px-6 py-3 bg-transparent rounded-lg border-2 border-indigo-400/50 text-indigo-400 hover:bg-indigo-500/10 transition-all hover:scale-105 font-medium"
+					>
 						<Link to={"/home"}>Cancel</Link>
 					</button>
 					<button
 						onClick={handleSubmit}
+						disabled={loading}
 						className="px-6 py-3 bg-gradient-to-r from-indigo-500 to-purple-500 text-white rounded-lg hover:from-indigo-600 hover:to-purple-600 transition-all hover:scale-105 font-medium"
 					>
-						Create Hisab
+						{loading ? (
+							<svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+								<circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+								<path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
+							</svg>
+						) : 'Create Hisab'}
 					</button>
 				</div>
 			</div>

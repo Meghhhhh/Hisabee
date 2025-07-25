@@ -30,12 +30,14 @@ import {
 } from '../../store/slice/hisabSlice';
 import axios from 'axios';
 import { toast } from 'react-toastify';
+import { setLoading } from '../../store/slice/loading';
 
 export default function EnhancedHisabComponent() {
 	// State and logic from your original
+	const loading = useSelector((state) => state.loading.loading);
 	const [expandedId, setExpandedId] = useState(null);
 	const [currentPage, setCurrentPage] = useState(1);
-	const [loading, setLoading] = useState(false);
+	const [loadingForTXN, setLoadingForTXN] = useState(false);
 	const [spentMap, setSpentMap] = useState({});
 	const hisabsPerPage = 5;
 	const dispatch = useDispatch();
@@ -703,6 +705,7 @@ export default function EnhancedHisabComponent() {
 								try {
 									const amount = parseFloat(transactionForm.amount);
 									if (!amount) throw new Error("Amount must be a number.");
+									setLoadingForTXN(true);
 									const res = await axios.post(
 										`${import.meta.env.VITE_BACKEND_API_URL}/transactions`,
 										{
@@ -721,6 +724,7 @@ export default function EnhancedHisabComponent() {
 										},
 										{ withCredentials: true }
 									);
+									setLoadingForTXN(false);
 									dispatch(
 										updateHisab({
 											id: selectedHisabId,
@@ -877,10 +881,16 @@ export default function EnhancedHisabComponent() {
 									Cancel
 								</button>
 								<button
+									disabled={loadingForTXN}
 									type="submit"
-									className="px-5 py-2.5 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-xl font-medium text-white hover:from-indigo-600 hover:to-purple-600 transition-all duration-300 transform hover:scale-105"
+									className={`px-5 py-2.5 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-xl font-medium text-white flex items-center justify-center gap-2 hover:from-indigo-600 hover:to-purple-600 transition-all duration-300 transform hover:scale-105 ${loadingForTXN ? 'opacity-60 cursor-not-allowed' : ''}`}
 								>
-									Add Transaction
+									{loadingForTXN ? (
+										<svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+											<circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+											<path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
+										</svg>
+									) : 'Add Transaction'}
 								</button>
 							</div>
 						</form>
