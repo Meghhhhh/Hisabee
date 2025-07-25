@@ -52,7 +52,11 @@ const Navbar = () => {
 					{isLoggedIn ? (
 						<div className="flex gap-2 sm:gap-4">
 							<Link to="/profile" title="Profile">
-								<img src={avatar} alt="profile" className="w-7 h-7 rounded-full" />
+								<img
+									src={avatar}
+									alt="profile"
+									className="w-7 h-7 rounded-full"
+								/>
 							</Link>
 							<Link to="/notifications" title="Notifications">
 								<CiBellOn
@@ -91,6 +95,14 @@ const Navbar = () => {
 					<div className="fixed inset-0 bg-black bg-opacity-80 z-50 flex items-center justify-center">
 						<div className="bg-[#0b0b0f] rounded-xl p-6 max-w-xs w-full text-center space-y-4">
 							{/* Support Button */}
+
+							<Link
+								to="/about"
+								className="block py-2 px-4 text-lg text-white bg-gradient-to-r from-blue-500/20 to-cyan-500/20 rounded-lg border border-blue-400/20  hover:from-blue-500/30 hover:to-cyan-500/30 transition-colors"
+								onClick={toggleMenu}
+							>
+								About
+							</Link>
 							<Link
 								to="/support"
 								className="block py-2 px-4 text-lg text-white bg-gradient-to-r from-blue-500/20 to-cyan-500/20 border border-blue-400/20 hover:from-blue-500/30 hover:to-cyan-500/30 rounded-lg transition-colors"
@@ -98,6 +110,7 @@ const Navbar = () => {
 							>
 								Support
 							</Link>
+
 							{/* New Hisab Button: Only when logged in */}
 							{isLoggedIn && (
 								<Link
@@ -116,7 +129,11 @@ const Navbar = () => {
 										className="p-2 bg-gray-700 rounded-full"
 										onClick={toggleMenu}
 									>
-										<img src={avatar} alt="profile" className="w-8 h-8 rounded-full" />
+										<img
+											src={avatar}
+											alt="profile"
+											className="w-8 h-8 rounded-full"
+										/>
 									</Link>
 									<Link
 										to="/notifications"
