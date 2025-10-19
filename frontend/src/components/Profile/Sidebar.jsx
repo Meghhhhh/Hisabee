@@ -18,13 +18,13 @@ const Sidebar = ({ activeTab, setActiveTab }) => {
 
   const handleLogout = async () => {
     const res = await axios.post(
-      `${import.meta.env.VITE_BACKEND_API_URL}/user/logout`,
+      `/api/v1/user/logout`,
       {},
       { withCredentials: true },
     );
     dispatch(setUserData({}));
     dispatch(setIsLoggedIn(false));
-    toast.success(res.data.message);
+    toast.success(res.data?.message);
     navigate('/home');
   };
 

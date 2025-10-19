@@ -42,18 +42,9 @@ const Notifications = () => {
       setError(null);
       try {
         const [notiRes, outgoingRes, incomingRes] = await Promise.all([
-          axios.get(
-            `${import.meta.env.VITE_BACKEND_API_URL}/notifications/getAll`,
-            { withCredentials: true },
-          ),
-          axios.get(
-            `${import.meta.env.VITE_BACKEND_API_URL}/user/outgoing-requests`,
-            { withCredentials: true },
-          ),
-          axios.get(
-            `${import.meta.env.VITE_BACKEND_API_URL}/user/incoming-requests`,
-            { withCredentials: true },
-          ),
+          axios.get(`api/v1/notifications/getAll`, { withCredentials: true }),
+          axios.get(`api/v1/user/outgoing-requests`, { withCredentials: true }),
+          axios.get(`api/v1/user/incoming-requests`, { withCredentials: true }),
         ]);
         const notificationsData = (notiRes.data?.data || []).map(n => ({
           id: n.notification_id,
@@ -101,11 +92,9 @@ const Notifications = () => {
     setAddFriendLoading(true);
     try {
       const payload = { email: friendEmail };
-      const res = await axios.post(
-        `${import.meta.env.VITE_BACKEND_API_URL}/user/add-friend`,
-        payload,
-        { withCredentials: true },
-      );
+      const res = await axios.post(`api/v1/user/add-friend`, payload, {
+        withCredentials: true,
+      });
       toast.success(res.data?.message || 'Friend request sent!');
       setAddFriendOpen(false);
       setFriendEmail('');
@@ -121,7 +110,7 @@ const Notifications = () => {
   const handleAccept = async friend_id => {
     try {
       await axios.post(
-        `${import.meta.env.VITE_BACKEND_API_URL}/user/accept-request`,
+        `api/v1/user/accept-request`,
         { friend_id },
         { withCredentials: true },
       );
@@ -134,7 +123,7 @@ const Notifications = () => {
   const handleReject = async friend_id => {
     try {
       await axios.post(
-        `${import.meta.env.VITE_BACKEND_API_URL}/user/reject-request`,
+        `api/v1/user/reject-request`,
         { friend_id },
         { withCredentials: true },
       );

@@ -9,10 +9,9 @@ const useAuthCheck = () => {
   useEffect(() => {
     const checkAuth = async () => {
       try {
-        const res = await axios.get(
-          `${import.meta.env.VITE_BACKEND_API_URL}/user/is-user-loggedin`,
-          { withCredentials: true },
-        );
+        const res = await axios.get(`/api/v1/user/is-user-loggedin`, {
+          withCredentials: true,
+        });
 
         dispatch(setIsLoggedIn(res.status === 200));
       } catch (error) {
