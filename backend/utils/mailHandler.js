@@ -65,7 +65,8 @@ const sendMessage = async (to, subject, html) => {
     html,
   });
 
-  // console.log('Message sent:', info.messageId);
+  console.log('Message sent:', info.messageId);
+  console.log('Message sent:', info);
 };
 
 export default sendMessage;
