@@ -57,16 +57,69 @@ export const otpHtml = otp => `
     </html>
   `;
 
-const sendMessage = async (to, subject, html) => {
-  await transporter.sendMail({
-    from: process.env.APP_EMAIL,
-    to,
-    subject,
-    html,
-  });
+export const passwordResetHtml = otp => `
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <style>
+        body {
+          font-family: Arial, sans-serif;
+          background-color: #f4f4f4;
+          color: #333;
+          padding: 20px;
+        }
+        .container {
+          background-color: white;
+          padding: 20px;
+          border-radius: 8px;
+          box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+          max-width: 500px;
+          margin: 0 auto;
+        }
+        h2 {
+          color: #2c3e50;
+        }
+        .otp-code {
+          font-size: 24px;
+          font-weight: bold;
+          color: #e74c3c;
+          margin-top: 20px;
+        }
+        .footer {
+          font-size: 12px;
+          color: #7f8c8d;
+          margin-top: 20px;
+        }
+      </style>
+    </head>
+    <body>
+      <div class="container">
+        <h2>Password Reset Code</h2>
+        <p>Hello,</p>
+        <p>You requested to reset your password. Here is your password reset code:</p>
+        <div class="otp-code">${otp}</div>
+        <p>This code will expire in 5 minutes. Please enter it on the website to reset your password.</p>
+        <div class="footer">If you didn't request this, please ignore this email.</div>
+      </div>
+    </body>
+    </html>
+  `;
 
-  console.log('Message sent:', info.messageId);
-  console.log('Message sent:', info);
+const sendMessage = async (to, subject, html) => {
+  try {
+    const info = await transporter.sendMail({
+      from: process.env.APP_EMAIL,
+      to,
+      subject,
+      html,
+    });
+
+    console.log('Message sent:', info.messageId);
+    return info;
+  } catch (error) {
+    console.error('Error sending email:', error);
+    throw error;
+  }
 };
 
 export default sendMessage;

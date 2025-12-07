@@ -1,5 +1,6 @@
 import pool from '../config/postgres-db.js';
 import createTableQueries from './data.js';
+import addPasswordResetFields from './migrations/addPasswordResetFields.js';
 
 const createTables = async () => {
   if (!createTableQueries || Object.keys(createTableQueries).length === 0) {
@@ -12,6 +13,9 @@ const createTables = async () => {
       await pool.query(query);
       console.log(`Table ${table} created successfully.`);
     }
+    
+    // Run migrations
+    await addPasswordResetFields();
   } catch (error) {
     console.error('Error creating tables:', error);
   }

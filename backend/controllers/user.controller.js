@@ -16,7 +16,7 @@ import {
 import asyncHandler from '../utils/asyncHandler.js';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
-import sendMessage, { otpHtml } from '../utils/mailHandler.js';
+import sendMessage, { otpHtml, passwordResetHtml } from '../utils/mailHandler.js';
 
 const cookieOptions = {
   httpOnly: true,
@@ -94,7 +94,7 @@ export const registerUser = asyncHandler(async (req, res) => {
         otp_expires_at: expiry,
       });
 
-      sendMessage(email, 'OTP for Hisabee', otpHtml(newOTP));
+      await sendMessage(email, 'OTP for Hisabee', otpHtml(newOTP));
       return handleResponse(res, 200, 'OTP resent please verify');
     }
   }
@@ -114,7 +114,7 @@ export const registerUser = asyncHandler(async (req, res) => {
   });
 
   // send otp
-  sendMessage(email, 'OTP for Hisabee', otpHtml(otp));
+  await sendMessage(email, 'OTP for Hisabee', otpHtml(otp));
 
   return handleResponse(
     res,
@@ -216,7 +216,7 @@ export const resendOtp = asyncHandler(async (req, res) => {
     otp_expires_at: otpExpiry,
   });
 
-  sendMessage(email, 'OTP for Hisabee', otpHtml(otp));
+  await sendMessage(email, 'OTP for Hisabee', otpHtml(otp));
 
   return handleResponse(res, 200, 'OTP resent successfully');
 });
@@ -380,4 +380,79 @@ export const rejectRequest = asyncHandler(async (req, res) => {
   if (!result)
     return handleResponse(res, 404, 'Request not found or already handled');
   return handleResponse(res, 200, 'Friend request rejected', result);
+});
+
+export const forgotPassword = asyncHandler(async (req, res) => {
+  const { email } = req.body;
+  if (!email) return handleResponse(res, 400, 'Email is required');
+
+  const user = await getOneUserByQuery('email', email);
+  if (!user) {
+    // Don't reveal if user exists or not for security
+    return handleResponse(
+      res,
+      200,
+      'If the email exists, a password reset code has been sent',
+    );
+  }
+
+  // Generate 6-digit reset code
+  const resetCode = Math.floor(100000 + Math.random() * 900000);
+  const resetExpiry = new Date(Date.now() + 5 * 60 * 1000); // 5 minutes
+
+  await updateUser(user.user_id, {
+    password_reset_token: resetCode.toString(),
+    password_reset_expires_at: resetExpiry,
+  });
+
+  try {
+    await sendMessage(
+      email,
+      'Password Reset Code - Hisabee',
+      passwordResetHtml(resetCode),
+    );
+    return handleResponse(
+      res,
+      200,
+      'If the email exists, a password reset code has been sent',
+    );
+  } catch (error) {
+    console.error('Error sending password reset email:', error);
+    return handleResponse(res, 500, 'Failed to send password reset email');
+  }
+});
+
+export const resetPassword = asyncHandler(async (req, res) => {
+  const { email, resetCode, newPassword } = req.body;
+
+  if (!email || !resetCode || !newPassword) {
+    return handleResponse(
+      res,
+      400,
+      'Email, reset code, and new password are required',
+    );
+  }
+
+  const user = await getOneUserByQuery('email', email);
+  if (!user) return handleResponse(res, 404, 'User not found');
+
+  if (
+    !user.password_reset_token ||
+    user.password_reset_token !== resetCode.toString() ||
+    new Date() > new Date(user.password_reset_expires_at)
+  ) {
+    return handleResponse(res, 400, 'Invalid or expired reset code');
+  }
+
+  // Hash new password
+  const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+  // Update password and clear reset token
+  await updateUser(user.user_id, {
+    password: hashedPassword,
+    password_reset_token: null,
+    password_reset_expires_at: null,
+  });
+
+  return handleResponse(res, 200, 'Password reset successfully');
 });
