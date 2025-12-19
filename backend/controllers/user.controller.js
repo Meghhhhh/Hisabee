@@ -17,7 +17,6 @@ import asyncHandler from '../utils/asyncHandler.js';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import sendMessage, { otpHtml, passwordResetHtml } from '../utils/mailHandler.js';
-import sendMessage, { otpHtml, passwordResetHtml } from '../utils/mailHandler.js';
 
 const cookieOptions = {
   httpOnly: true,
