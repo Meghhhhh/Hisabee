@@ -13,6 +13,8 @@ export const usePasswordReset = () => {
     try {
       const response = await axios.post('/api/v1/user/request-password-reset', {
         email,
+      }, {
+        withCredentials: true,
       });
 
       if (response.status < 300) {

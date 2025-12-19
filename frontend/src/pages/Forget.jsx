@@ -21,8 +21,6 @@ const ForgetPassword = () => {
 
 		const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 		if (!emailRegex.test(email)) {
-		const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-		if (!emailRegex.test(email)) {
 			setError("Please enter a valid email address");
 			return;
 		}
@@ -30,9 +28,10 @@ const ForgetPassword = () => {
 		const result = await requestPasswordReset(email);
 		if (result.success) {
 			setIsSubmitted(true);
+		} else {
+			setError(result.error || "Failed to send reset link. Please try again.");
 		}
 	};
-}
 
 	// const handleBackToLogin = () => {
 	// 	navigate("/signup");
@@ -165,7 +164,7 @@ const ForgetPassword = () => {
 						)}
 
 						<button
-							onClick={handleSubmit}
+							type="submit"
 							disabled={loading}
 							className="w-full py-3 bg-gradient-to-r from-purple-500 to-pink-500 rounded-xl font-semibold text-white hover:from-purple-600 hover:to-pink-600 transition-all duration-300 transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none flex items-center justify-center space-x-2"
 						>
