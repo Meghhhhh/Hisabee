@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router";
+import React, { useState, useEffect } from 'react';
+import { Link, useNavigate } from 'react-router';
 import {
   ChevronDown,
   ChevronUp,
@@ -33,190 +33,205 @@ import { toast } from 'react-toastify';
 import { setLoading } from '../../store/slice/loading';
 
 export default function EnhancedHisabComponent() {
-	// State and logic from your original
-	const loading = useSelector((state) => state.loading.loading);
-	const [expandedId, setExpandedId] = useState(null);
-	const [currentPage, setCurrentPage] = useState(1);
-	const [loadingForTXN, setLoadingForTXN] = useState(false);
-	const [spentMap, setSpentMap] = useState({});
-	const hisabsPerPage = 5;
-	const dispatch = useDispatch();
-	const [showModal, setShowModal] = useState(false);
-	const [transactionForm, setTransactionForm] = useState({
-		amount: "",
-		description: "",
-		paid_by: "",
-		category: "",
-	});
-	const [selectedHisabId, setSelectedHisabId] = useState(null);
-	const [showAllTransactions, setShowAllTransactions] = useState({});
-	const [error, setError] = useState("");
-	const navigate = useNavigate();
-	const user = useSelector((state) => state.user);
+  // State and logic from your original
+  const loading = useSelector(state => state.loading.loading);
+  const [expandedId, setExpandedId] = useState(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [loadingForTXN, setLoadingForTXN] = useState(false);
+  const [spentMap, setSpentMap] = useState({});
+  const hisabsPerPage = 5;
+  const dispatch = useDispatch();
+  const [showModal, setShowModal] = useState(false);
+  const [transactionForm, setTransactionForm] = useState({
+    amount: '',
+    description: '',
+    paid_by: '',
+    category: '',
+  });
+  const [selectedHisabId, setSelectedHisabId] = useState(null);
+  const [showAllTransactions, setShowAllTransactions] = useState({});
+  const [error, setError] = useState('');
+  const navigate = useNavigate();
+  const user = useSelector(state => state.user);
 
-	// Fetch hisabs
-	useEffect(() => {
-		setLoading(true);
-		const fetchHisabs = async () => {
-			try {
-				const res = await axios.get(
-					`${import.meta.env.VITE_BACKEND_API_URL}/hisabs`,
-					{ withCredentials: true }
-				);
-				dispatch(setHisabs(res.data));
-			} catch (error) {
-				setError("Failed to fetch hisabs. Please try again.");
-				console.error("Error fetching hisabs:", error);
-			} finally {
-				setLoading(false);
-			}
-		};
-		fetchHisabs();
-	}, [dispatch]);
+  // Fetch hisabs
+  useEffect(() => {
+    setLoading(true);
+    const fetchHisabs = async () => {
+      try {
+        const res = await axios.get(`/api/v1/hisabs`, {
+          withCredentials: true,
+        });
+        dispatch(setHisabs(res.data));
+      } catch (error) {
+        setError('Failed to fetch hisabs. Please try again.');
+        console.error('Error fetching hisabs:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchHisabs();
+  }, [dispatch]);
 
-	// Calculate spent for each hisab
-	const hisabs = useSelector((state) => state.hisabs.hisabs);
-	useEffect(() => {
-		const newSpentMap = {};
-		hisabs.forEach((hisab) => {
-			newSpentMap[hisab.id] = (hisab.transactions || []).reduce(
-				(sum, txn) => sum + (parseFloat(txn.amount) || 0),
-				0
-			);
-		});
-		setSpentMap(newSpentMap);
-	}, [hisabs]);
+  // Calculate spent for each hisab
+  const hisabs = useSelector(state => state.hisabs.hisabs);
+  useEffect(() => {
+    const newSpentMap = {};
+    hisabs.forEach(hisab => {
+      newSpentMap[hisab.id] = (hisab.transactions || []).reduce(
+        (sum, txn) => sum + (parseFloat(txn.amount) || 0),
+        0,
+      );
+    });
+    setSpentMap(newSpentMap);
+  }, [hisabs]);
 
-	// Helper: Get all transactions across hisabs
-	const allTransactions = hisabs.flatMap(h => (h.transactions || []).map(txn => ({...txn, hisabTitle: h.title})));
-	const recentTransactions = allTransactions.sort((a, b) => new Date(b.date) - new Date(a.date)).slice(0, 3);
-	const totalSpent = allTransactions.reduce((sum, txn) => sum + (parseFloat(txn.amount) || 0), 0);
-	const totalBudget = hisabs.reduce((sum, h) => sum + (parseFloat(h.total_budget) || 0), 0);
+  // Helper: Get all transactions across hisabs
+  const allTransactions = hisabs.flatMap(h =>
+    (h.transactions || []).map(txn => ({ ...txn, hisabTitle: h.title })),
+  );
+  const recentTransactions = allTransactions
+    .sort((a, b) => new Date(b.date) - new Date(a.date))
+    .slice(0, 3);
+  const totalSpent = allTransactions.reduce(
+    (sum, txn) => sum + (parseFloat(txn.amount) || 0),
+    0,
+  );
+  const totalBudget = hisabs.reduce(
+    (sum, h) => sum + (parseFloat(h.total_budget) || 0),
+    0,
+  );
 
-	// Tips/Info
-	const tips = [
-	  "Tip: Click on a Hisab to expand and see details!",
-	  "Did you know? You can add contributors to split expenses easily.",
-	  "Use the summary button to get a quick overview of your group spending.",
-	  "Hover over transaction categories for color-coded insights!"
-	];
-	const [tipIndex, setTipIndex] = useState(0);
-	useEffect(() => {
-	  const interval = setInterval(() => setTipIndex(i => (i + 1) % tips.length), 6000);
-	  return () => clearInterval(interval);
-	}, []);
+  // Tips/Info
+  const tips = [
+    'Tip: Click on a Hisab to expand and see details!',
+    'Did you know? You can add contributors to split expenses easily.',
+    'Use the summary button to get a quick overview of your group spending.',
+    'Hover over transaction categories for color-coded insights!',
+  ];
+  const [tipIndex, setTipIndex] = useState(0);
+  useEffect(() => {
+    const interval = setInterval(
+      () => setTipIndex(i => (i + 1) % tips.length),
+      6000,
+    );
+    return () => clearInterval(interval);
+  }, []);
 
-	// For leaderboard and events
-	const contributorSpend = {};
-	allTransactions.forEach(txn => {
-	  if (txn.paid_by && txn.paid_by !== 'CONTRIBUTION') {
-	    contributorSpend[txn.paid_by] = (contributorSpend[txn.paid_by] || 0) + parseFloat(txn.amount || 0);
-	  }
-	});
-	const contributorsList = hisabs.flatMap(h => h.contributors || []);
-	const uniqueContributors = Array.from(new Map(contributorsList.map(c => [c.user_id, c])).values());
-	const leaderboard = uniqueContributors
-	  .map(c => ({ ...c, spent: contributorSpend[c.user_id] || 0 }))
-	  .sort((a, b) => b.spent - a.spent)
-	  .slice(0, 3);
+  // For leaderboard and events
+  const contributorSpend = {};
+  allTransactions.forEach(txn => {
+    if (txn.paid_by && txn.paid_by !== 'CONTRIBUTION') {
+      contributorSpend[txn.paid_by] =
+        (contributorSpend[txn.paid_by] || 0) + parseFloat(txn.amount || 0);
+    }
+  });
+  const contributorsList = hisabs.flatMap(h => h.contributors || []);
+  const uniqueContributors = Array.from(
+    new Map(contributorsList.map(c => [c.user_id, c])).values(),
+  );
+  const leaderboard = uniqueContributors
+    .map(c => ({ ...c, spent: contributorSpend[c.user_id] || 0 }))
+    .sort((a, b) => b.spent - a.spent)
+    .slice(0, 3);
 
-	const quotes = [
-	  "Alone we can do so little; together we can do so much. – Helen Keller",
-	  "Many hands make light work.",
-	  "Great things in business are never done by one person. – Steve Jobs",
-	  "A budget is telling your money where to go instead of wondering where it went. – Dave Ramsey",
-	  "Teamwork divides the task and multiplies the success."
-	];
-	const [quoteIndex, setQuoteIndex] = useState(0);
-	useEffect(() => {
-	  const interval = setInterval(() => setQuoteIndex(i => (i + 1) % quotes.length), 8000);
-	  return () => clearInterval(interval);
-	}, []);
+  const quotes = [
+    'Alone we can do so little; together we can do so much. – Helen Keller',
+    'Many hands make light work.',
+    'Great things in business are never done by one person. – Steve Jobs',
+    'A budget is telling your money where to go instead of wondering where it went. – Dave Ramsey',
+    'Teamwork divides the task and multiplies the success.',
+  ];
+  const [quoteIndex, setQuoteIndex] = useState(0);
+  useEffect(() => {
+    const interval = setInterval(
+      () => setQuoteIndex(i => (i + 1) % quotes.length),
+      8000,
+    );
+    return () => clearInterval(interval);
+  }, []);
 
-	// Recent/Upcoming events (use hisab titles and created_at)
-	const events = hisabs
-	  .map(h => ({ title: h.title, date: h.created_at }))
-	  .sort((a, b) => new Date(b.date) - new Date(a.date))
-	  .slice(0, 3);
+  // Recent/Upcoming events (use hisab titles and created_at)
+  const events = hisabs
+    .map(h => ({ title: h.title, date: h.created_at }))
+    .sort((a, b) => new Date(b.date) - new Date(a.date))
+    .slice(0, 3);
 
-	// Contributors for selected modal
-	const contributors = selectedHisabId
-		? hisabs.find((h) => h.id === selectedHisabId)?.contributors || []
-		: [];
+  // Contributors for selected modal
+  const contributors = selectedHisabId
+    ? hisabs.find(h => h.id === selectedHisabId)?.contributors || []
+    : [];
 
-	// Toggle expanded state
-	const toggleHisab = (id) => {
-		setExpandedId(expandedId === id ? null : id);
-	};
+  // Toggle expanded state
+  const toggleHisab = id => {
+    setExpandedId(expandedId === id ? null : id);
+  };
 
-	// Progress bar calculation
-	const calculateProgress = (spent, budget) => {
-		const percentage = (spent / budget) * 100;
-		return Math.min(percentage, 100);
-	};
+  // Progress bar calculation
+  const calculateProgress = (spent, budget) => {
+    const percentage = (spent / budget) * 100;
+    return Math.min(percentage, 100);
+  };
 
-	// Pagination logic
-	const totalPages = Math.ceil(hisabs.length / hisabsPerPage);
-	const indexOfLastHisab = currentPage * hisabsPerPage;
-	const indexOfFirstHisab = indexOfLastHisab - hisabsPerPage;
-	const currentHisabs = hisabs.slice(indexOfFirstHisab, indexOfLastHisab);
+  // Pagination logic
+  const totalPages = Math.ceil(hisabs.length / hisabsPerPage);
+  const indexOfLastHisab = currentPage * hisabsPerPage;
+  const indexOfFirstHisab = indexOfLastHisab - hisabsPerPage;
+  const currentHisabs = hisabs.slice(indexOfFirstHisab, indexOfLastHisab);
 
-	const paginate = (pageNumber) => {
-		setExpandedId(null);
-		setCurrentPage(pageNumber);
-	};
+  const paginate = pageNumber => {
+    setExpandedId(null);
+    setCurrentPage(pageNumber);
+  };
 
-	// Format date with Indian locale
-	const formatDate = (dateString) => {
-		const options = { year: "numeric", month: "short", day: "numeric" };
-		return new Date(dateString).toLocaleDateString("en-IN", options);
-	};
+  // Format date with Indian locale
+  const formatDate = dateString => {
+    const options = { year: 'numeric', month: 'short', day: 'numeric' };
+    return new Date(dateString).toLocaleDateString('en-IN', options);
+  };
 
-	// Category color mapping
-	const getCategoryColor = (category) => {
-		const colors = {
-			Accommodation: "bg-purple-500",
-			Transportation: "bg-blue-400",
-			Food: "bg-yellow-400",
-			Utilities: "bg-red-400",
-			Miscellaneous: "bg-gray-400",
-			Venue: "bg-pink-400",
-		};
-		return colors[category] || "bg-gray-400";
-	};
+  // Category color mapping
+  const getCategoryColor = category => {
+    const colors = {
+      Accommodation: 'bg-purple-500',
+      Transportation: 'bg-blue-400',
+      Food: 'bg-yellow-400',
+      Utilities: 'bg-red-400',
+      Miscellaneous: 'bg-gray-400',
+      Venue: 'bg-pink-400',
+    };
+    return colors[category] || 'bg-gray-400';
+  };
 
-	// Responsive grid columns
-	const gridCols =
-		expandedId !== null
-			? "grid-cols-1 md:grid-cols-2"
-			: "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3";
+  // Responsive grid columns
+  const gridCols =
+    expandedId !== null
+      ? 'grid-cols-1 md:grid-cols-2'
+      : 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3';
 
-	// Loading state
-	if (loading) {
-		return (
-			<div className="min-h-screen flex items-center justify-center bg-black text-white">
-				<div className="backdrop-blur-sm bg-white/5 rounded-3xl p-8 border border-white/10 shadow-2xl inline-block">
-					<div className="animate-pulse flex flex-col items-center">
-						<div className="w-20 h-20 rounded-full bg-gradient-to-r from-indigo-500/40 to-purple-500/40 flex items-center justify-center mb-4">
-							<div className="w-10 h-10 bg-white/60 rounded-full"></div>
-						</div>
-						<h2 className="text-xl font-semibold text-transparent bg-gradient-to-r from-indigo-300 to-purple-300 bg-clip-text">
-							Loading your hisabs...
-						</h2>
-					</div>
-				</div>
-			</div>
-		);
-	}
+  // Loading state
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-black text-white">
+        <div className="backdrop-blur-sm bg-white/5 rounded-3xl p-8 border border-white/10 shadow-2xl inline-block">
+          <div className="animate-pulse flex flex-col items-center">
+            <div className="w-20 h-20 rounded-full bg-gradient-to-r from-indigo-500/40 to-purple-500/40 flex items-center justify-center mb-4">
+              <div className="w-10 h-10 bg-white/60 rounded-full"></div>
+            </div>
+            <h2 className="text-xl font-semibold text-transparent bg-gradient-to-r from-indigo-300 to-purple-300 bg-clip-text">
+              Loading your hisabs...
+            </h2>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   // Delete hisab handler
   const handleDeleteHisab = async id => {
     setError('');
     try {
-      await axios.delete(
-        `${import.meta.env.VITE_BACKEND_API_URL}/hisabs/${id}`,
-        { withCredentials: true },
-      );
+      await axios.delete(`api/v1/hisabs/${id}`, { withCredentials: true });
       dispatch(deleteHisab(id));
       toast.success('Hisab deleted successfully');
     } catch (err) {
@@ -250,150 +265,228 @@ export default function EnhancedHisabComponent() {
         ))}
       </div>
 
-			<div className="relative z-10 pb-8 px-4 sm:px-6 md:px-8 w-full max-w-7xl mx-auto">
-				{/* Welcome Banner */}
-				<div className="rounded-2xl bg-gradient-to-r from-indigo-500/20 to-purple-500/20 p-5 mb-6 flex flex-col md:flex-row items-center justify-between gap-4 shadow-lg border border-white/10 animate-fade-in">
-					<div>
-						<h2 className="text-2xl font-bold text-white mb-1 flex items-center gap-2">
-							<Sparkles className="text-indigo-300 animate-pulse" size={24} />
-							Welcome{user?.name ? `, ${user.name}` : ''}!
-						</h2>
-						<p className="text-gray-300 text-sm italic">"Track, split, and settle with ease. Your financial harmony starts here!"</p>
-						<div className="mt-3 text-indigo-200 text-xs italic animate-fade-in-slow">{quotes[quoteIndex]}</div>
-					</div>
-					<div className="flex gap-6 mt-4 md:mt-0">
-						<div className="flex flex-col items-center">
-							<span className="text-lg font-bold text-indigo-300 animate-count">{hisabs.length}</span>
-							<span className="text-xs text-gray-400">Hisabs</span>
-						</div>
-						<div className="flex flex-col items-center">
-							<span className="text-lg font-bold text-green-300 animate-count">₹{totalSpent.toLocaleString()}</span>
-							<span className="text-xs text-gray-400">Total Spent</span>
-						</div>
-						<div className="flex flex-col items-center">
-							<span className="text-lg font-bold text-cyan-300 animate-count">₹{(totalBudget - totalSpent).toLocaleString()}</span>
-							<span className="text-xs text-gray-400">Remaining</span>
-						</div>
-					</div>
-				</div>
+      <div className="relative z-10 pb-8 px-4 sm:px-6 md:px-8 w-full max-w-7xl mx-auto">
+        {/* Welcome Banner */}
+        <div className="rounded-2xl bg-gradient-to-r from-indigo-500/20 to-purple-500/20 p-5 mb-6 flex flex-col md:flex-row items-center justify-between gap-4 shadow-lg border border-white/10 animate-fade-in">
+          <div>
+            <h2 className="text-2xl font-bold text-white mb-1 flex items-center gap-2">
+              <Sparkles className="text-indigo-300 animate-pulse" size={24} />
+              Welcome{user?.name ? `, ${user.name}` : ''}!
+            </h2>
+            <p className="text-gray-300 text-sm italic">
+              "Track, split, and settle with ease. Your financial harmony starts
+              here!"
+            </p>
+            <div className="mt-3 text-indigo-200 text-xs italic animate-fade-in-slow">
+              {quotes[quoteIndex]}
+            </div>
+          </div>
+          <div className="flex gap-6 mt-4 md:mt-0">
+            <div className="flex flex-col items-center">
+              <span className="text-lg font-bold text-indigo-300 animate-count">
+                {hisabs.length}
+              </span>
+              <span className="text-xs text-gray-400">Hisabs</span>
+            </div>
+            <div className="flex flex-col items-center">
+              <span className="text-lg font-bold text-green-300 animate-count">
+                ₹{totalSpent.toLocaleString()}
+              </span>
+              <span className="text-xs text-gray-400">Total Spent</span>
+            </div>
+            <div className="flex flex-col items-center">
+              <span className="text-lg font-bold text-cyan-300 animate-count">
+                ₹{(totalBudget - totalSpent).toLocaleString()}
+              </span>
+              <span className="text-xs text-gray-400">Remaining</span>
+            </div>
+          </div>
+        </div>
 
-				{/* Financial Overview & Leaderboard */}
-				<div className="flex flex-col md:flex-row gap-6 mb-8">
-					{/* Financial Overview Card */}
-					<div className="flex-1 bg-white/5 rounded-2xl p-5 border border-white/10 shadow-md animate-fade-in flex flex-col items-center">
-						<h3 className="text-lg font-semibold text-white mb-3 flex items-center gap-2">
-							<BarChart2 size={18} /> Financial Overview
-						</h3>
-						{/* Static Bar Chart */}
-						<div className="w-full flex flex-col items-center mb-4">
-							<div className="w-full h-6 flex items-end gap-2">
-								<div className="h-6 bg-indigo-500 rounded-l-lg" style={{ width: `${Math.min((totalSpent / (totalBudget || 1)) * 100, 100)}%`, minWidth: '10%' }}></div>
-								<div className="h-6 bg-cyan-500 rounded-r-lg" style={{ width: `${Math.max(100 - (totalSpent / (totalBudget || 1)) * 100, 0)}%`, minWidth: '10%' }}></div>
-							</div>
-							<div className="flex justify-between w-full text-xs text-gray-400 mt-1">
-								<span>Spent</span>
-								<span>Budget</span>
-							</div>
-						</div>
-						<div className="flex justify-between w-full text-sm text-gray-300">
-							<span>₹{totalSpent.toLocaleString()}</span>
-							<span>of ₹{totalBudget.toLocaleString()}</span>
-						</div>
-					</div>
-					{/* Leaderboard */}
-					<div className="w-full md:w-72 flex-shrink-0 bg-white/5 rounded-2xl p-5 border border-white/10 shadow-md flex flex-col items-center animate-fade-in">
-						<h3 className="text-lg font-semibold text-white mb-3 flex items-center gap-2">
-							<Star size={18} className="text-yellow-300" /> Top Contributors
-						</h3>
-						{leaderboard.length === 0 ? (
-							<p className="text-gray-400 text-sm">No contributors yet.</p>
-						) : (
-							<ul className="space-y-2 w-full">
-								{leaderboard.map((c, idx) => (
-									<li key={c.user_id} className="flex items-center gap-2 bg-gradient-to-r from-indigo-500/10 to-purple-500/10 rounded-lg p-2">
-										<span className="font-bold text-indigo-200">#{idx + 1}</span>
-										<span className="flex-1 text-white font-medium truncate">{c.name}</span>
-										<span className="text-green-300 font-semibold">₹{c.spent.toLocaleString()}</span>
-									</li>
-								))}
-							</ul>
-						)}
-					</div>
-				</div>
+        {/* Financial Overview & Leaderboard */}
+        <div className="flex flex-col md:flex-row gap-6 mb-8">
+          {/* Financial Overview Card */}
+          <div className="flex-1 bg-white/5 rounded-2xl p-5 border border-white/10 shadow-md animate-fade-in flex flex-col items-center">
+            <h3 className="text-lg font-semibold text-white mb-3 flex items-center gap-2">
+              <BarChart2 size={18} /> Financial Overview
+            </h3>
+            {/* Static Bar Chart */}
+            <div className="w-full flex flex-col items-center mb-4">
+              <div className="w-full h-6 flex items-end gap-2">
+                <div
+                  className="h-6 bg-indigo-500 rounded-l-lg"
+                  style={{
+                    width: `${Math.min(
+                      (totalSpent / (totalBudget || 1)) * 100,
+                      100,
+                    )}%`,
+                    minWidth: '10%',
+                  }}
+                ></div>
+                <div
+                  className="h-6 bg-cyan-500 rounded-r-lg"
+                  style={{
+                    width: `${Math.max(
+                      100 - (totalSpent / (totalBudget || 1)) * 100,
+                      0,
+                    )}%`,
+                    minWidth: '10%',
+                  }}
+                ></div>
+              </div>
+              <div className="flex justify-between w-full text-xs text-gray-400 mt-1">
+                <span>Spent</span>
+                <span>Budget</span>
+              </div>
+            </div>
+            <div className="flex justify-between w-full text-sm text-gray-300">
+              <span>₹{totalSpent.toLocaleString()}</span>
+              <span>of ₹{totalBudget.toLocaleString()}</span>
+            </div>
+          </div>
+          {/* Leaderboard */}
+          <div className="w-full md:w-72 flex-shrink-0 bg-white/5 rounded-2xl p-5 border border-white/10 shadow-md flex flex-col items-center animate-fade-in">
+            <h3 className="text-lg font-semibold text-white mb-3 flex items-center gap-2">
+              <Star size={18} className="text-yellow-300" /> Top Contributors
+            </h3>
+            {leaderboard.length === 0 ? (
+              <p className="text-gray-400 text-sm">No contributors yet.</p>
+            ) : (
+              <ul className="space-y-2 w-full">
+                {leaderboard.map((c, idx) => (
+                  <li
+                    key={c.user_id}
+                    className="flex items-center gap-2 bg-gradient-to-r from-indigo-500/10 to-purple-500/10 rounded-lg p-2"
+                  >
+                    <span className="font-bold text-indigo-200">
+                      #{idx + 1}
+                    </span>
+                    <span className="flex-1 text-white font-medium truncate">
+                      {c.name}
+                    </span>
+                    <span className="text-green-300 font-semibold">
+                      ₹{c.spent.toLocaleString()}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
+        </div>
 
-				{/* Recent Activity Feed & Tips */}
-				<div className="flex flex-col md:flex-row gap-6 mb-8">
-					<div className="flex-1 bg-white/5 rounded-2xl p-5 border border-white/10 shadow-md animate-fade-in">
-						<h3 className="text-lg font-semibold text-white mb-3 flex items-center gap-2">
-							<TrendingUp size={18} /> Recent Activity
-						</h3>
-						{recentTransactions.length === 0 ? (
-							<p className="text-gray-400 text-sm">No recent transactions yet.</p>
-						) : (
-							<ul className="space-y-3">
-								{recentTransactions.map((txn, idx) => (
-									<li key={idx} className="flex items-center gap-3 hover:bg-white/10 rounded-lg p-2 transition">
-										<span className={`w-8 h-8 rounded-lg flex items-center justify-center text-white ${getCategoryColor(txn.category)}`}>{txn.category === "Food" ? <DollarSign size={14}/> : txn.category === "Transportation" ? <TrendingUp size={14}/> : txn.category === "Accommodation" ? <Wallet size={14}/> : txn.category === "Utilities" ? <Wallet size={14}/> : txn.category === "Venue" ? <Users size={14}/> : <DollarSign size={14}/>}</span>
-										<div className="flex-1">
-											<div className="font-medium text-white text-sm">{txn.description}</div>
-											<div className="text-xs text-gray-400">{txn.hisabTitle} • {formatDate(txn.date)}</div>
-										</div>
-										<span className="font-semibold text-green-400 text-sm">₹{txn.amount?.toLocaleString()}</span>
-									</li>
-								))}
-							</ul>
-						)}
-					</div>
-					<div className="w-full md:w-72 flex-shrink-0 bg-white/5 rounded-2xl p-5 border border-white/10 shadow-md flex flex-col items-center justify-center animate-fade-in">
-						<Info size={28} className="text-indigo-300 mb-2 animate-bounce" />
-						<div className="text-base text-indigo-200 text-center font-medium mb-2">Did you know?</div>
-						<div className="text-sm text-gray-300 text-center italic min-h-[48px]">{tips[tipIndex]}</div>
-					</div>
-				</div>
+        {/* Recent Activity Feed & Tips */}
+        <div className="flex flex-col md:flex-row gap-6 mb-8">
+          <div className="flex-1 bg-white/5 rounded-2xl p-5 border border-white/10 shadow-md animate-fade-in">
+            <h3 className="text-lg font-semibold text-white mb-3 flex items-center gap-2">
+              <TrendingUp size={18} /> Recent Activity
+            </h3>
+            {recentTransactions.length === 0 ? (
+              <p className="text-gray-400 text-sm">
+                No recent transactions yet.
+              </p>
+            ) : (
+              <ul className="space-y-3">
+                {recentTransactions.map((txn, idx) => (
+                  <li
+                    key={idx}
+                    className="flex items-center gap-3 hover:bg-white/10 rounded-lg p-2 transition"
+                  >
+                    <span
+                      className={`w-8 h-8 rounded-lg flex items-center justify-center text-white ${getCategoryColor(
+                        txn.category,
+                      )}`}
+                    >
+                      {txn.category === 'Food' ? (
+                        <DollarSign size={14} />
+                      ) : txn.category === 'Transportation' ? (
+                        <TrendingUp size={14} />
+                      ) : txn.category === 'Accommodation' ? (
+                        <Wallet size={14} />
+                      ) : txn.category === 'Utilities' ? (
+                        <Wallet size={14} />
+                      ) : txn.category === 'Venue' ? (
+                        <Users size={14} />
+                      ) : (
+                        <DollarSign size={14} />
+                      )}
+                    </span>
+                    <div className="flex-1">
+                      <div className="font-medium text-white text-sm">
+                        {txn.description}
+                      </div>
+                      <div className="text-xs text-gray-400">
+                        {txn.hisabTitle} • {formatDate(txn.date)}
+                      </div>
+                    </div>
+                    <span className="font-semibold text-green-400 text-sm">
+                      ₹{txn.amount?.toLocaleString()}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
+          <div className="w-full md:w-72 flex-shrink-0 bg-white/5 rounded-2xl p-5 border border-white/10 shadow-md flex flex-col items-center justify-center animate-fade-in">
+            <Info size={28} className="text-indigo-300 mb-2 animate-bounce" />
+            <div className="text-base text-indigo-200 text-center font-medium mb-2">
+              Did you know?
+            </div>
+            <div className="text-sm text-gray-300 text-center italic min-h-[48px]">
+              {tips[tipIndex]}
+            </div>
+          </div>
+        </div>
 
-				{/* Upcoming/Recent Events */}
-				<div className="mb-8">
-					<div className="bg-white/5 rounded-2xl p-5 border border-white/10 shadow-md animate-fade-in">
-						<h3 className="text-lg font-semibold text-white mb-3 flex items-center gap-2">
-							<CalendarIcon size={18} /> Recent/Upcoming Events
-						</h3>
-						{events.length === 0 ? (
-							<p className="text-gray-400 text-sm">No events yet.</p>
-						) : (
-							<ul className="space-y-2">
-								{events.map((e, idx) => (
-									<li key={idx} className="flex items-center gap-2 bg-gradient-to-r from-blue-500/10 to-cyan-500/10 rounded-lg p-2">
-										<span className="font-medium text-white truncate">{e.title}</span>
-										<span className="text-xs text-gray-400">{formatDate(e.date)}</span>
-									</li>
-								))}
-							</ul>
-						)}
-					</div>
-				</div>
+        {/* Upcoming/Recent Events */}
+        <div className="mb-8">
+          <div className="bg-white/5 rounded-2xl p-5 border border-white/10 shadow-md animate-fade-in">
+            <h3 className="text-lg font-semibold text-white mb-3 flex items-center gap-2">
+              <CalendarIcon size={18} /> Recent/Upcoming Events
+            </h3>
+            {events.length === 0 ? (
+              <p className="text-gray-400 text-sm">No events yet.</p>
+            ) : (
+              <ul className="space-y-2">
+                {events.map((e, idx) => (
+                  <li
+                    key={idx}
+                    className="flex items-center gap-2 bg-gradient-to-r from-blue-500/10 to-cyan-500/10 rounded-lg p-2"
+                  >
+                    <span className="font-medium text-white truncate">
+                      {e.title}
+                    </span>
+                    <span className="text-xs text-gray-400">
+                      {formatDate(e.date)}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
+        </div>
 
-				{/* Error message */}
-				{error && (
-					<div className="backdrop-blur-sm bg-red-500/10 border border-red-400/30 rounded-2xl p-3 mb-6 flex items-center gap-2 text-red-300">
-						<AlertCircle size={18} />
-						<span>{error}</span>
-					</div>
-				)}
+        {/* Error message */}
+        {error && (
+          <div className="backdrop-blur-sm bg-red-500/10 border border-red-400/30 rounded-2xl p-3 mb-6 flex items-center gap-2 text-red-300">
+            <AlertCircle size={18} />
+            <span>{error}</span>
+          </div>
+        )}
 
-				{/* Hisab Cards */}
-				<div className={`${gridCols} gap-4 md:gap-6 mb-8`}>
-					{currentHisabs.map((hisab) => {
-						const progress = calculateProgress(
-							spentMap[hisab.id] || 0,
-							hisab.total_budget
-						);
-						const progressColor =
-							progress > 90
-								? "bg-red-400"
-								: progress > 75
-								? "bg-yellow-400"
-								: "bg-green-400";
-						const remaining = hisab.total_budget - (spentMap[hisab.id] || 0);
+        {/* Hisab Cards */}
+        <div className={`${gridCols} gap-4 md:gap-6 mb-8`}>
+          {currentHisabs.map(hisab => {
+            const progress = calculateProgress(
+              spentMap[hisab.id] || 0,
+              hisab.total_budget,
+            );
+            const progressColor =
+              progress > 90
+                ? 'bg-red-400'
+                : progress > 75
+                ? 'bg-yellow-400'
+                : 'bg-green-400';
+            const remaining = hisab.total_budget - (spentMap[hisab.id] || 0);
 
             return (
               <div
@@ -488,415 +581,435 @@ export default function EnhancedHisabComponent() {
                       </div>
                     </div>
 
-										<div className="mb-4">
-											<h4 className="font-medium text-gray-300 mb-2 text-sm sm:text-base">
-												Contributors
-											</h4>
-											<div className="flex flex-wrap gap-2">
-												{hisab.contributors.map((contributor) => (
-													<div
-														key={contributor.user_id}
-														className="px-2 py-1 bg-indigo-500/20 text-indigo-200 rounded-full text-xs sm:text-sm"
-													>
-														{contributor.name}
-													</div>
-												))}
-											</div>
-										</div>
+                    <div className="mb-4">
+                      <h4 className="font-medium text-gray-300 mb-2 text-sm sm:text-base">
+                        Contributors
+                      </h4>
+                      <div className="flex flex-wrap gap-2">
+                        {hisab.contributors.map(contributor => (
+                          <div
+                            key={contributor.user_id}
+                            className="px-2 py-1 bg-indigo-500/20 text-indigo-200 rounded-full text-xs sm:text-sm"
+                          >
+                            {contributor.name}
+                          </div>
+                        ))}
+                      </div>
+                    </div>
 
-										<div className="mb-3">
-											<div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 sm:gap-0 mb-3">
-												<h4 className="font-medium text-gray-300 text-sm sm:text-base">
-													Transactions
-												</h4>
-												<div className="flex gap-2">
-													<button
-														onClick={() => {
-															setSelectedHisabId(hisab.id);
-															setShowModal(true);
-															setTransactionForm({
-																amount: "",
-																description: "",
-																paid_by: "CONTRIBUTION",
-																category: "",
-															});
-														}}
-														className="flex items-center gap-1 text-xs sm:text-sm font-medium px-2 sm:px-3 py-1 bg-gradient-to-r from-indigo-400/40 to-purple-400/40 border border-indigo-300/30 rounded-xl text-white hover:from-indigo-400/60 hover:to-purple-400/60 transition-all duration-300 transform hover:scale-105"
-													>
-														<Plus className="w-3 h-3 sm:w-4 sm:h-4" />
-														<span>Add Tx</span>
-													</button>
-													<button
-														onClick={() => navigate(`/summary/${hisab.id}`)}
-														className="flex items-center gap-1 text-xs sm:text-sm font-medium px-2 sm:px-3 py-1 bg-gradient-to-r from-green-400/40 to-emerald-400/40 border border-green-300/30 rounded-xl text-white hover:from-green-400/60 hover:to-emerald-400/60 transition-all duration-300 transform hover:scale-105"
-													>
-														<TrendingUp className="w-3 h-3 sm:w-4 sm:h-4" />
-														<span>Summary</span>
-													</button>
-												</div>
-											</div>
-										</div>
+                    <div className="mb-3">
+                      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 sm:gap-0 mb-3">
+                        <h4 className="font-medium text-gray-300 text-sm sm:text-base">
+                          Transactions
+                        </h4>
+                        <div className="flex gap-2">
+                          <button
+                            onClick={() => {
+                              setSelectedHisabId(hisab.id);
+                              setShowModal(true);
+                              setTransactionForm({
+                                amount: '',
+                                description: '',
+                                paid_by: 'CONTRIBUTION',
+                                category: '',
+                              });
+                            }}
+                            className="flex items-center gap-1 text-xs sm:text-sm font-medium px-2 sm:px-3 py-1 bg-gradient-to-r from-indigo-400/40 to-purple-400/40 border border-indigo-300/30 rounded-xl text-white hover:from-indigo-400/60 hover:to-purple-400/60 transition-all duration-300 transform hover:scale-105"
+                          >
+                            <Plus className="w-3 h-3 sm:w-4 sm:h-4" />
+                            <span>Add Tx</span>
+                          </button>
+                          <button
+                            onClick={() => navigate(`/summary/${hisab.id}`)}
+                            className="flex items-center gap-1 text-xs sm:text-sm font-medium px-2 sm:px-3 py-1 bg-gradient-to-r from-green-400/40 to-emerald-400/40 border border-green-300/30 rounded-xl text-white hover:from-green-400/60 hover:to-emerald-400/60 transition-all duration-300 transform hover:scale-105"
+                          >
+                            <TrendingUp className="w-3 h-3 sm:w-4 sm:h-4" />
+                            <span>Summary</span>
+                          </button>
+                        </div>
+                      </div>
+                    </div>
 
-										<div className="space-y-2 sm:space-y-3">
-											{(() => {
-												const txns = hisab.transactions || [];
-												const showAll = showAllTransactions[hisab.id];
-												const visibleTxns = showAll ? txns : txns.slice(0, 3);
-												return (
-													<>
-														{visibleTxns.length > 0 ? (
-															visibleTxns.map((txn, idx) => (
-																<div
-																	key={idx}
-																	className="bg-gradient-to-r from-white/5 to-white/10 hover:from-white/10 hover:to-white/15 rounded-lg p-3 sm:p-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 sm:gap-4 transition-all duration-300 transform hover:scale-[1.02]"
-																>
-																	<div className="flex items-center gap-2 sm:gap-3">
-																		<div
-																			className={`${getCategoryColor(
-																				txn.category
-																			)} w-8 h-8 sm:w-10 sm:h-10 rounded-lg flex items-center justify-center text-white`}
-																		>
-																			{txn.category === "Food" && (
-																				<DollarSign size={14} />
-																			)}
-																			{txn.category === "Transportation" && (
-																				<TrendingUp size={14} />
-																			)}
-																			{txn.category === "Accommodation" && (
-																				<Wallet size={14} />
-																			)}
-																			{txn.category === "Utilities" && (
-																				<Wallet size={14} />
-																			)}
-																			{txn.category === "Venue" && (
-																				<Users size={14} />
-																			)}
-																			{txn.category === "Miscellaneous" && (
-																				<DollarSign size={14} />
-																			)}
-																		</div>
-																		<div>
-																			<div className="font-medium text-sm sm:text-base text-white">
-																				{txn.description}
-																			</div>
-																			<div className="text-xs sm:text-sm text-gray-300 flex flex-wrap items-center gap-1 sm:gap-2">
-																				<span>{formatDate(txn.date)}</span>
-																				<span>•</span>
-																				<span>Paid by {txn.paid_by}</span>
-																			</div>
-																		</div>
-																	</div>
-																	<div className="font-semibold text-sm sm:text-base text-green-400">
-																		₹{txn.amount?.toLocaleString()}
-																	</div>
-																</div>
-															))
-														) : (
-															<div className="flex items-center gap-2 sm:gap-3 p-3 sm:p-4 bg-white/5 rounded-lg">
-																<div className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg bg-gradient-to-r from-blue-500/20 to-cyan-500/20 flex items-center justify-center">
-																	<DollarSign className="w-4 h-4 text-white" />
-																</div>
-																<div className="font-medium text-sm sm:text-base text-gray-300">
-																	No transactions yet
-																</div>
-															</div>
-														)}
-														{txns.length > 3 && (
-															<button
-																onClick={() =>
-																	setShowAllTransactions((prev) => ({
-																		...prev,
-																		[hisab.id]: !prev[hisab.id],
-																	}))
-																}
-																className="mt-2 text-sm text-cyan-300 hover:text-cyan-200 transition-colors"
-															>
-																{showAll ? "Show Less" : "Show All"}
-															</button>
-														)}
-													</>
-												);
-											})()}
-										</div>
-									</div>
-								)}
-							</div>
-						);
-					})}
-				</div>
+                    <div className="space-y-2 sm:space-y-3">
+                      {(() => {
+                        const txns = hisab.transactions || [];
+                        const showAll = showAllTransactions[hisab.id];
+                        const visibleTxns = showAll ? txns : txns.slice(0, 3);
+                        return (
+                          <>
+                            {visibleTxns.length > 0 ? (
+                              visibleTxns.map((txn, idx) => (
+                                <div
+                                  key={idx}
+                                  className="bg-gradient-to-r from-white/5 to-white/10 hover:from-white/10 hover:to-white/15 rounded-lg p-3 sm:p-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 sm:gap-4 transition-all duration-300 transform hover:scale-[1.02]"
+                                >
+                                  <div className="flex items-center gap-2 sm:gap-3">
+                                    <div
+                                      className={`${getCategoryColor(
+                                        txn.category,
+                                      )} w-8 h-8 sm:w-10 sm:h-10 rounded-lg flex items-center justify-center text-white`}
+                                    >
+                                      {txn.category === 'Food' && (
+                                        <DollarSign size={14} />
+                                      )}
+                                      {txn.category === 'Transportation' && (
+                                        <TrendingUp size={14} />
+                                      )}
+                                      {txn.category === 'Accommodation' && (
+                                        <Wallet size={14} />
+                                      )}
+                                      {txn.category === 'Utilities' && (
+                                        <Wallet size={14} />
+                                      )}
+                                      {txn.category === 'Venue' && (
+                                        <Users size={14} />
+                                      )}
+                                      {txn.category === 'Miscellaneous' && (
+                                        <DollarSign size={14} />
+                                      )}
+                                    </div>
+                                    <div>
+                                      <div className="font-medium text-sm sm:text-base text-white">
+                                        {txn.description}
+                                      </div>
+                                      <div className="text-xs sm:text-sm text-gray-300 flex flex-wrap items-center gap-1 sm:gap-2">
+                                        <span>{formatDate(txn.date)}</span>
+                                        <span>•</span>
+                                        <span>Paid by {txn.paid_by}</span>
+                                      </div>
+                                    </div>
+                                  </div>
+                                  <div className="font-semibold text-sm sm:text-base text-green-400">
+                                    ₹{txn.amount?.toLocaleString()}
+                                  </div>
+                                </div>
+                              ))
+                            ) : (
+                              <div className="flex items-center gap-2 sm:gap-3 p-3 sm:p-4 bg-white/5 rounded-lg">
+                                <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg bg-gradient-to-r from-blue-500/20 to-cyan-500/20 flex items-center justify-center">
+                                  <DollarSign className="w-4 h-4 text-white" />
+                                </div>
+                                <div className="font-medium text-sm sm:text-base text-gray-300">
+                                  No transactions yet
+                                </div>
+                              </div>
+                            )}
+                            {txns.length > 3 && (
+                              <button
+                                onClick={() =>
+                                  setShowAllTransactions(prev => ({
+                                    ...prev,
+                                    [hisab.id]: !prev[hisab.id],
+                                  }))
+                                }
+                                className="mt-2 text-sm text-cyan-300 hover:text-cyan-200 transition-colors"
+                              >
+                                {showAll ? 'Show Less' : 'Show All'}
+                              </button>
+                            )}
+                          </>
+                        );
+                      })()}
+                    </div>
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </div>
 
-				{/* Pagination */}
-				{totalPages > 1 && (
-					<div className="mt-4 sm:mt-6">
-						<div className="flex justify-center items-center gap-1 sm:gap-2">
-							<button
-								onClick={() => paginate(Math.max(1, currentPage - 1))}
-								disabled={currentPage === 1}
-								className={`w-8 h-8 sm:w-10 sm:h-10 rounded-full border flex items-center justify-center transition-all duration-300 transform hover:scale-105 ${
-									currentPage === 1
-										? "border-gray-600/30 text-gray-500 cursor-not-allowed"
-										: "border-gray-400/20 text-white hover:bg-white/10"
-								}`}
-							>
-								<ChevronLeft size={16} />
-							</button>
-							<div className="flex flex-wrap justify-center gap-1 sm:gap-2">
-								{[...Array(totalPages)].map((_, index) => (
-									<button
-										key={index}
-										onClick={() => paginate(index + 1)}
-										className={`w-8 h-8 sm:w-10 sm:h-10 rounded-full border flex items-center justify-center transition-all duration-300 transform hover:scale-105 ${
-											currentPage === index + 1
-												? "border-indigo-400 bg-gradient-to-r from-indigo-500/40 to-purple-500/40 text-white"
-												: "border-gray-400/20 text-white hover:bg-white/10"
-										}`}
-									>
-										{index + 1}
-									</button>
-								))}
-							</div>
-							<button
-								onClick={() => paginate(Math.min(totalPages, currentPage + 1))}
-								disabled={currentPage === totalPages}
-								className={`w-8 h-8 sm:w-10 sm:h-10 rounded-full border flex items-center justify-center transition-all duration-300 transform hover:scale-105 ${
-									currentPage === totalPages
-										? "border-gray-600/30 text-gray-500 cursor-not-allowed"
-										: "border-gray-400/20 text-white hover:bg-white/10"
-								}`}
-							>
-								<ChevronRight size={16} />
-							</button>
-						</div>
-					</div>
-				)}
-			</div>
+        {/* Pagination */}
+        {totalPages > 1 && (
+          <div className="mt-4 sm:mt-6">
+            <div className="flex justify-center items-center gap-1 sm:gap-2">
+              <button
+                onClick={() => paginate(Math.max(1, currentPage - 1))}
+                disabled={currentPage === 1}
+                className={`w-8 h-8 sm:w-10 sm:h-10 rounded-full border flex items-center justify-center transition-all duration-300 transform hover:scale-105 ${
+                  currentPage === 1
+                    ? 'border-gray-600/30 text-gray-500 cursor-not-allowed'
+                    : 'border-gray-400/20 text-white hover:bg-white/10'
+                }`}
+              >
+                <ChevronLeft size={16} />
+              </button>
+              <div className="flex flex-wrap justify-center gap-1 sm:gap-2">
+                {[...Array(totalPages)].map((_, index) => (
+                  <button
+                    key={index}
+                    onClick={() => paginate(index + 1)}
+                    className={`w-8 h-8 sm:w-10 sm:h-10 rounded-full border flex items-center justify-center transition-all duration-300 transform hover:scale-105 ${
+                      currentPage === index + 1
+                        ? 'border-indigo-400 bg-gradient-to-r from-indigo-500/40 to-purple-500/40 text-white'
+                        : 'border-gray-400/20 text-white hover:bg-white/10'
+                    }`}
+                  >
+                    {index + 1}
+                  </button>
+                ))}
+              </div>
+              <button
+                onClick={() => paginate(Math.min(totalPages, currentPage + 1))}
+                disabled={currentPage === totalPages}
+                className={`w-8 h-8 sm:w-10 sm:h-10 rounded-full border flex items-center justify-center transition-all duration-300 transform hover:scale-105 ${
+                  currentPage === totalPages
+                    ? 'border-gray-600/30 text-gray-500 cursor-not-allowed'
+                    : 'border-gray-400/20 text-white hover:bg-white/10'
+                }`}
+              >
+                <ChevronRight size={16} />
+              </button>
+            </div>
+          </div>
+        )}
+      </div>
 
-			{/* Floating Action Button for New Hisab */}
-			<Link
-				to="/newhisab"
-				className="fixed bottom-8 right-8 z-50 group"
-				title="Create New Hisab"
-			>
-				<button
-					className="w-16 h-16 rounded-full bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 shadow-2xl flex items-center justify-center text-white text-3xl font-bold border-4 border-white/20 animate-fab-glow group-hover:scale-110 transition-transform duration-300 focus:outline-none"
-					style={{ boxShadow: '0 4px 32px 0 rgba(99,102,241,0.4)' }}
-				>
-					<Plus size={36} className="drop-shadow-lg" />
-				</button>
-				<span className="absolute -top-8 right-1/2 translate-x-1/2 bg-black/80 text-white text-xs rounded px-3 py-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none shadow-lg">
-					New Hisab
-				</span>
-			</Link>
+      {/* Floating Action Button for New Hisab */}
+      <Link
+        to="/newhisab"
+        className="fixed bottom-8 right-8 z-50 group"
+        title="Create New Hisab"
+      >
+        <button
+          className="w-16 h-16 rounded-full bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 shadow-2xl flex items-center justify-center text-white text-3xl font-bold border-4 border-white/20 animate-fab-glow group-hover:scale-110 transition-transform duration-300 focus:outline-none"
+          style={{ boxShadow: '0 4px 32px 0 rgba(99,102,241,0.4)' }}
+        >
+          <Plus size={36} className="drop-shadow-lg" />
+        </button>
+        <span className="absolute -top-8 right-1/2 translate-x-1/2 bg-black/80 text-white text-xs rounded px-3 py-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none shadow-lg">
+          New Hisab
+        </span>
+      </Link>
 
-			{/* Modern Glass Card Modal */}
-			{showModal && (
-				<div className="fixed inset-0 flex items-center justify-center z-50 backdrop-blur-md bg-black/50">
-					<div
-						className="bg-white/5 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/10 p-5 sm:p-6 md:p-7 w-full max-w-xs sm:max-w-sm md:max-w-md mx-4 transition-all duration-300 transform animate-pop-in"
-						style={{ boxShadow: "0 8px 32px 0 rgba(31, 38, 135, 0.37)" }}
-					>
-						<h2 className="text-xl sm:text-2xl font-bold text-center mb-4 sm:mb-5 bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent">
-							Add Transaction
-						</h2>
-						<form
-							onSubmit={async (e) => {
-								e.preventDefault();
-								setError("");
-								try {
-									const amount = parseFloat(transactionForm.amount);
-									if (!amount) throw new Error("Amount must be a number.");
-									setLoadingForTXN(true);
-									const res = await axios.post(
-										`${import.meta.env.VITE_BACKEND_API_URL}/transactions`,
-										{
-											hisab_id: selectedHisabId,
-											paid_by:
-												transactionForm.paid_by === "CONTRIBUTION"
-													? null
-													: transactionForm.paid_by,
-											amount: amount,
-											description: transactionForm.description,
-											category: transactionForm.category,
-											paid_through_contribution:
-												transactionForm.paid_by === "CONTRIBUTION"
-													? true
-													: false,
-										},
-										{ withCredentials: true }
-									);
-									setLoadingForTXN(false);
-									dispatch(
-										updateHisab({
-											id: selectedHisabId,
-											transactions: res.data,
-										})
-									);
-									setSpentMap((prev) => ({
-										...prev,
-										[selectedHisabId]: (prev[selectedHisabId] || 0) + amount,
-									}));
-									setShowModal(false);
-									setTransactionForm({
-										amount: "",
-										description: "",
-										paid_by: "CONTRIBUTION",
-										category: "",
-									});
-								} catch (err) {
-									setError(
-										err.message ||
-											"Failed to add transaction. Please try again."
-									);
-									setTimeout(() => setError(""), 4000);
-								}
-							}}
-						>
-							{error && (
-								<div className="mb-4 flex items-center gap-2 text-red-400 bg-red-500/10 rounded-xl p-3 border border-red-500/20">
-									<AlertCircle size={18} />
-									<span className="text-xs sm:text-sm">{error}</span>
-								</div>
-							)}
-							<div className="mb-4">
-								<label className="block text-sm sm:text-base font-medium text-gray-300 mb-2">
-									Amount
-								</label>
-								<input
-									type="text"
-									className="w-full px-4 py-2.5 bg-white/10 border border-white/15 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-400/20 focus:border-transparent transition-all"
-									placeholder="₹0.00"
-									value={transactionForm.amount}
-									onChange={(e) =>
-										setTransactionForm({
-											...transactionForm,
-											amount: e.target.value,
-										})
-									}
-									required
-								/>
-							</div>
-							<div className="mb-4">
-								<label className="block text-sm sm:text-base font-medium text-gray-300 mb-2">
-									Description
-								</label>
-								<input
-									type="text"
-									className="w-full px-4 py-2.5 bg-white/10 border border-white/15 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-400/20 focus:border-transparent transition-all"
-									placeholder="Short description"
-									value={transactionForm.description}
-									onChange={(e) =>
-										setTransactionForm({
-											...transactionForm,
-											description: e.target.value,
-										})
-									}
-									required
-								/>
-							</div>
-							<div className="mb-4">
-								<label className="block text-sm sm:text-base font-medium text-gray-300 mb-2">
-									Category
-								</label>
-								<select
-									className="w-full px-4 py-2.5 bg-white/10 border border-white/15 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-indigo-400/20 focus:border-transparent transition-all"
-									value={transactionForm.category}
-									onChange={(e) =>
-										setTransactionForm({
-											...transactionForm,
-											category: e.target.value,
-										})
-									}
-									required
-								>
-									<option value="" disabled className="bg-white/5 text-white">
-										Select a category
-									</option>
-									<option
-										value="Accommodation"
-										className="bg-white/5 text-white"
-									>
-										Accommodation
-									</option>
-									<option
-										value="Transportation"
-										className="bg-white/5 text-white"
-									>
-										Transportation
-									</option>
-									<option value="Food" className="bg-white/5 text-white">
-										Food
-									</option>
-									<option value="Utilities" className="bg-white/5 text-white">
-										Utilities
-									</option>
-									<option value="Venue" className="bg-white/5 text-white">
-										Venue
-									</option>
-									<option
-										value="Miscellaneous"
-										className="bg-white/5 text-white"
-									>
-										Miscellaneous
-									</option>
-								</select>
-							</div>
-							<div className="mb-6">
-								<label className="block text-sm sm:text-base font-medium text-gray-300 mb-2">
-									Paid By
-								</label>
-								<select
-									className="w-full px-4 py-2.5 bg-white/10 border border-white/15 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-indigo-400/20 focus:border-transparent transition-all"
-									value={transactionForm.paid_by}
-									onChange={(e) =>
-										setTransactionForm({
-											...transactionForm,
-											paid_by: e.target.value,
-										})
-									}
-									required
-								>
-									<option
-										value="CONTRIBUTION"
-										className="bg-white/5 text-white"
-									>
-										From Contribution (Initial Pool)
-									</option>
-									{contributors.map((contributor) => (
-										<option
-											key={contributor.user_id}
-											value={contributor.user_id}
-											className="bg-white/5 text-white"
-										>
-											{contributor.name}
-										</option>
-									))}
-								</select>
-							</div>
-							<div className="flex flex-col sm:flex-row justify-center gap-3">
-								<button
-									type="button"
-									onClick={() => setShowModal(false)}
-									className="px-5 py-2.5 bg-gradient-to-r from-gray-500/10 to-gray-600/10 border border-gray-400/20 rounded-xl text-white hover:from-gray-600/20 hover:to-gray-700/20 transition-all duration-300 transform hover:scale-105"
-								>
-									Cancel
-								</button>
-								<button
-									disabled={loadingForTXN}
-									type="submit"
-									className={`px-5 py-2.5 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-xl font-medium text-white flex items-center justify-center gap-2 hover:from-indigo-600 hover:to-purple-600 transition-all duration-300 transform hover:scale-105 ${loadingForTXN ? 'opacity-60 cursor-not-allowed' : ''}`}
-								>
-									{loadingForTXN ? (
-										<svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-											<circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-											<path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
-										</svg>
-									) : 'Add Transaction'}
-								</button>
-							</div>
-						</form>
-					</div>
-				</div>
-			)}
-		</div>
-	);
+      {/* Modern Glass Card Modal */}
+      {showModal && (
+        <div className="fixed inset-0 flex items-center justify-center z-50 backdrop-blur-md bg-black/50">
+          <div
+            className="bg-white/5 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/10 p-5 sm:p-6 md:p-7 w-full max-w-xs sm:max-w-sm md:max-w-md mx-4 transition-all duration-300 transform animate-pop-in"
+            style={{ boxShadow: '0 8px 32px 0 rgba(31, 38, 135, 0.37)' }}
+          >
+            <h2 className="text-xl sm:text-2xl font-bold text-center mb-4 sm:mb-5 bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent">
+              Add Transaction
+            </h2>
+            <form
+              onSubmit={async e => {
+                e.preventDefault();
+                setError('');
+                try {
+                  const amount = parseFloat(transactionForm.amount);
+                  if (!amount) throw new Error('Amount must be a number.');
+                  setLoadingForTXN(true);
+                  const res = await axios.post(
+                    `/api/v1/transactions`,
+                    {
+                      hisab_id: selectedHisabId,
+                      paid_by:
+                        transactionForm.paid_by === 'CONTRIBUTION'
+                          ? null
+                          : transactionForm.paid_by,
+                      amount: amount,
+                      description: transactionForm.description,
+                      category: transactionForm.category,
+                      paid_through_contribution:
+                        transactionForm.paid_by === 'CONTRIBUTION'
+                          ? true
+                          : false,
+                    },
+                    { withCredentials: true },
+                  );
+                  setLoadingForTXN(false);
+                  dispatch(
+                    updateHisab({
+                      id: selectedHisabId,
+                      transactions: res.data,
+                    }),
+                  );
+                  setSpentMap(prev => ({
+                    ...prev,
+                    [selectedHisabId]: (prev[selectedHisabId] || 0) + amount,
+                  }));
+                  setShowModal(false);
+                  setTransactionForm({
+                    amount: '',
+                    description: '',
+                    paid_by: 'CONTRIBUTION',
+                    category: '',
+                  });
+                } catch (err) {
+                  setError(
+                    err.message ||
+                      'Failed to add transaction. Please try again.',
+                  );
+                  setTimeout(() => setError(''), 4000);
+                }
+              }}
+            >
+              {error && (
+                <div className="mb-4 flex items-center gap-2 text-red-400 bg-red-500/10 rounded-xl p-3 border border-red-500/20">
+                  <AlertCircle size={18} />
+                  <span className="text-xs sm:text-sm">{error}</span>
+                </div>
+              )}
+              <div className="mb-4">
+                <label className="block text-sm sm:text-base font-medium text-gray-300 mb-2">
+                  Amount
+                </label>
+                <input
+                  type="text"
+                  className="w-full px-4 py-2.5 bg-white/10 border border-white/15 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-400/20 focus:border-transparent transition-all"
+                  placeholder="₹0.00"
+                  value={transactionForm.amount}
+                  onChange={e =>
+                    setTransactionForm({
+                      ...transactionForm,
+                      amount: e.target.value,
+                    })
+                  }
+                  required
+                />
+              </div>
+              <div className="mb-4">
+                <label className="block text-sm sm:text-base font-medium text-gray-300 mb-2">
+                  Description
+                </label>
+                <input
+                  type="text"
+                  className="w-full px-4 py-2.5 bg-white/10 border border-white/15 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-400/20 focus:border-transparent transition-all"
+                  placeholder="Short description"
+                  value={transactionForm.description}
+                  onChange={e =>
+                    setTransactionForm({
+                      ...transactionForm,
+                      description: e.target.value,
+                    })
+                  }
+                  required
+                />
+              </div>
+              <div className="mb-4">
+                <label className="block text-sm sm:text-base font-medium text-gray-300 mb-2">
+                  Category
+                </label>
+                <select
+                  className="w-full px-4 py-2.5 bg-white/10 border border-white/15 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-indigo-400/20 focus:border-transparent transition-all"
+                  value={transactionForm.category}
+                  onChange={e =>
+                    setTransactionForm({
+                      ...transactionForm,
+                      category: e.target.value,
+                    })
+                  }
+                  required
+                >
+                  <option value="" disabled className="bg-white/5 text-white">
+                    Select a category
+                  </option>
+                  <option
+                    value="Accommodation"
+                    className="bg-white/5 text-white"
+                  >
+                    Accommodation
+                  </option>
+                  <option
+                    value="Transportation"
+                    className="bg-white/5 text-white"
+                  >
+                    Transportation
+                  </option>
+                  <option value="Food" className="bg-white/5 text-white">
+                    Food
+                  </option>
+                  <option value="Utilities" className="bg-white/5 text-white">
+                    Utilities
+                  </option>
+                  <option value="Venue" className="bg-white/5 text-white">
+                    Venue
+                  </option>
+                  <option
+                    value="Miscellaneous"
+                    className="bg-white/5 text-white"
+                  >
+                    Miscellaneous
+                  </option>
+                </select>
+              </div>
+              <div className="mb-6">
+                <label className="block text-sm sm:text-base font-medium text-gray-300 mb-2">
+                  Paid By
+                </label>
+                <select
+                  className="w-full px-4 py-2.5 bg-white/10 border border-white/15 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-indigo-400/20 focus:border-transparent transition-all"
+                  value={transactionForm.paid_by}
+                  onChange={e =>
+                    setTransactionForm({
+                      ...transactionForm,
+                      paid_by: e.target.value,
+                    })
+                  }
+                  required
+                >
+                  <option
+                    value="CONTRIBUTION"
+                    className="bg-white/5 text-white"
+                  >
+                    From Contribution (Initial Pool)
+                  </option>
+                  {contributors.map(contributor => (
+                    <option
+                      key={contributor.user_id}
+                      value={contributor.user_id}
+                      className="bg-white/5 text-white"
+                    >
+                      {contributor.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div className="flex flex-col sm:flex-row justify-center gap-3">
+                <button
+                  type="button"
+                  onClick={() => setShowModal(false)}
+                  className="px-5 py-2.5 bg-gradient-to-r from-gray-500/10 to-gray-600/10 border border-gray-400/20 rounded-xl text-white hover:from-gray-600/20 hover:to-gray-700/20 transition-all duration-300 transform hover:scale-105"
+                >
+                  Cancel
+                </button>
+                <button
+                  disabled={loadingForTXN}
+                  type="submit"
+                  className={`px-5 py-2.5 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-xl font-medium text-white flex items-center justify-center gap-2 hover:from-indigo-600 hover:to-purple-600 transition-all duration-300 transform hover:scale-105 ${
+                    loadingForTXN ? 'opacity-60 cursor-not-allowed' : ''
+                  }`}
+                >
+                  {loadingForTXN ? (
+                    <svg
+                      className="animate-spin h-5 w-5 text-white"
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                    >
+                      <circle
+                        className="opacity-25"
+                        cx="12"
+                        cy="12"
+                        r="10"
+                        stroke="currentColor"
+                        strokeWidth="4"
+                      ></circle>
+                      <path
+                        className="opacity-75"
+                        fill="currentColor"
+                        d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
+                      ></path>
+                    </svg>
+                  ) : (
+                    'Add Transaction'
+                  )}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+    </div>
+  );
 }

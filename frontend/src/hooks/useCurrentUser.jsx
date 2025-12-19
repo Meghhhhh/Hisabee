@@ -13,12 +13,9 @@ export const useCurrentUser = () => {
     dispatch(setLoading(true));
     const getCurrUser = async () => {
       try {
-        const response = await axios.get(
-          `${import.meta.env.VITE_BACKEND_API_URL}/user/current-user`,
-          {
-            withCredentials: true,
-          },
-        );
+        const response = await axios.get(`/api/v1/user/current-user`, {
+          withCredentials: true,
+        });
 
         if (response.status < 300) {
           dispatch(setUserData(response?.data?.data));

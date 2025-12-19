@@ -1,15 +1,14 @@
 import React, { useState } from "react";
 import { Mail, ArrowLeft, Check, AlertCircle } from "lucide-react";
-import { Link, useNavigate } from "react-router";
-import axios from "axios";
-import { toast } from "react-toastify";
+import { Link } from "react-router";
+import { usePasswordReset } from "../hooks/usePasswordReset";
 
-const ForgetPassword = () => {
+const ForgetPassword = () => {	
 	const [email, setEmail] = useState("");
 	const [isSubmitted, setIsSubmitted] = useState(false);
-	const [isLoading, setIsLoading] = useState(false);
 	const [error, setError] = useState("");
-	const navigate = useNavigate();
+	const { requestPasswordReset, loading } = usePasswordReset();
+	// const navigate = useNavigate();
 
 	const handleSubmit = async (e) => {
 		e.preventDefault();
@@ -22,56 +21,22 @@ const ForgetPassword = () => {
 
 		const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 		if (!emailRegex.test(email)) {
+		const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+		if (!emailRegex.test(email)) {
 			setError("Please enter a valid email address");
 			return;
 		}
 
-		setIsLoading(true);
-
-		try {
-			const response = await axios.post(
-				`/api/v1/user/forgot-password`,
-				{ email },
-				{ withCredentials: true }
-			);
-
-			if (response.status < 300) {
-				toast.success(response.data?.message || "Password reset code sent to your email", {
-					autoClose: 3000,
-				});
-				setIsSubmitted(true);
-			}
-		} catch (err) {
-			console.error("Forgot password error:", err);
-			const errorMessage = err.response?.data?.message || "Failed to send reset code. Please try again.";
-			setError(errorMessage);
-			toast.error(errorMessage);
-		} finally {
-			setIsLoading(false);
+		const result = await requestPasswordReset(email);
+		if (result.success) {
+			setIsSubmitted(true);
 		}
 	};
+}
 
-	const handleResend = async () => {
-		setIsLoading(true);
-		try {
-			const response = await axios.post(
-				`/api/v1/user/forgot-password`,
-				{ email },
-				{ withCredentials: true }
-			);
-
-			if (response.status < 300) {
-				toast.success("Reset code resent to your email", {
-					autoClose: 3000,
-				});
-			}
-		} catch (err) {
-			console.error("Resend error:", err);
-			toast.error(err.response?.data?.message || "Failed to resend code. Please try again.");
-		} finally {
-			setIsLoading(false);
-		}
-	};
+	// const handleBackToLogin = () => {
+	// 	navigate("/signup");
+	// };
 
 	if (isSubmitted) {
 		return (
@@ -109,18 +74,11 @@ const ForgetPassword = () => {
 
 						<div className="space-y-4">
 							<button
-								onClick={handleResend}
-								disabled={isLoading}
-								className="w-full py-3 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-xl font-semibold text-white hover:from-blue-600 hover:to-cyan-600 transition-all duration-300 transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none flex items-center justify-center space-x-2"
+								onClick={handleSubmit}
+								disabled={loading}
+								className="w-full py-3 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-xl font-semibold text-white hover:from-blue-600 hover:to-cyan-600 transition-all duration-300 transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"
 							>
-								{isLoading ? (
-									<>
-										<div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-										<span>Sending...</span>
-									</>
-								) : (
-									<span>Resend Email</span>
-								)}
+								{loading ? "Sending..." : "Resend Email"}
 							</button>
 
 							<Link
@@ -207,11 +165,11 @@ const ForgetPassword = () => {
 						)}
 
 						<button
-							type="submit"
-							disabled={isLoading}
+							onClick={handleSubmit}
+							disabled={loading}
 							className="w-full py-3 bg-gradient-to-r from-purple-500 to-pink-500 rounded-xl font-semibold text-white hover:from-purple-600 hover:to-pink-600 transition-all duration-300 transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none flex items-center justify-center space-x-2"
 						>
-							{isLoading ? (
+							{loading ? (
 								<>
 									<div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
 									<span>Sending...</span>

@@ -15,7 +15,7 @@ import {
   getIncomingRequests,
   acceptRequest,
   rejectRequest,
-  forgotPassword,
+  requestPasswordReset,
   resetPassword,
 } from '../controllers/user.controller.js';
 import { validateBody } from '../middleware/bodyValidator.js';
@@ -38,7 +38,7 @@ router.get('/outgoing-requests', auth, getOutgoingRequests);
 router.get('/incoming-requests', auth, getIncomingRequests);
 router.post('/accept-request', auth, acceptRequest);
 router.post('/reject-request', auth, rejectRequest);
-router.post('/forgot-password', validateBody(['email']), forgotPassword);
-router.post('/reset-password', validateBody(['email', 'resetCode', 'newPassword']), resetPassword);
+router.post('/request-password-reset', validateBody(['email']), requestPasswordReset);
+router.post('/reset-password', validateBody(['email', 'resetToken', 'newPassword']), resetPassword);
 
 export default router;

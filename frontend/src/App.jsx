@@ -17,6 +17,7 @@ import "react-toastify/dist/ReactToastify.css";
 import About from "./pages/About";
 import Summary from "./pages/Summary";
 import Forget from "./pages/Forget";
+import ResetPassword from "./pages/ResetPassword";
 import Support from "./pages/Support";
 import NotFound from "./pages/NotFound";
 
@@ -29,6 +30,7 @@ const App = () => {
 				<Route path="/signup" element={<SignUp />} />
 				<Route path="/register" element={<Register />} />
 				<Route path="/forgetpassword" element={<Forget />} />
+				<Route path="/reset-password" element={<ResetPassword />} />
 				<Route path="/otp" element={<OTP />} />
 				<Route path="/" element={<Home />} />
 				<Route path="/home" element={<Home />} />

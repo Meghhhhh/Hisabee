@@ -17,6 +17,7 @@ import asyncHandler from '../utils/asyncHandler.js';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import sendMessage, { otpHtml, passwordResetHtml } from '../utils/mailHandler.js';
+import sendMessage, { otpHtml, passwordResetHtml } from '../utils/mailHandler.js';
 
 const cookieOptions = {
   httpOnly: true,
@@ -382,7 +383,7 @@ export const rejectRequest = asyncHandler(async (req, res) => {
   return handleResponse(res, 200, 'Friend request rejected', result);
 });
 
-export const forgotPassword = asyncHandler(async (req, res) => {
+export const requestPasswordReset = asyncHandler(async (req, res) => {
   const { email } = req.body;
   if (!email) return handleResponse(res, 400, 'Email is required');
 
@@ -392,56 +393,87 @@ export const forgotPassword = asyncHandler(async (req, res) => {
     return handleResponse(
       res,
       200,
-      'If the email exists, a password reset code has been sent',
+      'If an account with that email exists, a password reset code has been sent.',
+    );
+  }
+
+  if (!user.is_verified) {
+    return handleResponse(
+      res,
+      400,
+      'Please verify your account first before resetting password.',
     );
   }
 
   // Generate 6-digit reset code
   const resetCode = Math.floor(100000 + Math.random() * 900000);
-  const resetExpiry = new Date(Date.now() + 5 * 60 * 1000); // 5 minutes
+  const resetExpiry = new Date(Date.now() + 15 * 60 * 1000); // 15 minutes
 
+  // Store reset code in otp_code field (we'll use this for password reset)
   await updateUser(user.user_id, {
-    password_reset_token: resetCode.toString(),
-    password_reset_expires_at: resetExpiry,
+    otp_code: resetCode.toString(),
+    otp_expires_at: resetExpiry,
   });
 
-  try {
-    await sendMessage(
-      email,
-      'Password Reset Code - Hisabee',
-      passwordResetHtml(resetCode),
-    );
-    return handleResponse(
-      res,
-      200,
-      'If the email exists, a password reset code has been sent',
-    );
-  } catch (error) {
-    console.error('Error sending password reset email:', error);
-    return handleResponse(res, 500, 'Failed to send password reset email');
-  }
+  // Create reset URL - ensure no double slashes
+  const frontendUrl = (process.env.FRONTEND_URL || 'http://localhost:5173').replace(/\/$/, '');
+  const resetUrl = `${frontendUrl}/reset-password?token=${resetCode}&email=${encodeURIComponent(email)}`;
+
+  // Send password reset email
+  await sendMessage(
+    email,
+    'Password Reset Request - Hisabee',
+    passwordResetHtml(resetCode, resetUrl),
+  );
+
+  return handleResponse(
+    res,
+    200,
+    'If an account with that email exists, a password reset code has been sent.',
+  );
 });
 
 export const resetPassword = asyncHandler(async (req, res) => {
-  const { email, resetCode, newPassword } = req.body;
+  const { email, resetToken, newPassword } = req.body;
 
-  if (!email || !resetCode || !newPassword) {
+  if (!email || !resetToken || !newPassword) {
     return handleResponse(
       res,
       400,
-      'Email, reset code, and new password are required',
+      'Email, reset token, and new password are required',
+    );
+  }
+
+  // Validate password strength
+  if (newPassword.length < 6) {
+    return handleResponse(
+      res,
+      400,
+      'Password must be at least 6 characters long',
     );
   }
 
   const user = await getOneUserByQuery('email', email);
-  if (!user) return handleResponse(res, 404, 'User not found');
+  if (!user) {
+    return handleResponse(res, 404, 'User not found');
+  }
 
+  if (!user.is_verified) {
+    return handleResponse(
+      res,
+      400,
+      'Please verify your account first before resetting password.',
+    );
+  }
+
+  // Verify reset token
   if (
-    !user.password_reset_token ||
-    user.password_reset_token !== resetCode.toString() ||
-    new Date() > new Date(user.password_reset_expires_at)
+    !user.otp_code ||
+    user.otp_code !== resetToken.toString() ||
+    !user.otp_expires_at ||
+    new Date() > new Date(user.otp_expires_at)
   ) {
-    return handleResponse(res, 400, 'Invalid or expired reset code');
+    return handleResponse(res, 400, 'Invalid or expired reset token');
   }
 
   // Hash new password
@@ -450,8 +482,8 @@ export const resetPassword = asyncHandler(async (req, res) => {
   // Update password and clear reset token
   await updateUser(user.user_id, {
     password: hashedPassword,
-    password_reset_token: null,
-    password_reset_expires_at: null,
+    otp_code: null,
+    otp_expires_at: null,
   });
 
   return handleResponse(res, 200, 'Password reset successfully');
