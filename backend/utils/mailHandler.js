@@ -2,10 +2,15 @@ import 'dotenv/config';
 import nodemailer from 'nodemailer';
 
 const transporter = nodemailer.createTransport({
-  service: process.env.APP_SERVICE_TYPE,
+  host: process.env.APP_EMAIL_HOST,
+  port: process.env.APP_EMAIL_PORT,
+  secure: false,
   auth: {
     user: process.env.APP_EMAIL,
-    pass: process.env.APP_PASSWORD,
+    pass: process.env.APP_PASSWORD, 
+  },
+  tls: {
+    rejectUnauthorized: false,
   },
 });
 
